@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useAuth } from './useAuth'
 import { useCards } from './useCards'
-import type { Card, Discipline } from '../types'
+import type { Discipline } from '../types'
 import { DISCIPLINES } from '../types'
 
 export interface ActivityDay {
