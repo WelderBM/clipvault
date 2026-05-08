@@ -29,6 +29,32 @@ interface Props {
   isSelected?: boolean
   /** Toggle this card in/out of the selection. Long-press also calls this. */
   onToggleSelect?: () => void
+  /** Text to highlight in the title and text fields */
+  highlight?: string | null
+}
+
+function HighlightedText({ text, highlight }: { text: string; highlight?: string | null }) {
+  if (!highlight || !highlight.trim()) return <>{text}</>;
+  
+  try {
+    const escaped = highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escaped})`, 'gi');
+    const parts = text.split(regex);
+    
+    return (
+      <>
+        {parts.map((part, i) => 
+          i % 2 === 1 ? (
+            <mark key={i} className="bg-teal/40 text-white rounded-sm px-[2px] bg-opacity-60">{part}</mark>
+          ) : (
+            <span key={i}>{part}</span>
+          )
+        )}
+      </>
+    );
+  } catch {
+    return <>{text}</>;
+  }
 }
 
 export default function CardItem({
@@ -37,6 +63,7 @@ export default function CardItem({
   selectionMode = false,
   isSelected = false,
   onToggleSelect,
+  highlight,
 }: Props) {
   const { user } = useAuth()
   const [copied, setCopied] = useState(false)
@@ -458,7 +485,7 @@ export default function CardItem({
             )}
             {card.title && (
               <span className="font-body font-semibold text-sm text-white/80 truncate max-w-[160px]">
-                {card.title}
+                <HighlightedText text={card.title} highlight={highlight} />
               </span>
             )}
             {card.category && (
@@ -482,7 +509,7 @@ export default function CardItem({
 
           {/* Text preview */}
           <p className="font-body text-sm text-white/60 leading-relaxed line-clamp-3">
-            {card.text}
+            <HighlightedText text={card.text} highlight={highlight} />
           </p>
         </div>
 

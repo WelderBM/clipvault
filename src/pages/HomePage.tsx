@@ -2,11 +2,14 @@ import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { useCards, type CardSort } from '../hooks/useCards'
 import { useSelection } from '../hooks/useSelection'
+import { useFilteredCards, type Filters } from '../hooks/useFilteredCards'
+import type { Discipline, Importance } from '../types'
 import { bulkArchiveCards, bulkDeleteCards } from '../lib/cards'
 import CardItem from '../components/CardItem'
 import CreateCardSheet from '../components/CreateCardSheet'
 import ImportCardsSheet from '../components/ImportCardsSheet'
 import SelectionToolbar from '../components/SelectionToolbar'
+import FilterBar from '../components/FilterBar'
 import { Link } from 'react-router-dom'
 
 const PAGE_SIZE = 20
@@ -23,6 +26,15 @@ export default function HomePage() {
   const [showImport, setShowImport] = useState(false)
   const selection = useSelection()
   const sentinelRef = useRef<HTMLDivElement>(null)
+
+  const [filters, setFilters] = useState<Filters>({
+    search: '',
+    disciplines: new Set<Discipline>(),
+    importance: new Set<Importance>(),
+    hotOnly: false,
+  })
+
+  const filteredCards = useFilteredCards(cards, filters)
 
   // Infinite scroll: when the sentinel scrolls into view, fetch the next page.
   useEffect(() => {
@@ -53,7 +65,7 @@ export default function HomePage() {
   }
 
   const handleBulkExport = () => {
-    const data = cards
+    const data = filteredCards
       .filter(c => selection.isSelected(c.id))
       .map(c => ({
         title: c.title,
@@ -100,18 +112,25 @@ export default function HomePage() {
 
       {/* Content */}
       <main className={`px-4 pt-4 ${selection.selectionMode ? 'pb-32' : 'pb-28'}`}>
+        {!selection.selectionMode && (
+          <FilterBar filters={filters} setFilters={setFilters} />
+        )}
+
         {loading ? (
           <div className="flex flex-col gap-3 mt-2">
             {[1, 2, 3].map(i => (
               <div key={i} className="h-36 bg-surface rounded-2xl border border-border animate-pulse" />
             ))}
           </div>
-        ) : cards.length === 0 ? (
+        ) : filteredCards.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-4 mt-20 text-center px-8">
             <span className="text-5xl">📋</span>
             <p className="font-body text-white/30 text-sm leading-relaxed">
-              Nenhum card ativo ainda.<br />
-              Toca no <strong className="text-white/50">+</strong> para adicionar o primeiro.
+              {cards.length === 0 ? (
+                <>Nenhum card ativo ainda.<br />Toca no <strong className="text-white/50">+</strong> para adicionar o primeiro.</>
+              ) : (
+                <>Nenhum card encontrado com esses filtros.</>
+              )}
             </p>
           </div>
         ) : (
@@ -119,7 +138,7 @@ export default function HomePage() {
             {/* Count + sort toggle */}
             <div className="flex items-center justify-between mb-1 gap-3">
               <p className="font-mono text-[11px] text-white/25 uppercase tracking-wider">
-                {cards.length} card{cards.length !== 1 ? 's' : ''}
+                {filteredCards.length} card{filteredCards.length !== 1 ? 's' : ''}
                 {selection.selectionMode && (
                   <>  ·  <span className="text-teal/80">segure pra adicionar à seleção</span></>
                 )}
@@ -152,13 +171,14 @@ export default function HomePage() {
               )}
             </div>
 
-            {cards.map(card => (
+            {filteredCards.map(card => (
               <CardItem
                 key={card.id}
                 card={card}
                 selectionMode={selection.selectionMode}
                 isSelected={selection.isSelected(card.id)}
                 onToggleSelect={() => selection.toggle(card.id)}
+                highlight={filters.search}
               />
             ))}
 
