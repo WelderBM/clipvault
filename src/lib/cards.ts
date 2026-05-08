@@ -2,7 +2,7 @@ import {
   collection, doc, addDoc, updateDoc, deleteDoc,
   query, where, orderBy, onSnapshot, getDocs,
   limit as fsLimit, startAfter,
-  serverTimestamp, Timestamp, writeBatch,
+  serverTimestamp, Timestamp, writeBatch, increment,
 } from 'firebase/firestore'
 import type { QueryDocumentSnapshot, DocumentData } from 'firebase/firestore'
 import { db } from './firebase'
@@ -111,6 +111,17 @@ export async function updateCard(uid: string, cardId: string, data: Partial<Card
 
 export async function deleteCard(uid: string, cardId: string) {
   await deleteDoc(doc(db, 'users', uid, 'cards', cardId))
+}
+
+/**
+ * Marca uma revisão: atualiza lastReviewed para now() e incrementa reviewCount.
+ * Usa increment() do Firestore p/ ser atômico mesmo com writes concorrentes.
+ */
+export async function markAsReviewed(uid: string, cardId: string) {
+  await updateDoc(doc(db, 'users', uid, 'cards', cardId), {
+    lastReviewed: Timestamp.now(),
+    reviewCount: increment(1),
+  })
 }
 
 /**

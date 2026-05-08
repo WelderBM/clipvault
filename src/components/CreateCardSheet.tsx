@@ -1,7 +1,14 @@
 import { useState } from 'react'
 import { createCard } from '../lib/cards'
 import { useAuth } from '../hooks/useAuth'
-import { CARD_COLORS, CARD_CATEGORIES } from '../types'
+import {
+  CARD_COLORS,
+  CARD_CATEGORIES,
+  DISCIPLINES,
+  DISCIPLINE_LABELS,
+  IMPORTANCE_LEVELS,
+} from '../types'
+import type { Discipline, Importance } from '../types'
 
 interface Props {
   onClose: () => void
@@ -16,6 +23,8 @@ export default function CreateCardSheet({ onClose }: Props) {
   const [color, setColor] = useState(CARD_COLORS[0].value)
   const [emoji, setEmoji] = useState('📋')
   const [category, setCategory] = useState(CARD_CATEGORIES[0])
+  const [discipline, setDiscipline] = useState<Discipline | undefined>(undefined)
+  const [importance, setImportance] = useState<Importance>(1)
   const [saving, setSaving] = useState(false)
 
   const canSave = text.trim().length > 0
@@ -31,6 +40,8 @@ export default function CreateCardSheet({ onClose }: Props) {
         emoji,
         category,
         status: 'active',
+        ...(discipline !== undefined && { discipline }),
+        ...(importance !== 1 && { importance }),
       })
       onClose()
     } finally {
@@ -133,6 +144,57 @@ export default function CreateCardSheet({ onClose }: Props) {
                 style={category === cat ? { backgroundColor: color } : {}}
               >
                 {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Discipline (matéria do edital) */}
+        <div className="flex flex-col gap-1.5">
+          <label className="font-mono text-[11px] text-white/40 uppercase tracking-wider">Matéria</label>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setDiscipline(undefined)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-body font-medium transition-all ${
+                discipline === undefined
+                  ? 'bg-white/10 text-white/80 border border-white/20'
+                  : 'bg-void border border-border text-white/40 hover:border-white/20'
+              }`}
+            >
+              Sem matéria
+            </button>
+            {DISCIPLINES.map(d => (
+              <button
+                key={d}
+                onClick={() => setDiscipline(d)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-body font-medium transition-all ${
+                  discipline === d
+                    ? 'bg-teal/20 text-teal border border-teal/40'
+                    : 'bg-void border border-border text-white/40 hover:border-white/20'
+                }`}
+              >
+                {DISCIPLINE_LABELS[d]}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Importance */}
+        <div className="flex flex-col gap-1.5">
+          <label className="font-mono text-[11px] text-white/40 uppercase tracking-wider">Importância</label>
+          <div className="flex gap-2">
+            {IMPORTANCE_LEVELS.map(lvl => (
+              <button
+                key={lvl.value}
+                onClick={() => setImportance(lvl.value)}
+                className={`flex-1 px-3 py-2 rounded-xl text-xs font-body font-medium transition-all flex items-center justify-center gap-1.5 ${
+                  importance === lvl.value
+                    ? 'bg-amber/20 text-amber border border-amber/40'
+                    : 'bg-void border border-border text-white/40 hover:border-white/20'
+                }`}
+              >
+                <span>{lvl.emoji}</span>
+                <span>{lvl.label}</span>
               </button>
             ))}
           </div>
