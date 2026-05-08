@@ -36,8 +36,8 @@ export interface Card {
   usedAt: Timestamp | null
 
   // ----- Phase 2 fields (todos opcionais p/ retrocompat com cards antigos) -----
-  /** Matéria do edital. */
-  discipline?: Discipline
+  /** Matéria do edital. null = card teve matéria limpada explicitamente. */
+  discipline?: Discipline | null
   /** 1=normal, 2=importante, 3=hot. Default 1 quando ausente. */
   importance?: Importance
   /** Última vez que o usuário marcou revisão. */

@@ -29,23 +29,17 @@ interface Result {
  *
  * Formula: importance * log1p(daysSince(lastReviewed ?? createdAt))
  *
- * Phase 2 will populate `importance` (1=normal, 2=importante, 3=hot) and `lastReviewed`.
- * Until then, all cards default to importance=1 and lastReviewed=null, so the score
- * collapses to log1p(daysSinceCreated) — older cards rank higher in 'urgent' mode,
- * which is the inverse of 'recent'.
+ * - importance 1 (normal) | 2 (importante) | 3 (hot FCC) — multiplica o decay temporal.
+ * - lastReviewed quando presente "zera" o relógio na revisão; senão cai pra createdAt.
+ * - log1p suaviza p/ que cards muito antigos não dominem absurdamente.
  *
- * NOTE: this sort runs over the *loaded* set only. Cards on yet-unloaded pages may
- * have higher scores; users may need to load-more to see them rank correctly.
+ * NOTE: este sort roda sobre o set *carregado*. Cards em páginas ainda não-carregadas
+ * podem ter score maior; usuários podem precisar dar load-more pra ver tudo no topo.
  */
 function urgencyScore(card: Card): number {
-  // Read Phase 2 fields without committing to Card type yet.
-  const c = card as Card & {
-    importance?: number
-    lastReviewed?: { toMillis?: () => number } | null
-  }
-  const importance = typeof c.importance === 'number' ? c.importance : 1
+  const importance = card.importance ?? 1
   const lastTouchMs =
-    c.lastReviewed?.toMillis?.() ?? card.createdAt?.toMillis?.() ?? 0
+    card.lastReviewed?.toMillis?.() ?? card.createdAt?.toMillis?.() ?? 0
   const daysSince = Math.max(0, (Date.now() - lastTouchMs) / 86_400_000)
   return importance * Math.log1p(daysSince)
 }

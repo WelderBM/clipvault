@@ -1,12 +1,19 @@
 import { useEffect, useState } from 'react'
-import type { Card } from '../types'
-import { CARD_COLORS, CARD_CATEGORIES } from '../types'
+import type { Card, Discipline, Importance } from '../types'
+import {
+  CARD_COLORS,
+  CARD_CATEGORIES,
+  DISCIPLINES,
+  DISCIPLINE_LABELS,
+  IMPORTANCE_LEVELS,
+} from '../types'
 import {
   markAsUsed,
   archiveCard,
   reactivateCard,
   updateCard,
   deleteCard,
+  markAsReviewed,
 } from '../lib/cards'
 import { useAuth } from '../hooks/useAuth'
 import { useLongPress } from '../hooks/useLongPress'
@@ -44,7 +51,12 @@ export default function CardItem({
   const [editColor, setEditColor] = useState(card.color)
   const [editEmoji, setEditEmoji] = useState(card.emoji)
   const [editCategory, setEditCategory] = useState(card.category)
+  const [editDiscipline, setEditDiscipline] = useState<Discipline | undefined>(
+    card.discipline ?? undefined
+  )
+  const [editImportance, setEditImportance] = useState<Importance>(card.importance ?? 1)
   const [savingEdit, setSavingEdit] = useState(false)
+  const [reviewing, setReviewing] = useState(false)
 
   // When selection mode turns on, force-close anything that doesn't make sense
   useEffect(() => {
@@ -88,6 +100,17 @@ export default function CardItem({
     }
   }
 
+  const handleReview = async () => {
+    if (!user || reviewing) return
+    setReviewing(true)
+    try {
+      await markAsReviewed(user.uid, card.id)
+      setShowActions(false)
+    } finally {
+      setReviewing(false)
+    }
+  }
+
   const closeActions = () => {
     setShowActions(false)
     setConfirmDelete(false)
@@ -99,6 +122,8 @@ export default function CardItem({
     setEditColor(card.color)
     setEditEmoji(card.emoji)
     setEditCategory(card.category)
+    setEditDiscipline(card.discipline ?? undefined)
+    setEditImportance(card.importance ?? 1)
     setShowActions(false)
     setConfirmDelete(false)
     setEditing(true)
@@ -109,12 +134,16 @@ export default function CardItem({
   }
 
   const canSaveEdit = editText.trim().length > 0
+  const currentImportance = card.importance ?? 1
+  const currentDiscipline = card.discipline ?? undefined
   const hasChanges =
     (editTitle.trim() || null) !== card.title ||
     editText.trim() !== card.text ||
     editColor !== card.color ||
     editEmoji !== card.emoji ||
-    editCategory !== card.category
+    editCategory !== card.category ||
+    editDiscipline !== currentDiscipline ||
+    editImportance !== currentImportance
 
   const saveEdit = async () => {
     if (!user || !canSaveEdit) return
@@ -130,6 +159,10 @@ export default function CardItem({
         color: editColor,
         emoji: editEmoji,
         category: editCategory,
+        // Coerce undefined -> null para limpar a matéria explicitamente no Firestore
+        // (Firestore não aceita undefined em writes).
+        discipline: editDiscipline ?? null,
+        importance: editImportance,
       })
       setEditing(false)
     } finally {
@@ -269,6 +302,57 @@ export default function CardItem({
             </div>
           </div>
 
+          {/* Discipline (matéria do edital) */}
+          <div className="flex flex-col gap-1">
+            <label className="font-mono text-[10px] text-white/40 uppercase tracking-wider">Matéria</label>
+            <div className="flex flex-wrap gap-1.5">
+              <button
+                onClick={() => setEditDiscipline(undefined)}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-body font-medium transition-all ${
+                  editDiscipline === undefined
+                    ? 'bg-white/10 text-white/80 border border-white/20'
+                    : 'bg-void border border-border text-white/40 hover:border-white/20'
+                }`}
+              >
+                Sem matéria
+              </button>
+              {DISCIPLINES.map(d => (
+                <button
+                  key={d}
+                  onClick={() => setEditDiscipline(d)}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-body font-medium transition-all ${
+                    editDiscipline === d
+                      ? 'bg-teal/20 text-teal border border-teal/40'
+                      : 'bg-void border border-border text-white/40 hover:border-white/20'
+                  }`}
+                >
+                  {DISCIPLINE_LABELS[d]}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Importance */}
+          <div className="flex flex-col gap-1">
+            <label className="font-mono text-[10px] text-white/40 uppercase tracking-wider">Importância</label>
+            <div className="flex gap-1.5">
+              {IMPORTANCE_LEVELS.map(lvl => (
+                <button
+                  key={lvl.value}
+                  onClick={() => setEditImportance(lvl.value)}
+                  className={`flex-1 px-2 py-1.5 rounded-lg text-[11px] font-body font-medium transition-all flex items-center justify-center gap-1 ${
+                    editImportance === lvl.value
+                      ? 'bg-amber/20 text-amber border border-amber/40'
+                      : 'bg-void border border-border text-white/40 hover:border-white/20'
+                  }`}
+                >
+                  <span>{lvl.emoji}</span>
+                  <span>{lvl.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="flex gap-2 pt-1">
             <button
               onClick={cancelEdit}
@@ -360,8 +444,18 @@ export default function CardItem({
           className="pr-8 cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-teal/40 rounded-lg select-none"
         >
           {/* Header */}
-          <div className="flex items-center gap-2 min-w-0 mb-2">
+          <div className="flex items-center gap-2 min-w-0 mb-2 flex-wrap">
             <span className="text-lg leading-none">{card.emoji}</span>
+            {(card.importance ?? 1) >= 2 && (
+              <span
+                className="text-xs leading-none"
+                title={
+                  card.importance === 3 ? 'Hot topic FCC' : 'Importante'
+                }
+              >
+                {card.importance === 3 ? '🔥' : '★'}
+              </span>
+            )}
             {card.title && (
               <span className="font-body font-semibold text-sm text-white/80 truncate max-w-[160px]">
                 {card.title}
@@ -377,6 +471,11 @@ export default function CardItem({
                 }}
               >
                 {card.category}
+              </span>
+            )}
+            {card.discipline && (
+              <span className="font-mono text-[10px] px-2 py-0.5 rounded-full border border-white/10 bg-white/5 text-white/50 whitespace-nowrap">
+                {DISCIPLINE_LABELS[card.discipline]}
               </span>
             )}
           </div>
@@ -471,6 +570,22 @@ export default function CardItem({
                       className="text-xs font-body text-white/30 hover:text-teal transition-colors"
                     >
                       Editar
+                    </button>
+                    <button
+                      {...stopPointer}
+                      onClick={e => {
+                        e.stopPropagation()
+                        handleReview()
+                      }}
+                      disabled={reviewing}
+                      className="text-xs font-body text-white/30 hover:text-teal transition-colors disabled:opacity-50"
+                      title={
+                        card.lastReviewed
+                          ? `Revisado ${card.reviewCount ?? 0}x`
+                          : 'Marcar revisão'
+                      }
+                    >
+                      {reviewing ? '…' : 'Revisei'}
                     </button>
                     {!archived && (
                       <button

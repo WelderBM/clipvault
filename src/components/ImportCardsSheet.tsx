@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { bulkCreateCards } from '../lib/cards'
-import { CARD_COLORS, CARD_CATEGORIES } from '../types'
-import type { CardInput } from '../types'
+import { CARD_COLORS, CARD_CATEGORIES, DISCIPLINES } from '../types'
+import type { CardInput, Discipline, Importance } from '../types'
 
 interface Props {
   onClose: () => void
@@ -21,6 +21,7 @@ interface ParseResult {
 
 const VALID_COLORS = new Set(CARD_COLORS.map(c => c.value))
 const VALID_CATEGORIES = new Set<string>(CARD_CATEGORIES)
+const VALID_DISCIPLINES = new Set<string>(DISCIPLINES)
 const DEFAULT_COLOR = CARD_COLORS[0].value
 const DEFAULT_CATEGORY = CARD_CATEGORIES[0]
 const DEFAULT_EMOJI = '📋'
@@ -31,7 +32,9 @@ const PLACEHOLDER = `[
     "text": "1/3 discute, maioria absoluta vota — quórum progressivo",
     "color": "#1BE4C8",
     "emoji": "🔥",
-    "category": "ALE-RR"
+    "category": "ALE-RR",
+    "discipline": "legislacao",
+    "importance": 3
   }
 ]`
 
@@ -90,6 +93,16 @@ function parse(raw: string): ParseResult {
         ? obj.category
         : DEFAULT_CATEGORY
 
+    const discipline: Discipline | undefined =
+      typeof obj.discipline === 'string' && VALID_DISCIPLINES.has(obj.discipline)
+        ? (obj.discipline as Discipline)
+        : undefined
+
+    const importance: Importance =
+      obj.importance === 1 || obj.importance === 2 || obj.importance === 3
+        ? (obj.importance as Importance)
+        : 1
+
     valid.push({
       title,
       text,
@@ -97,6 +110,8 @@ function parse(raw: string): ParseResult {
       emoji,
       category,
       status: 'active',
+      ...(discipline !== undefined && { discipline }),
+      ...(importance !== 1 && { importance }),
     })
   })
 
@@ -157,7 +172,9 @@ export default function ImportCardsSheet({ onClose }: Props) {
           <code className="font-mono text-white/60">title</code>,{' '}
           <code className="font-mono text-white/60">color</code>,{' '}
           <code className="font-mono text-white/60">emoji</code>,{' '}
-          <code className="font-mono text-white/60">category</code>.
+          <code className="font-mono text-white/60">category</code>,{' '}
+          <code className="font-mono text-white/60">discipline</code>,{' '}
+          <code className="font-mono text-white/60">importance</code> (1–3).
         </div>
 
         {/* JSON textarea */}
