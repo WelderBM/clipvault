@@ -78,7 +78,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-void text-white">
+    <div className="flex-1 text-white">
       {/* Header */}
       <header className="sticky top-0 z-30 bg-void/90 backdrop-blur border-b border-border px-4 py-3 flex items-center justify-between">
         <h1 className="font-display text-2xl tracking-wider text-white">CLIPVAULT</h1>
@@ -203,7 +203,7 @@ export default function HomePage() {
       {!selection.selectionMode && (
         <button
           onClick={() => setShowCreate(true)}
-          className="fixed bottom-6 right-4 w-14 h-14 bg-teal text-void rounded-2xl flex items-center justify-center shadow-lg shadow-teal/20 hover:bg-teal-dim transition-all active:scale-95 z-30"
+          className="fixed bottom-[88px] right-4 w-14 h-14 bg-teal text-void rounded-2xl flex items-center justify-center shadow-lg shadow-teal/20 hover:bg-teal-dim transition-all active:scale-95 z-30"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>

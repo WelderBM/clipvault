@@ -3,6 +3,10 @@ import { AuthProvider, useAuth } from './hooks/useAuth'
 import LoginPage from './pages/LoginPage'
 import HomePage from './pages/HomePage'
 import ArchivePage from './pages/ArchivePage'
+import DashboardPage from './pages/DashboardPage'
+import StrategyPage from './pages/StrategyPage'
+import ReaderPage from './pages/ReaderPage'
+import MainLayout from './components/MainLayout'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -24,7 +28,12 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={user ? <Navigate to="/" replace /> : <LoginPage />} />
-      <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+      <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
+        <Route index element={<HomePage />} />
+        <Route path="dashboard" element={<DashboardPage />} />
+        <Route path="strategy" element={<StrategyPage />} />
+        <Route path="reader" element={<ReaderPage />} />
+      </Route>
       <Route path="/archive" element={<ProtectedRoute><ArchivePage /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

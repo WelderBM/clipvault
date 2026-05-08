@@ -57,7 +57,7 @@ export default function SelectionToolbar({
   }
 
   return (
-    <div className="fixed bottom-0 inset-x-0 z-40 px-3 pb-3 pt-2 bg-void/95 backdrop-blur border-t border-border">
+    <div className="fixed bottom-0 inset-x-0 z-50 px-3 pb-3 pt-2 bg-void/95 backdrop-blur border-t border-border">
       <div className="bg-surface border border-border rounded-2xl px-3 py-2 flex flex-col gap-2">
         {/* Top row — count + cancel */}
         <div className="flex items-center justify-between">
