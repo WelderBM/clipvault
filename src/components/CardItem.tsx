@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { Card } from '../types'
 import { CARD_COLORS, CARD_CATEGORIES } from '../types'
 import {
@@ -9,15 +9,28 @@ import {
   deleteCard,
 } from '../lib/cards'
 import { useAuth } from '../hooks/useAuth'
+import { useLongPress } from '../hooks/useLongPress'
 
 const EMOJIS = ['📋', '📌', '🔥', '⚡', '🎯', '📚', '💡', '🔑', '⚙️', '🧠', '📝', '🚀']
 
 interface Props {
   card: Card
   archived?: boolean
+  /** When the parent is in multi-selection mode. */
+  selectionMode?: boolean
+  /** Whether this card is part of the current selection. */
+  isSelected?: boolean
+  /** Toggle this card in/out of the selection. Long-press also calls this. */
+  onToggleSelect?: () => void
 }
 
-export default function CardItem({ card, archived = false }: Props) {
+export default function CardItem({
+  card,
+  archived = false,
+  selectionMode = false,
+  isSelected = false,
+  onToggleSelect,
+}: Props) {
   const { user } = useAuth()
   const [copied, setCopied] = useState(false)
   const [showActions, setShowActions] = useState(false)
@@ -33,6 +46,16 @@ export default function CardItem({ card, archived = false }: Props) {
   const [editCategory, setEditCategory] = useState(card.category)
   const [savingEdit, setSavingEdit] = useState(false)
 
+  // When selection mode turns on, force-close anything that doesn't make sense
+  useEffect(() => {
+    if (selectionMode) {
+      setEditing(false)
+      setShowActions(false)
+      setConfirmDelete(false)
+    }
+  }, [selectionMode])
+
+  // ----- Read-mode handlers -----
   const copy = async () => {
     await navigator.clipboard.writeText(card.text)
     setCopied(true)
@@ -59,9 +82,7 @@ export default function CardItem({ card, archived = false }: Props) {
     setDeleting(true)
     try {
       await deleteCard(user.uid, card.id)
-      // Card disappears via onSnapshot — no further state to clean up
     } catch {
-      // On failure, drop out of confirm so the user can retry
       setDeleting(false)
       setConfirmDelete(false)
     }
@@ -116,6 +137,28 @@ export default function CardItem({ card, archived = false }: Props) {
     }
   }
 
+  // ----- Tap region: long-press always toggles selection;
+  //       a regular tap edits unless we are in selection mode -----
+  const longPressHandlers = useLongPress({
+    onLongPress: () => {
+      if (onToggleSelect) onToggleSelect()
+    },
+    onClick: () => {
+      if (selectionMode) {
+        if (onToggleSelect) onToggleSelect()
+      } else {
+        startEdit()
+      }
+    },
+  })
+
+  // Stop pointer events from bubbling into the long-press handlers
+  // for any inner control that has its own click semantics.
+  const stopPointer = {
+    onMouseDown: (e: React.MouseEvent) => e.stopPropagation(),
+    onTouchStart: (e: React.TouchEvent) => e.stopPropagation(),
+  }
+
   // ---------------- EDIT MODE ----------------
   if (editing) {
     return (
@@ -129,7 +172,6 @@ export default function CardItem({ card, archived = false }: Props) {
         />
 
         <div className="pl-4 pr-4 pt-3 pb-3 flex flex-col gap-3">
-          {/* Edit header */}
           <div className="flex items-center justify-between">
             <span className="font-mono text-[10px] text-white/40 uppercase tracking-wider">
               Editando
@@ -147,11 +189,8 @@ export default function CardItem({ card, archived = false }: Props) {
             </button>
           </div>
 
-          {/* Title */}
           <div className="flex flex-col gap-1">
-            <label className="font-mono text-[10px] text-white/40 uppercase tracking-wider">
-              Título
-            </label>
+            <label className="font-mono text-[10px] text-white/40 uppercase tracking-wider">Título</label>
             <input
               value={editTitle}
               onChange={e => setEditTitle(e.target.value)}
@@ -160,11 +199,8 @@ export default function CardItem({ card, archived = false }: Props) {
             />
           </div>
 
-          {/* Text */}
           <div className="flex flex-col gap-1">
-            <label className="font-mono text-[10px] text-white/40 uppercase tracking-wider">
-              Texto *
-            </label>
+            <label className="font-mono text-[10px] text-white/40 uppercase tracking-wider">Texto *</label>
             <textarea
               value={editText}
               onChange={e => setEditText(e.target.value)}
@@ -175,11 +211,8 @@ export default function CardItem({ card, archived = false }: Props) {
             />
           </div>
 
-          {/* Emoji */}
           <div className="flex flex-col gap-1">
-            <label className="font-mono text-[10px] text-white/40 uppercase tracking-wider">
-              Emoji
-            </label>
+            <label className="font-mono text-[10px] text-white/40 uppercase tracking-wider">Emoji</label>
             <div className="flex flex-wrap gap-1.5">
               {EMOJIS.map(e => (
                 <button
@@ -197,11 +230,8 @@ export default function CardItem({ card, archived = false }: Props) {
             </div>
           </div>
 
-          {/* Color */}
           <div className="flex flex-col gap-1">
-            <label className="font-mono text-[10px] text-white/40 uppercase tracking-wider">
-              Cor
-            </label>
+            <label className="font-mono text-[10px] text-white/40 uppercase tracking-wider">Cor</label>
             <div className="flex gap-2">
               {CARD_COLORS.map(c => (
                 <button
@@ -219,11 +249,8 @@ export default function CardItem({ card, archived = false }: Props) {
             </div>
           </div>
 
-          {/* Category */}
           <div className="flex flex-col gap-1">
-            <label className="font-mono text-[10px] text-white/40 uppercase tracking-wider">
-              Categoria
-            </label>
+            <label className="font-mono text-[10px] text-white/40 uppercase tracking-wider">Categoria</label>
             <div className="flex flex-wrap gap-1.5">
               {CARD_CATEGORIES.map(cat => (
                 <button
@@ -242,7 +269,6 @@ export default function CardItem({ card, archived = false }: Props) {
             </div>
           </div>
 
-          {/* Actions */}
           <div className="flex gap-2 pt-1">
             <button
               onClick={cancelEdit}
@@ -266,34 +292,75 @@ export default function CardItem({ card, archived = false }: Props) {
   }
 
   // ---------------- READ MODE ----------------
+  const accentColor = card.color
+  const borderAlpha = isSelected ? 'CC' : '30'
+
   return (
     <div
       className="relative bg-surface rounded-2xl border overflow-hidden transition-all duration-200 active:scale-[0.99]"
-      style={{ borderColor: `${card.color}30` }}
+      style={{ borderColor: `${accentColor}${borderAlpha}` }}
     >
       {/* Color accent bar */}
       <div
         className="absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl"
-        style={{ backgroundColor: card.color }}
+        style={{ backgroundColor: accentColor }}
       />
 
-      {/* Tap-to-edit body */}
-      <div
-        role="button"
-        tabIndex={0}
-        onClick={startEdit}
-        onKeyDown={e => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault()
-            startEdit()
-          }
-        }}
-        aria-label="Editar card"
-        className="pl-4 pr-4 pt-3 pb-3 cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-teal/40 rounded-2xl"
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2 min-w-0">
+      <div className="relative pl-4 pr-4 pt-3 pb-3">
+        {/* Top-right: ⋮ menu (read mode) OR check indicator (selection mode) */}
+        {selectionMode ? (
+          <div
+            className="absolute top-3 right-3 w-5 h-5 rounded-full flex items-center justify-center transition-all pointer-events-none"
+            style={{
+              backgroundColor: isSelected ? accentColor : 'transparent',
+              border: `1.5px solid ${isSelected ? accentColor : '#FFFFFF40'}`,
+            }}
+          >
+            {isSelected && (
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#03080F" strokeWidth="3.5">
+                <polyline points="20,6 9,17 4,12" />
+              </svg>
+            )}
+          </div>
+        ) : (
+          <button
+            {...stopPointer}
+            onClick={e => {
+              e.stopPropagation()
+              setShowActions(v => !v)
+              setConfirmDelete(false)
+            }}
+            className="absolute top-3 right-3 text-white/30 hover:text-white/60 transition-colors p-1"
+            aria-label="Mais ações"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="12" cy="5" r="2" />
+              <circle cx="12" cy="12" r="2" />
+              <circle cx="12" cy="19" r="2" />
+            </svg>
+          </button>
+        )}
+
+        {/* Tap region — long press toggles selection, click edits/toggles */}
+        <div
+          role="button"
+          tabIndex={0}
+          {...longPressHandlers}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              if (selectionMode) {
+                if (onToggleSelect) onToggleSelect()
+              } else {
+                startEdit()
+              }
+            }
+          }}
+          aria-label={selectionMode ? 'Selecionar card' : 'Editar card'}
+          className="pr-8 cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-teal/40 rounded-lg select-none"
+        >
+          {/* Header */}
+          <div className="flex items-center gap-2 min-w-0 mb-2">
             <span className="text-lg leading-none">{card.emoji}</span>
             {card.title && (
               <span className="font-body font-semibold text-sm text-white/80 truncate max-w-[160px]">
@@ -314,167 +381,162 @@ export default function CardItem({ card, archived = false }: Props) {
             )}
           </div>
 
-          <button
-            onClick={e => {
-              e.stopPropagation()
-              setShowActions(v => !v)
-              setConfirmDelete(false)
-            }}
-            className="text-white/30 hover:text-white/60 transition-colors p-1 -mr-1"
-            aria-label="Mais ações"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <circle cx="12" cy="5" r="2" />
-              <circle cx="12" cy="12" r="2" />
-              <circle cx="12" cy="19" r="2" />
-            </svg>
-          </button>
+          {/* Text preview */}
+          <p className="font-body text-sm text-white/60 leading-relaxed line-clamp-3">
+            {card.text}
+          </p>
         </div>
 
-        {/* Text preview */}
-        <p className="font-body text-sm text-white/60 leading-relaxed line-clamp-3 mb-3">
-          {card.text}
-        </p>
-
-        {/* Actions row */}
-        <div className="flex items-center gap-2">
-          {/* Copy */}
-          <button
-            onClick={e => {
-              e.stopPropagation()
-              copy()
-            }}
-            className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-body font-medium transition-all duration-150 active:scale-95"
-            style={{
-              backgroundColor: copied ? `${card.color}20` : `${card.color}15`,
-              color: card.color,
-              border: `1px solid ${card.color}30`,
-            }}
-          >
-            {copied ? (
-              <>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <polyline points="20,6 9,17 4,12" />
-                </svg>
-                Copiado!
-              </>
-            ) : (
-              <>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="9" y="9" width="13" height="13" rx="2" />
-                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-                </svg>
-                Copiar
-              </>
-            )}
-          </button>
-
-          {/* Status action */}
-          {!archived ? (
-            <button
-              onClick={e => {
-                e.stopPropagation()
-                handleUsed()
-              }}
-              className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-body font-medium bg-white/5 text-white/40 border border-white/10 hover:border-white/20 hover:text-white/60 transition-all active:scale-95"
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <polyline points="20,6 9,17 4,12" />
-              </svg>
-              Usado
-            </button>
-          ) : (
-            <button
-              onClick={e => {
-                e.stopPropagation()
-                handleReactivate()
-              }}
-              className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-body font-medium bg-white/5 text-white/40 border border-white/10 hover:border-teal/30 hover:text-teal transition-all active:scale-95"
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <polyline points="1,4 1,10 7,10" />
-                <path d="M3.51 15a9 9 0 102.13-9.36L1 10" />
-              </svg>
-              Reativar
-            </button>
-          )}
-        </div>
-
-        {/* Dropdown actions */}
-        {showActions && (
-          <div
-            className="mt-2 pt-2 border-t border-border flex gap-3 items-center"
-            onClick={e => e.stopPropagation()}
-          >
-            {!confirmDelete ? (
-              <>
-                <button
-                  onClick={e => {
-                    e.stopPropagation()
-                    startEdit()
-                  }}
-                  className="text-xs font-body text-white/30 hover:text-teal transition-colors"
-                >
-                  Editar
-                </button>
-                {!archived && (
-                  <button
-                    onClick={e => {
-                      e.stopPropagation()
-                      handleArchive()
-                    }}
-                    className="text-xs font-body text-white/30 hover:text-amber transition-colors"
-                  >
-                    Arquivar
-                  </button>
+        {/* Action row + dropdown — hidden in selection mode */}
+        {!selectionMode && (
+          <>
+            <div className="flex items-center gap-2 mt-3">
+              <button
+                {...stopPointer}
+                onClick={e => {
+                  e.stopPropagation()
+                  copy()
+                }}
+                className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-body font-medium transition-all duration-150 active:scale-95"
+                style={{
+                  backgroundColor: copied ? `${card.color}20` : `${card.color}15`,
+                  color: card.color,
+                  border: `1px solid ${card.color}30`,
+                }}
+              >
+                {copied ? (
+                  <>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <polyline points="20,6 9,17 4,12" />
+                    </svg>
+                    Copiado!
+                  </>
+                ) : (
+                  <>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="9" y="9" width="13" height="13" rx="2" />
+                      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                    </svg>
+                    Copiar
+                  </>
                 )}
+              </button>
+
+              {!archived ? (
                 <button
+                  {...stopPointer}
                   onClick={e => {
                     e.stopPropagation()
-                    setConfirmDelete(true)
+                    handleUsed()
                   }}
-                  className="text-xs font-body text-white/30 hover:text-rose-400 transition-colors"
+                  className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-body font-medium bg-white/5 text-white/40 border border-white/10 hover:border-white/20 hover:text-white/60 transition-all active:scale-95"
                 >
-                  Deletar
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <polyline points="20,6 9,17 4,12" />
+                  </svg>
+                  Usado
                 </button>
+              ) : (
                 <button
+                  {...stopPointer}
                   onClick={e => {
                     e.stopPropagation()
-                    closeActions()
+                    handleReactivate()
                   }}
-                  className="text-xs font-body text-white/20 ml-auto"
+                  className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-body font-medium bg-white/5 text-white/40 border border-white/10 hover:border-teal/30 hover:text-teal transition-all active:scale-95"
                 >
-                  Fechar
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <polyline points="1,4 1,10 7,10" />
+                    <path d="M3.51 15a9 9 0 102.13-9.36L1 10" />
+                  </svg>
+                  Reativar
                 </button>
-              </>
-            ) : (
-              <>
-                <span className="text-xs font-body text-white/60">
-                  Apagar este card?
-                </span>
-                <button
-                  onClick={e => {
-                    e.stopPropagation()
-                    handleDelete()
-                  }}
-                  disabled={deleting}
-                  className="text-xs font-body font-semibold text-rose-400 hover:text-rose-300 transition-colors ml-auto disabled:opacity-50"
-                >
-                  {deleting ? 'Apagando...' : 'Confirmar'}
-                </button>
-                <button
-                  onClick={e => {
-                    e.stopPropagation()
-                    setConfirmDelete(false)
-                  }}
-                  disabled={deleting}
-                  className="text-xs font-body text-white/40 hover:text-white/70 transition-colors disabled:opacity-50"
-                >
-                  Cancelar
-                </button>
-              </>
+              )}
+            </div>
+
+            {showActions && (
+              <div
+                className="mt-2 pt-2 border-t border-border flex gap-3 items-center"
+                {...stopPointer}
+                onClick={e => e.stopPropagation()}
+              >
+                {!confirmDelete ? (
+                  <>
+                    <button
+                      {...stopPointer}
+                      onClick={e => {
+                        e.stopPropagation()
+                        startEdit()
+                      }}
+                      className="text-xs font-body text-white/30 hover:text-teal transition-colors"
+                    >
+                      Editar
+                    </button>
+                    {!archived && (
+                      <button
+                        {...stopPointer}
+                        onClick={e => {
+                          e.stopPropagation()
+                          handleArchive()
+                        }}
+                        className="text-xs font-body text-white/30 hover:text-amber transition-colors"
+                      >
+                        Arquivar
+                      </button>
+                    )}
+                    <button
+                      {...stopPointer}
+                      onClick={e => {
+                        e.stopPropagation()
+                        setConfirmDelete(true)
+                      }}
+                      className="text-xs font-body text-white/30 hover:text-rose-400 transition-colors"
+                    >
+                      Deletar
+                    </button>
+                    <button
+                      {...stopPointer}
+                      onClick={e => {
+                        e.stopPropagation()
+                        closeActions()
+                      }}
+                      className="text-xs font-body text-white/20 ml-auto"
+                    >
+                      Fechar
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-xs font-body text-white/60">
+                      Apagar este card?
+                    </span>
+                    <button
+                      {...stopPointer}
+                      onClick={e => {
+                        e.stopPropagation()
+                        handleDelete()
+                      }}
+                      disabled={deleting}
+                      className="text-xs font-body font-semibold text-rose-400 hover:text-rose-300 transition-colors ml-auto disabled:opacity-50"
+                    >
+                      {deleting ? 'Apagando...' : 'Confirmar'}
+                    </button>
+                    <button
+                      {...stopPointer}
+                      onClick={e => {
+                        e.stopPropagation()
+                        setConfirmDelete(false)
+                      }}
+                      disabled={deleting}
+                      className="text-xs font-body text-white/40 hover:text-white/70 transition-colors disabled:opacity-50"
+                    >
+                      Cancelar
+                    </button>
+                  </>
+                )}
+              </div>
             )}
-          </div>
+          </>
         )}
       </div>
     </div>

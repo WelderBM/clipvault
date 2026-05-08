@@ -1,14 +1,44 @@
 import { useAuth } from '../hooks/useAuth'
 import { useCards } from '../hooks/useCards'
+import { useSelection } from '../hooks/useSelection'
+import { bulkDeleteCards, bulkReactivateCards } from '../lib/cards'
 import CardItem from '../components/CardItem'
+import SelectionToolbar from '../components/SelectionToolbar'
 import { Link } from 'react-router-dom'
 
 export default function ArchivePage() {
   const { user } = useAuth()
   const { cards: usedCards, loading: loadingUsed } = useCards(user?.uid, 'used')
   const { cards: archivedCards, loading: loadingArchived } = useCards(user?.uid, 'archived')
+  const selection = useSelection()
 
   const loading = loadingUsed || loadingArchived
+  const allCards = [...usedCards, ...archivedCards]
+
+  const handleBulkDelete = async () => {
+    if (!user) return
+    await bulkDeleteCards(user.uid, selection.ids)
+    selection.exit()
+  }
+
+  const handleBulkReactivate = async () => {
+    if (!user) return
+    await bulkReactivateCards(user.uid, selection.ids)
+    selection.exit()
+  }
+
+  const handleBulkExport = () => {
+    const data = allCards
+      .filter(c => selection.isSelected(c.id))
+      .map(c => ({
+        title: c.title,
+        text: c.text,
+        color: c.color,
+        emoji: c.emoji,
+        category: c.category,
+      }))
+    navigator.clipboard.writeText(JSON.stringify(data, null, 2))
+  }
 
   return (
     <div className="min-h-screen bg-void text-white">
@@ -21,7 +51,7 @@ export default function ArchivePage() {
         <h1 className="font-display text-2xl tracking-wider text-white">ARQUIVO</h1>
       </header>
 
-      <main className="px-4 pt-4 pb-12">
+      <main className={`px-4 pt-4 ${selection.selectionMode ? 'pb-32' : 'pb-12'}`}>
         {loading ? (
           <div className="flex flex-col gap-3 mt-2">
             {[1, 2, 3].map(i => (
@@ -45,7 +75,14 @@ export default function ArchivePage() {
                 </p>
                 <div className="flex flex-col gap-3">
                   {usedCards.map(card => (
-                    <CardItem key={card.id} card={card} archived />
+                    <CardItem
+                      key={card.id}
+                      card={card}
+                      archived
+                      selectionMode={selection.selectionMode}
+                      isSelected={selection.isSelected(card.id)}
+                      onToggleSelect={() => selection.toggle(card.id)}
+                    />
                   ))}
                 </div>
               </section>
@@ -58,7 +95,14 @@ export default function ArchivePage() {
                 </p>
                 <div className="flex flex-col gap-3">
                   {archivedCards.map(card => (
-                    <CardItem key={card.id} card={card} archived />
+                    <CardItem
+                      key={card.id}
+                      card={card}
+                      archived
+                      selectionMode={selection.selectionMode}
+                      isSelected={selection.isSelected(card.id)}
+                      onToggleSelect={() => selection.toggle(card.id)}
+                    />
                   ))}
                 </div>
               </section>
@@ -66,6 +110,16 @@ export default function ArchivePage() {
           </div>
         )}
       </main>
+
+      {selection.selectionMode && (
+        <SelectionToolbar
+          count={selection.count}
+          onCancel={selection.exit}
+          onDelete={handleBulkDelete}
+          onReactivate={handleBulkReactivate}
+          onExport={handleBulkExport}
+        />
+      )}
     </div>
   )
 }
