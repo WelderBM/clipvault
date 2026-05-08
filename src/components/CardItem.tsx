@@ -6,6 +6,7 @@ import {
   archiveCard,
   reactivateCard,
   updateCard,
+  deleteCard,
 } from '../lib/cards'
 import { useAuth } from '../hooks/useAuth'
 
@@ -21,6 +22,8 @@ export default function CardItem({ card, archived = false }: Props) {
   const [copied, setCopied] = useState(false)
   const [showActions, setShowActions] = useState(false)
   const [editing, setEditing] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   // Edit form state — populated each time we enter edit mode
   const [editTitle, setEditTitle] = useState(card.title || '')
@@ -51,6 +54,24 @@ export default function CardItem({ card, archived = false }: Props) {
     await reactivateCard(user.uid, card.id)
   }
 
+  const handleDelete = async () => {
+    if (!user) return
+    setDeleting(true)
+    try {
+      await deleteCard(user.uid, card.id)
+      // Card disappears via onSnapshot — no further state to clean up
+    } catch {
+      // On failure, drop out of confirm so the user can retry
+      setDeleting(false)
+      setConfirmDelete(false)
+    }
+  }
+
+  const closeActions = () => {
+    setShowActions(false)
+    setConfirmDelete(false)
+  }
+
   const startEdit = () => {
     setEditTitle(card.title || '')
     setEditText(card.text)
@@ -58,6 +79,7 @@ export default function CardItem({ card, archived = false }: Props) {
     setEditEmoji(card.emoji)
     setEditCategory(card.category)
     setShowActions(false)
+    setConfirmDelete(false)
     setEditing(true)
   }
 
@@ -296,6 +318,7 @@ export default function CardItem({ card, archived = false }: Props) {
             onClick={e => {
               e.stopPropagation()
               setShowActions(v => !v)
+              setConfirmDelete(false)
             }}
             className="text-white/30 hover:text-white/60 transition-colors p-1 -mr-1"
             aria-label="Mais ações"
@@ -383,35 +406,74 @@ export default function CardItem({ card, archived = false }: Props) {
             className="mt-2 pt-2 border-t border-border flex gap-3 items-center"
             onClick={e => e.stopPropagation()}
           >
-            <button
-              onClick={e => {
-                e.stopPropagation()
-                startEdit()
-              }}
-              className="text-xs font-body text-white/30 hover:text-teal transition-colors"
-            >
-              Editar
-            </button>
-            {!archived && (
-              <button
-                onClick={e => {
-                  e.stopPropagation()
-                  handleArchive()
-                }}
-                className="text-xs font-body text-white/30 hover:text-amber transition-colors"
-              >
-                Arquivar
-              </button>
+            {!confirmDelete ? (
+              <>
+                <button
+                  onClick={e => {
+                    e.stopPropagation()
+                    startEdit()
+                  }}
+                  className="text-xs font-body text-white/30 hover:text-teal transition-colors"
+                >
+                  Editar
+                </button>
+                {!archived && (
+                  <button
+                    onClick={e => {
+                      e.stopPropagation()
+                      handleArchive()
+                    }}
+                    className="text-xs font-body text-white/30 hover:text-amber transition-colors"
+                  >
+                    Arquivar
+                  </button>
+                )}
+                <button
+                  onClick={e => {
+                    e.stopPropagation()
+                    setConfirmDelete(true)
+                  }}
+                  className="text-xs font-body text-white/30 hover:text-rose-400 transition-colors"
+                >
+                  Deletar
+                </button>
+                <button
+                  onClick={e => {
+                    e.stopPropagation()
+                    closeActions()
+                  }}
+                  className="text-xs font-body text-white/20 ml-auto"
+                >
+                  Fechar
+                </button>
+              </>
+            ) : (
+              <>
+                <span className="text-xs font-body text-white/60">
+                  Apagar este card?
+                </span>
+                <button
+                  onClick={e => {
+                    e.stopPropagation()
+                    handleDelete()
+                  }}
+                  disabled={deleting}
+                  className="text-xs font-body font-semibold text-rose-400 hover:text-rose-300 transition-colors ml-auto disabled:opacity-50"
+                >
+                  {deleting ? 'Apagando...' : 'Confirmar'}
+                </button>
+                <button
+                  onClick={e => {
+                    e.stopPropagation()
+                    setConfirmDelete(false)
+                  }}
+                  disabled={deleting}
+                  className="text-xs font-body text-white/40 hover:text-white/70 transition-colors disabled:opacity-50"
+                >
+                  Cancelar
+                </button>
+              </>
             )}
-            <button
-              onClick={e => {
-                e.stopPropagation()
-                setShowActions(false)
-              }}
-              className="text-xs font-body text-white/20 ml-auto"
-            >
-              Fechar
-            </button>
           </div>
         )}
       </div>
