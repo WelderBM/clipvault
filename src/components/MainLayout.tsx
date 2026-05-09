@@ -1,8 +1,10 @@
 import { Outlet, NavLink } from 'react-router-dom'
+import ConnectivityBanner from './ConnectivityBanner'
 
 export default function MainLayout() {
   return (
     <div className="min-h-screen bg-void text-white flex flex-col">
+      <ConnectivityBanner />
       <div className="flex-1 pb-[64px]">
         <Outlet />
       </div>

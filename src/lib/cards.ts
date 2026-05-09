@@ -1,6 +1,6 @@
 import {
   collection, doc, addDoc, updateDoc, deleteDoc,
-  query, where, orderBy, onSnapshot, getDocs,
+  query, where, orderBy, onSnapshot, getDocs, getDocsFromCache,
   limit as fsLimit, startAfter,
   serverTimestamp, Timestamp, writeBatch, increment,
 } from 'firebase/firestore'
@@ -71,7 +71,18 @@ export async function fetchCardsPage(
     startAfter(cursor),
     fsLimit(pageSize)
   )
-  const snap = await getDocs(q)
+  
+  let snap;
+  if (!navigator.onLine) {
+    try {
+      snap = await getDocsFromCache(q)
+    } catch (err) {
+      snap = await getDocs(q)
+    }
+  } else {
+    snap = await getDocs(q)
+  }
+  
   const cards = snap.docs.map(d => ({ id: d.id, ...d.data() } as Card))
   const lastDoc = snap.docs.length > 0 ? snap.docs[snap.docs.length - 1] : null
   return { cards, lastDoc }
