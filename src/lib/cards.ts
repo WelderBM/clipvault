@@ -96,12 +96,7 @@ export async function createCard(uid: string, input: CardInput) {
   })
 }
 
-export async function markAsUsed(uid: string, cardId: string) {
-  await updateDoc(doc(db, 'users', uid, 'cards', cardId), {
-    status: 'used',
-    usedAt: Timestamp.now(),
-  })
-}
+
 
 export async function archiveCard(uid: string, cardId: string) {
   await updateDoc(doc(db, 'users', uid, 'cards', cardId), {

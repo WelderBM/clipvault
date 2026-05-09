@@ -23,11 +23,11 @@ export function useDashboardStats(): DashboardStats {
   const { user } = useAuth()
   // By omitting pageSize, we get the full collection for this user and status.
   const { cards: activeCards, loading: loadingActive } = useCards(user?.uid, 'active')
-  const { cards: usedCards, loading: loadingUsed } = useCards(user?.uid, 'used')
+  const { cards: archivedCards, loading: loadingArchived } = useCards(user?.uid, 'archived')
 
   return useMemo(() => {
-    const allCards = [...activeCards, ...usedCards]
-    const loading = loadingActive || loadingUsed
+    const allCards = [...activeCards, ...archivedCards]
+    const loading = loadingActive || loadingArchived
 
     const stats: DashboardStats = {
       totalCards: allCards.length,
@@ -79,5 +79,5 @@ export function useDashboardStats(): DashboardStats {
     }))
 
     return stats
-  }, [activeCards, usedCards, loadingActive, loadingUsed])
+  }, [activeCards, archivedCards, loadingActive, loadingArchived])
 }

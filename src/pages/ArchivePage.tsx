@@ -8,12 +8,10 @@ import { Link } from 'react-router-dom'
 
 export default function ArchivePage() {
   const { user } = useAuth()
-  const { cards: usedCards, loading: loadingUsed } = useCards(user?.uid, 'used')
-  const { cards: archivedCards, loading: loadingArchived } = useCards(user?.uid, 'archived')
+  const { cards: archivedCards, loading } = useCards(user?.uid, 'archived')
   const selection = useSelection()
 
-  const loading = loadingUsed || loadingArchived
-  const allCards = [...usedCards, ...archivedCards]
+  const allCards = [...archivedCards]
 
   const handleBulkDelete = async () => {
     if (!user) return
@@ -58,55 +56,33 @@ export default function ArchivePage() {
               <div key={i} className="h-36 bg-surface rounded-2xl border border-border animate-pulse" />
             ))}
           </div>
-        ) : usedCards.length === 0 && archivedCards.length === 0 ? (
+        ) : archivedCards.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-4 mt-20 text-center px-8">
             <span className="text-5xl">🗂️</span>
             <p className="font-body text-white/30 text-sm leading-relaxed">
               Nenhum card arquivado ainda.<br />
-              Cards marcados como usados aparecem aqui.
+              Cards concluídos aparecem aqui.
             </p>
           </div>
         ) : (
           <div className="flex flex-col gap-6">
-            {usedCards.length > 0 && (
-              <section>
-                <p className="font-mono text-[11px] text-white/25 uppercase tracking-wider mb-3">
-                  Usados · {usedCards.length}
-                </p>
-                <div className="flex flex-col gap-3">
-                  {usedCards.map(card => (
-                    <CardItem
-                      key={card.id}
-                      card={card}
-                      archived
-                      selectionMode={selection.selectionMode}
-                      isSelected={selection.isSelected(card.id)}
-                      onToggleSelect={() => selection.toggle(card.id)}
-                    />
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {archivedCards.length > 0 && (
-              <section>
-                <p className="font-mono text-[11px] text-white/25 uppercase tracking-wider mb-3">
-                  Arquivados · {archivedCards.length}
-                </p>
-                <div className="flex flex-col gap-3">
-                  {archivedCards.map(card => (
-                    <CardItem
-                      key={card.id}
-                      card={card}
-                      archived
-                      selectionMode={selection.selectionMode}
-                      isSelected={selection.isSelected(card.id)}
-                      onToggleSelect={() => selection.toggle(card.id)}
-                    />
-                  ))}
-                </div>
-              </section>
-            )}
+            <section>
+              <p className="font-mono text-[11px] text-white/25 uppercase tracking-wider mb-3">
+                Arquivados · {archivedCards.length}
+              </p>
+              <div className="flex flex-col gap-3">
+                {archivedCards.map(card => (
+                  <CardItem
+                    key={card.id}
+                    card={card}
+                    archived
+                    selectionMode={selection.selectionMode}
+                    isSelected={selection.isSelected(card.id)}
+                    onToggleSelect={() => selection.toggle(card.id)}
+                  />
+                ))}
+              </div>
+            </section>
           </div>
         )}
       </main>

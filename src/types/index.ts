@@ -1,6 +1,6 @@
 import { Timestamp } from 'firebase/firestore'
 
-export type CardStatus = 'active' | 'used' | 'archived'
+export type CardStatus = 'active' | 'archived'
 
 /**
  * Disciplina (matéria do edital ALE-RR 2026 — Programador, banca FCC).

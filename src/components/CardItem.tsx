@@ -8,7 +8,6 @@ import {
   IMPORTANCE_LEVELS,
 } from '../types'
 import {
-  markAsUsed,
   archiveCard,
   reactivateCard,
   updateCard,
@@ -99,11 +98,6 @@ export default function CardItem({
     await navigator.clipboard.writeText(card.text)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
-  }
-
-  const handleUsed = async () => {
-    if (!user) return
-    await markAsUsed(user.uid, card.id)
   }
 
   const handleArchive = async () => {
@@ -517,50 +511,19 @@ export default function CardItem({
         {!selectionMode && (
           <>
             <div className="flex items-center gap-2 mt-3">
-              <button
-                {...stopPointer}
-                onClick={e => {
-                  e.stopPropagation()
-                  copy()
-                }}
-                className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-body font-medium transition-all duration-150 active:scale-95"
-                style={{
-                  backgroundColor: copied ? `${card.color}20` : `${card.color}15`,
-                  color: card.color,
-                  border: `1px solid ${card.color}30`,
-                }}
-              >
-                {copied ? (
-                  <>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <polyline points="20,6 9,17 4,12" />
-                    </svg>
-                    Copiado!
-                  </>
-                ) : (
-                  <>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <rect x="9" y="9" width="13" height="13" rx="2" />
-                      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-                    </svg>
-                    Copiar
-                  </>
-                )}
-              </button>
-
               {!archived ? (
                 <button
                   {...stopPointer}
                   onClick={e => {
                     e.stopPropagation()
-                    handleUsed()
+                    handleArchive()
                   }}
-                  className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-body font-medium bg-white/5 text-white/40 border border-white/10 hover:border-white/20 hover:text-white/60 transition-all active:scale-95"
+                  className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-body font-medium transition-all duration-150 active:scale-95 text-white/50 bg-white/5 border border-white/10 hover:border-teal/30 hover:text-teal hover:bg-teal/10"
                 >
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <polyline points="20,6 9,17 4,12" />
                   </svg>
-                  Usado
+                  Concluir
                 </button>
               ) : (
                 <button
@@ -569,9 +532,9 @@ export default function CardItem({
                     e.stopPropagation()
                     handleReactivate()
                   }}
-                  className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-body font-medium bg-white/5 text-white/40 border border-white/10 hover:border-teal/30 hover:text-teal transition-all active:scale-95"
+                  className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-body font-medium transition-all duration-150 active:scale-95 text-white/50 bg-white/5 border border-white/10 hover:border-teal/30 hover:text-teal hover:bg-teal/10"
                 >
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <polyline points="1,4 1,10 7,10" />
                     <path d="M3.51 15a9 9 0 102.13-9.36L1 10" />
                   </svg>
@@ -588,6 +551,16 @@ export default function CardItem({
               >
                 {!confirmDelete ? (
                   <>
+                    <button
+                      {...stopPointer}
+                      onClick={e => {
+                        e.stopPropagation()
+                        copy()
+                      }}
+                      className="text-xs font-body text-white/30 hover:text-teal transition-colors"
+                    >
+                      {copied ? 'Copiado!' : 'Copiar'}
+                    </button>
                     <button
                       {...stopPointer}
                       onClick={e => {
