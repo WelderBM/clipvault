@@ -1,0 +1,228 @@
+{
+  "id": "constituicao-estadual-rr-poder-legislativo",
+  "titulo": "Constituição do Estado de Roraima — Poder Legislativo e Servidores",
+  "fonte": "Constituição do Estado de Roraima, promulgada em 31 de dezembro de 1991",
+  "atualizadoEm": "2023-12-31",
+  "observacao": "Artigos 30–67 (Poder Legislativo) e 111–116 (Servidores Públicos)",
+  "artigos": [
+    {
+      "numero": "Art. 30",
+      "titulo": "Composição do Poder Legislativo",
+      "caput": "O Poder Legislativo é exercido pela Assembleia Legislativa, composta de vinte e quatro Deputados Estaduais, eleitos pelo sistema proporcional, para mandato de quatro anos.",
+      "tags": [
+        "Assembleia Legislativa",
+        "24 deputados",
+        "proporcional",
+        "4 anos",
+        "mandato"
+      ],
+      "hotFCC": true,
+      "notaFCC": "24 deputados, sistema PROPORCIONAL, mandato de 4 anos. FCC pode cobrar o sistema eleitoral ou o número de deputados."
+    },
+    {
+      "numero": "Art. 31",
+      "titulo": "Período de Funcionamento",
+      "caput": "A Assembleia Legislativa reunir-se-á anualmente na Capital do Estado, de 15 de fevereiro a 30 de junho e de 1º de agosto a 22 de dezembro, independentemente de convocação.",
+      "paragrafos": [
+        "§ 1º A Sessão Legislativa não será interrompida sem a aprovação do projeto de lei de diretrizes orçamentárias.",
+        "§ 2º Nos intervalos das Sessões Legislativas, haverá Comissão Representativa da Assembleia Legislativa."
+      ],
+      "tags": [
+        "sessão legislativa",
+        "15 de fevereiro",
+        "30 de junho",
+        "1º de agosto",
+        "22 de dezembro",
+        "LDO",
+        "recesso"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Datas exatas: 15/fev a 30/jun e 1º/ago a 22/dez. LDO trava o recesso. FCC cobra a data de início: 15 de fevereiro (não 2 de fevereiro como na CF federal)."
+    },
+    {
+      "numero": "Art. 33",
+      "titulo": "Competência Privativa da ALERR",
+      "caput": "Compete privativamente à Assembleia Legislativa: I – eleger sua Mesa Diretora; II – elaborar seu Regimento Interno; III – criar, transformar e extinguir cargos e fixar remuneração dos servidores; IV – aprovar previamente a indicação do Procurador-Geral de Justiça; V – autorizar o Governador a ausentar-se do País; VI – conceder licença ao Governador por mais de 15 dias; VII – julgar as contas do Governador; VIII – processar e julgar o Governador por crimes de responsabilidade.",
+      "tags": [
+        "competência privativa",
+        "Mesa Diretora",
+        "Regimento Interno",
+        "PGJ",
+        "Governador",
+        "contas",
+        "impeachment"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Competências privativas mais cobradas: aprovar PGJ (não nomear), conceder licença ao Governador por mais de 15 dias, julgar contas e processar o Governador por crimes de responsabilidade."
+    },
+    {
+      "numero": "Art. 36",
+      "titulo": "Perda do Mandato de Deputado",
+      "caput": "Perderá o mandato o Deputado: I – que infringir qualquer das proibições estabelecidas no artigo anterior; II – cujo procedimento for declarado incompatível com o decoro parlamentar; III – que deixar de comparecer, em cada sessão legislativa, à terça parte das sessões ordinárias da Assembleia Legislativa, salvo licença ou missão por esta autorizada; IV – que perder ou tiver suspensos os direitos políticos; V – quando o decretar a Justiça Eleitoral; VI – que sofrer condenação criminal em sentença com trânsito em julgado.",
+      "tags": [
+        "perda do mandato",
+        "decoro",
+        "ausências",
+        "1/3 das sessões",
+        "condenação criminal",
+        "direitos políticos"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Perda por ausências: mais de 1/3 das sessões ordinárias sem justificativa. FCC cobra essa fração. Condenação criminal com trânsito em julgado também acarreta perda."
+    },
+    {
+      "numero": "Art. 43",
+      "titulo": "Processo Legislativo — Espécies",
+      "caput": "O processo legislativo compreende a elaboração de: I – emendas à Constituição Estadual; II – leis complementares; III – leis ordinárias; IV – leis delegadas; V – medidas provisórias; VI – decretos legislativos; VII – resoluções.",
+      "tags": [
+        "processo legislativo",
+        "espécies",
+        "emenda",
+        "lei complementar",
+        "lei ordinária",
+        "medida provisória",
+        "decreto legislativo",
+        "resolução"
+      ],
+      "hotFCC": true,
+      "notaFCC": "7 espécies de atos normativos. FCC pode cobrar quais espécies integram o processo legislativo estadual."
+    },
+    {
+      "numero": "Art. 44",
+      "titulo": "Emenda à Constituição Estadual",
+      "caput": "A Constituição poderá ser emendada mediante proposta: I – de um terço, no mínimo, dos membros da Assembleia Legislativa; II – do Governador do Estado; III – de mais da metade das Câmaras Municipais do Estado, manifestando-se, cada uma delas, pela maioria relativa de seus membros.",
+      "paragrafos": [
+        "§ 2º A proposta será discutida e votada em dois turnos, considerando-se aprovada se obtiver, em ambos, três quintos dos votos dos membros da Assembleia Legislativa.",
+        "§ 4º Não será objeto de deliberação a proposta de emenda tendente a abolir: I – a forma federativa de Estado; II – o voto direto, secreto, universal e periódico; III – a separação dos Poderes; IV – os direitos e garantias individuais."
+      ],
+      "tags": [
+        "emenda constitucional",
+        "3/5",
+        "dois turnos",
+        "1/3",
+        "cláusula pétrea"
+      ],
+      "hotFCC": true,
+      "notaFCC": "EC estadual: aprovação por 3/5 em dois turnos (igual à federal). Quórum de iniciativa: 1/3 dos deputados. FCC pode cobrar o quórum de aprovação."
+    },
+    {
+      "numero": "Art. 56",
+      "titulo": "Posse do Governador",
+      "caput": "O Governador e o Vice-Governador tomarão posse em sessão da Assembleia Legislativa, prestando o compromisso de manter, defender, cumprir e fazer cumprir a Constituição Federal e a do Estado, observar as leis e promover o bem-estar geral.",
+      "paragrafos": [
+        "Parágrafo único: Se decorridos dez dias da data fixada para a posse, o Governador ou o Vice-Governador, salvo motivo de força maior, não tiver assumido o cargo, este será declarado vago."
+      ],
+      "tags": [
+        "posse",
+        "Governador",
+        "Vice-Governador",
+        "Assembleia Legislativa",
+        "10 dias",
+        "vacância"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Posse ocorre na Assembleia Legislativa. Prazo: 10 dias para assumir, salvo força maior. Após 10 dias sem posse: cargo declarado vago."
+    },
+    {
+      "numero": "Art. 57",
+      "titulo": "Substituição e Sucessão do Governador",
+      "caput": "O Governador do Estado será substituído, em caso de impedimento, e sucedido, em caso de vacância, pelo Vice-Governador. § 1º Ocorrendo vacância dos cargos de Governador e Vice-Governador, far-se-á eleição noventa dias depois de aberta a última vaga. § 2º Ocorrendo as vagas nos últimos dois anos do período governamental, a eleição para ambos os cargos será feita pela Assembleia Legislativa, trinta dias depois da última vaga.",
+      "paragrafos": [
+        "Parágrafo único: Na ausência do Vice-Governador, o Presidente da Assembleia Legislativa substituirá o Governador."
+      ],
+      "tags": [
+        "substituição",
+        "Governador",
+        "Vice-Governador",
+        "Presidente da ALERR",
+        "vacância",
+        "eleição"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Ordem de substituição: VP → Presidente da ALERR. Dupla vacância nos últimos 2 anos: eleição indireta pela ALERR em 30 dias."
+    },
+    {
+      "numero": "Art. 111",
+      "titulo": "Acesso a Cargos Públicos",
+      "caput": "Os cargos, empregos e funções públicas são acessíveis aos brasileiros que preencham os requisitos estabelecidos em lei, assim como aos estrangeiros, na forma da lei.",
+      "tags": [
+        "cargo público",
+        "acesso",
+        "brasileiros",
+        "estrangeiros"
+      ],
+      "hotFCC": false
+    },
+    {
+      "numero": "Art. 112",
+      "titulo": "Concurso Público e Estágio Probatório",
+      "caput": "A investidura em cargo ou emprego público depende de aprovação prévia em concurso público de provas ou de provas e títulos, de acordo com a natureza e a complexidade do cargo ou emprego, na forma prevista em lei, ressalvadas as nomeações para cargo em comissão declarado em lei de livre nomeação e exoneração.",
+      "paragrafos": [
+        "§ 1º O prazo de validade do concurso público será de até dois anos, prorrogável uma vez, por igual período.",
+        "§ 2º Durante o prazo improrrogável previsto no edital de convocação, aquele aprovado em concurso público será convocado com prioridade sobre novos concursados."
+      ],
+      "tags": [
+        "concurso público",
+        "investidura",
+        "validade",
+        "2 anos",
+        "prioridade"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Validade do concurso: até 2 anos, prorrogável uma vez. Total máximo: 4 anos. Aprovado tem prioridade sobre novos concursados."
+    },
+    {
+      "numero": "Art. 113",
+      "titulo": "Estabilidade do Servidor",
+      "caput": "O servidor nomeado para cargo de provimento efetivo em virtude de concurso público adquirirá estabilidade após três anos de efetivo exercício.",
+      "paragrafos": [
+        "§ 1º O servidor público estável só perderá o cargo: I – em virtude de sentença judicial transitada em julgado; II – mediante processo administrativo em que lhe seja assegurada ampla defesa; III – mediante procedimento de avaliação periódica de desempenho, na forma de lei complementar, assegurada ampla defesa.",
+        "§ 4º Como condição para a aquisição da estabilidade, é obrigatória a avaliação especial de desempenho por comissão instituída para essa finalidade."
+      ],
+      "tags": [
+        "estabilidade",
+        "3 anos",
+        "sentença judicial",
+        "PAD",
+        "avaliação de desempenho",
+        "perda do cargo"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Estabilidade: 3 anos. 3 formas de perda: sentença judicial, PAD, avaliação de desempenho. Avaliação especial é condição para aquisição."
+    },
+    {
+      "numero": "Art. 114",
+      "titulo": "Acumulação de Cargos",
+      "caput": "É vedada a acumulação remunerada de cargos públicos, exceto quando houver compatibilidade de horários, observado em qualquer caso o disposto no inciso XI do art. 37 da Constituição Federal: I – a de dois cargos de professor; II – a de um cargo de professor com outro técnico ou científico; III – a de dois cargos ou empregos privativos de profissionais de saúde, com profissões regulamentadas.",
+      "tags": [
+        "acumulação de cargos",
+        "professor",
+        "saúde",
+        "compatibilidade de horários"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Acumulação permitida: 2 professores / 1 professor + 1 técnico-científico / 2 de saúde. Sempre com compatibilidade de horários e respeito ao teto."
+    },
+    {
+      "numero": "Art. 115",
+      "titulo": "Direito de Greve",
+      "caput": "Ao servidor público é assegurado o direito de greve, que será exercido nos termos e nos limites definidos em lei complementar.",
+      "tags": [
+        "greve",
+        "servidor público",
+        "lei complementar"
+      ],
+      "hotFCC": false
+    },
+    {
+      "numero": "Art. 116",
+      "titulo": "Direito de Associação Sindical",
+      "caput": "É garantido ao servidor público o direito de associação sindical.",
+      "tags": [
+        "associação sindical",
+        "servidor público"
+      ],
+      "hotFCC": false
+    }
+  ]
+}

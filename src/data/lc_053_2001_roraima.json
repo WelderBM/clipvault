@@ -1,0 +1,158 @@
+{
+  "id": "lc-053-2001-roraima",
+  "titulo": "Lei Complementar nº 053/2001 — Regime Jurídico dos Servidores de RR",
+  "fonte": "Lei Complementar nº 053, de 31 de dezembro de 2001",
+  "atualizadoEm": "2024-12-18",
+  "observacao": "Exibe apenas os artigos mais cobrados pela FCC para o cargo de Técnico Legislativo. Texto completo disponível em al.rr.leg.br",
+  "artigos": [
+    {
+      "numero": "Art. 1º",
+      "titulo": "Âmbito de Aplicação",
+      "caput": "Esta Lei Complementar institui o regime jurídico dos servidores públicos civis do Estado de Roraima, excetuadas as categorias que, por disposição constitucional, são regidas por regime próprio.",
+      "tags": [
+        "regime jurídico",
+        "servidores",
+        "Roraima"
+      ],
+      "hotFCC": false
+    },
+    {
+      "numero": "Art. 5º",
+      "titulo": "Concurso Público — Requisito para Posse",
+      "caput": "A investidura em cargo público depende de aprovação prévia em concurso público de provas ou de provas e títulos, de acordo com a natureza e a complexidade do cargo, na forma prevista em lei, ressalvadas as nomeações para cargo em comissão, declarado em lei de livre nomeação e exoneração.",
+      "paragrafos": [
+        "§ 1º São requisitos básicos para investidura em cargo público: I – a nacionalidade brasileira ou estrangeira, na forma da lei; II – o gozo dos direitos políticos; III – a quitação com as obrigações militares e eleitorais; IV – o nível de escolaridade exigido para o exercício do cargo; V – a idade mínima de dezoito anos; VI – aptidão física e mental.",
+        "§ 3º Às pessoas portadoras de deficiência é assegurado o direito de se inscrever em concurso público, assegurando-lhes 10% (dez por cento) das vagas oferecidas no concurso."
+      ],
+      "tags": [
+        "concurso público",
+        "investidura",
+        "requisitos",
+        "deficiência",
+        "cotas"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Cotas para PcD: 10% das vagas. FCC pode cobrar o percentual correto."
+    },
+    {
+      "numero": "Art. 12",
+      "titulo": "Validade do Concurso",
+      "caput": "O concurso público terá validade de até dois anos, podendo ser prorrogado, dentro deste prazo, uma única vez, por igual período, a critério da administração.",
+      "tags": [
+        "concurso público",
+        "validade",
+        "2 anos",
+        "prorrogação"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Validade: até 2 anos, prorrogável uma única vez por igual período. Total máximo: 4 anos."
+    },
+    {
+      "numero": "Art. 19",
+      "titulo": "Jornada de Trabalho",
+      "caput": "O servidor cumprirá jornada de trabalho fixada em razão das atribuições pertinentes ao respectivo cargo, respeitada a duração máxima do trabalho semanal de quarenta horas e observados os limites mínimo e máximo de seis horas e oito horas diárias, respectivamente.",
+      "paragrafos": [
+        "§ 1º O ocupante de cargo em comissão ou função de confiança submete-se a regime de integral dedicação ao serviço, podendo ser convocado sempre que houver interesse da Administração."
+      ],
+      "tags": [
+        "jornada",
+        "40 horas",
+        "6 horas",
+        "8 horas",
+        "cargo em comissão"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Jornada geral: máximo 40h semanais, entre 6h e 8h diárias. Servidores da ALERR têm jornada especial de 30h semanais (6h diárias) pela Res. 015/2024."
+    },
+    {
+      "numero": "Art. 20",
+      "titulo": "Estágio Probatório — 3 Anos",
+      "caput": "Ao entrar em exercício, o servidor nomeado para cargo de provimento efetivo ficará sujeito a estágio probatório por período de três anos, durante o qual a sua aptidão e capacidade serão objeto de avaliação para o desempenho do cargo, observados os seguintes fatores: I – assiduidade; II – disciplina; III – capacidade de iniciativa; IV – produtividade; V – responsabilidade.",
+      "paragrafos": [
+        "§ 1º Quatro meses antes de findo o período do estágio probatório, será submetido à homologação da autoridade competente a avaliação do desempenho do servidor.",
+        "§ 2º O servidor não aprovado no estágio probatório será exonerado ou, se estável, reconduzido ao cargo anteriormente ocupado."
+      ],
+      "tags": [
+        "estágio probatório",
+        "3 anos",
+        "avaliação",
+        "assiduidade",
+        "disciplina",
+        "iniciativa",
+        "produtividade",
+        "responsabilidade"
+      ],
+      "hotFCC": true,
+      "notaFCC": "ESTÁGIO PROBATÓRIO = 3 ANOS. Não é 2 anos. FCC cobra essa duração sistematicamente. 5 fatores avaliados: A-D-I-P-R (Assiduidade, Disciplina, Iniciativa, Produtividade, Responsabilidade)."
+    },
+    {
+      "numero": "Art. 21",
+      "titulo": "Estabilidade — Aquisição",
+      "caput": "O servidor habilitado em concurso público e empossado em cargo de provimento efetivo adquirirá estabilidade no serviço público ao completar três anos de efetivo exercício e aprovação em avaliação de desempenho.",
+      "tags": [
+        "estabilidade",
+        "3 anos",
+        "efetivo exercício",
+        "avaliação de desempenho"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Estabilidade = 3 anos de efetivo exercício + aprovação em avaliação de desempenho. Coincide com o estágio probatório."
+    },
+    {
+      "numero": "Art. 22",
+      "titulo": "Estabilidade — Perda do Cargo",
+      "caput": "O servidor público estável só perderá o cargo: I – em virtude de sentença judicial transitada em julgado; II – mediante processo administrativo disciplinar no qual lhe seja assegurada ampla defesa; III – mediante procedimento de avaliação periódica de desempenho, na forma da lei complementar federal, assegurada ampla defesa.",
+      "tags": [
+        "estabilidade",
+        "perda do cargo",
+        "sentença judicial",
+        "PAD",
+        "avaliação de desempenho"
+      ],
+      "hotFCC": true,
+      "notaFCC": "3 formas de perder o cargo estável: sentença judicial, PAD e avaliação de desempenho insatisfatória. FCC cobra se há outras formas — não há."
+    },
+    {
+      "numero": "Art. 34",
+      "titulo": "Remoção",
+      "caput": "Remoção é o deslocamento do servidor, a pedido ou de ofício, no âmbito do mesmo quadro, com ou sem mudança de sede.",
+      "tags": [
+        "remoção",
+        "deslocamento",
+        "mesmo quadro"
+      ],
+      "hotFCC": false
+    },
+    {
+      "numero": "Art. 100",
+      "titulo": "Responsabilidade Civil, Penal e Administrativa",
+      "caput": "O servidor responde civil, penal e administrativamente pelo exercício irregular de suas atribuições. As sanções civis, penais e administrativas poderão cumular-se, sendo independentes entre si.",
+      "paragrafos": [
+        "Parágrafo único: A responsabilidade administrativa do servidor será afastada no caso de absolvição criminal que negue a existência do fato ou sua autoria."
+      ],
+      "tags": [
+        "responsabilidade",
+        "civil",
+        "penal",
+        "administrativa",
+        "independência",
+        "absolvição"
+      ],
+      "hotFCC": true,
+      "notaFCC": "As três esferas são INDEPENDENTES entre si. Exceção: absolvição por negativa de autoria ou inexistência do fato vincula as demais esferas."
+    },
+    {
+      "numero": "Art. 110",
+      "titulo": "Infrações Disciplinares — Exemplos",
+      "caput": "São infrações ético-disciplinares, entre outras: I – ausentar-se do serviço sem motivo justificado; II – retirar, sem prévia anuência da autoridade competente, qualquer documento ou objeto da repartição; III – recusar fé a documentos públicos; IV – opor resistência injustificada ao andamento de documento e processo ou execução de serviço; V – promover manifestação de apreço ou desapreço no recinto da repartição.",
+      "tags": [
+        "infrações",
+        "disciplina",
+        "ausência",
+        "resistência",
+        "manifestação"
+      ],
+      "hotFCC": false
+    }
+  ]
+}

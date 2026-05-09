@@ -1,0 +1,211 @@
+{
+  "id": "codigo-etica-parlamentar-alerr",
+  "titulo": "Código de Ética Parlamentar da ALERR",
+  "fonte": "Resolução nº 29, de 1995 (texto vigente: Resolução nº 28/1999)",
+  "atualizadoEm": "1999-08-31",
+  "artigos": [
+    {
+      "numero": "Art. 1º",
+      "titulo": "Instituição do Código",
+      "caput": "Fica instituído o Código de Ética Parlamentar da Assembleia Legislativa do Estado de Roraima.",
+      "tags": [
+        "código de ética",
+        "instituição"
+      ],
+      "hotFCC": false
+    },
+    {
+      "numero": "Art. 2º",
+      "titulo": "Obrigações do Deputado",
+      "caput": "No exercício do mandato, o Deputado atenderá às prescrições constitucionais, legais, regimentais e as estabelecidas neste Código, sujeitando-se às medidas disciplinares nele previstas.",
+      "tags": [
+        "mandato",
+        "obrigações",
+        "disciplina"
+      ],
+      "hotFCC": false
+    },
+    {
+      "numero": "Art. 3º",
+      "titulo": "Serviço às Instituições Democráticas",
+      "caput": "Na sua atividade, o Deputado presta serviço fundamental à manutenção das instituições democráticas, tendo livre acesso aos órgãos da administração direta ou indireta do Estado, mesmo sem aviso prévio, sendo-lhe devidas todas as informações necessárias ao exercício do mandato.",
+      "tags": [
+        "democracia",
+        "acesso",
+        "informação",
+        "mandato"
+      ],
+      "hotFCC": false
+    },
+    {
+      "numero": "Art. 4º",
+      "titulo": "Deveres Fundamentais do Deputado",
+      "caput": "São deveres fundamentais do Deputado: I – comparecer às sessões plenárias e reuniões das comissões de que seja membro; II – votar nas deliberações, salvo motivo de suspeição ou impedimento; III – manter conduta irrepreensível na vida pública e privada; IV – guardar decoro parlamentar dentro e fora da Assembleia Legislativa; V – declarar seus bens no início e no término do mandato.",
+      "tags": [
+        "deveres",
+        "comparecimento",
+        "votação",
+        "decoro",
+        "bens",
+        "mandato"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Declaração de bens obrigatória no INÍCIO e no TÉRMINO do mandato. FCC pode cobrar apenas um dos momentos como alternativa errada."
+    },
+    {
+      "numero": "Art. 5º",
+      "titulo": "Imunidades e Prerrogativas",
+      "caput": "As prerrogativas consistem em garantia da independência do Poder Legislativo, sendo deferidas aos Deputados em função do mandato parlamentar. A inviolabilidade consiste na impossibilidade de responsabilização do Deputado por suas opiniões, palavras e votos.",
+      "tags": [
+        "imunidade",
+        "prerrogativa",
+        "inviolabilidade",
+        "mandato"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Imunidade material: inviolabilidade por opiniões, palavras e votos no exercício do mandato. Imunidade formal: impedimento de prisão salvo flagrante de crime inafiançável."
+    },
+    {
+      "numero": "Art. 6º",
+      "titulo": "Imunidade Formal",
+      "caput": "A imunidade importa no impedimento de prisão, desde a expedição do Diploma, salvo em flagrante pela prática de crime inafiançável, ou processo criminal de membro da Assembleia Legislativa, com prévia licença da Casa.",
+      "tags": [
+        "imunidade formal",
+        "prisão",
+        "diploma",
+        "crime inafiançável",
+        "licença"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Prisão só em flagrante de crime inafiançável. Processo criminal depende de prévia licença da Casa."
+    },
+    {
+      "numero": "Art. 7º",
+      "titulo": "Comissão de Ética Parlamentar — Composição",
+      "caput": "Fica criada a Comissão de Ética Parlamentar composta de 5 (cinco) membros titulares e 2 (dois) suplentes, que reunir-se-á sempre que for necessário, por convocação de seu Presidente.",
+      "paragrafos": [
+        "Parágrafo único: A Comissão de Ética Parlamentar também poderá ser convocada através de requerimento assinado pela maioria de seus membros."
+      ],
+      "tags": [
+        "Comissão de Ética",
+        "composição",
+        "5 membros",
+        "convocação"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Comissão de Ética: 5 titulares + 2 suplentes. PROPÕE — não decide. Quem decide é o PLENÁRIO."
+    },
+    {
+      "numero": "Art. 8º",
+      "titulo": "Competências da Comissão de Ética",
+      "caput": "Compete à Comissão de Ética Parlamentar: I – zelar pelo funcionamento harmônico e pela imagem do Poder Legislativo; II – receber e processar representações contra deputados por infração ao decoro parlamentar; III – instaurar processo disciplinar e emitir parecer conclusivo sobre a conduta do deputado; IV – propor ao Plenário a aplicação das sanções previstas neste Código.",
+      "tags": [
+        "Comissão de Ética",
+        "competência",
+        "representação",
+        "processo disciplinar",
+        "parecer"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Comissão de Ética PROPÕE ao Plenário. A decisão final — especialmente a perda do mandato — é sempre do PLENÁRIO. FCC frequentemente atribui a decisão à Comissão."
+    },
+    {
+      "numero": "Art. 9º",
+      "titulo": "Condutas Vedadas — Atentado ao Decoro",
+      "caput": "Atentam contra o decoro parlamentar as seguintes condutas: I – abuso das prerrogativas constitucionais asseguradas aos deputados; II – percepção de vantagens indevidas; III – uso dos poderes e prerrogativas do cargo para constranger ou aliciar servidor, colega ou qualquer pessoa com fim de obter favorecimento; IV – praticar ofensas físicas ou morais nas dependências da Assembleia; V – revelar conteúdo de sessão secreta.",
+      "tags": [
+        "decoro",
+        "condutas vedadas",
+        "abuso",
+        "vantagens indevidas",
+        "ofensas"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Lista de condutas atentatórias ao decoro — cobrada por literalidade. FCC pode apresentar conduta não prevista como se fosse vedada."
+    },
+    {
+      "numero": "Art. 10",
+      "titulo": "Sanções — Espécies e Ordem de Gravidade",
+      "caput": "São as seguintes as penalidades aplicáveis por conduta atentatória ao decoro parlamentar, em ordem crescente de gravidade: I – censura verbal; II – censura escrita; III – suspensão temporária do exercício do mandato, por até 30 (trinta) dias; IV – perda do mandato.",
+      "tags": [
+        "sanções",
+        "penalidades",
+        "censura verbal",
+        "censura escrita",
+        "suspensão",
+        "perda do mandato",
+        "gravidade"
+      ],
+      "hotFCC": true,
+      "notaFCC": "4 sanções em ordem crescente: censura verbal → censura escrita → suspensão (até 30 dias) → perda do mandato. FCC cobra a ordem e o limite de 30 dias da suspensão."
+    },
+    {
+      "numero": "Art. 11",
+      "titulo": "Censura Verbal",
+      "caput": "A censura verbal será aplicada, pelo Presidente da Assembleia Legislativa, em sessão ou de Comissão, durante suas reuniões, ao Deputado que incorrer em conduta atentatória ao decoro parlamentar de menor gravidade. Contra a aplicação desta penalidade caberá recurso ao Plenário.",
+      "tags": [
+        "censura verbal",
+        "Presidente",
+        "recurso",
+        "Plenário"
+      ],
+      "hotFCC": false
+    },
+    {
+      "numero": "Art. 12",
+      "titulo": "Censura Escrita",
+      "caput": "A censura escrita será aplicada pela Mesa Diretora, mediante proposta da Comissão de Ética Parlamentar, registrada nos anais da Assembleia Legislativa. Desta penalidade caberá recurso ao Plenário.",
+      "tags": [
+        "censura escrita",
+        "Mesa Diretora",
+        "anais",
+        "recurso"
+      ],
+      "hotFCC": false
+    },
+    {
+      "numero": "Art. 13",
+      "titulo": "Suspensão Temporária",
+      "caput": "A suspensão temporária do exercício do mandato será aplicada pelo Plenário, mediante proposta da Comissão de Ética Parlamentar, por prazo não superior a 30 (trinta) dias, assegurado o contraditório e a ampla defesa.",
+      "tags": [
+        "suspensão",
+        "30 dias",
+        "Plenário",
+        "contraditório",
+        "ampla defesa"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Suspensão: aplicada pelo PLENÁRIO, mediante PROPOSTA da Comissão de Ética. Prazo máximo: 30 dias."
+    },
+    {
+      "numero": "Art. 14",
+      "titulo": "Perda do Mandato",
+      "caput": "A perda do mandato será declarada pelo Plenário, por maioria absoluta de seus membros, mediante proposta da Comissão de Ética Parlamentar, assegurados o contraditório e a ampla defesa, nos casos previstos na Constituição Estadual e neste Código.",
+      "paragrafos": [
+        "Parágrafo único: A Mesa Diretora incumbe fazer publicar, na forma do caput deste artigo, a ementa da resolução que importe em sanção de perda do mandato parlamentar."
+      ],
+      "tags": [
+        "perda do mandato",
+        "Plenário",
+        "maioria absoluta",
+        "Comissão de Ética",
+        "proposta",
+        "contraditório"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Perda do mandato: PLENÁRIO por MAIORIA ABSOLUTA (13 de 24), mediante PROPOSTA da Comissão de Ética. Comissão PROPÕE — Plenário DECIDE. Questão clássica FCC."
+    },
+    {
+      "numero": "Art. 15",
+      "titulo": "Boletim de Desempenho",
+      "caput": "A Comissão de Ética Parlamentar publicará anualmente Boletim de Desempenho dos Deputados, contendo informações sobre: presença nas sessões plenárias e reuniões de comissões, proposições apresentadas, votos e declarações de bens.",
+      "tags": [
+        "boletim",
+        "desempenho",
+        "presença",
+        "transparência"
+      ],
+      "hotFCC": false
+    }
+  ]
+}

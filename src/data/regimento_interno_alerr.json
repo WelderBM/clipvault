@@ -1,0 +1,24 @@
+{
+  "id": "regimento_interno_alerr",
+  "titulo": "Regimento Interno ALERR",
+  "fonte": "Resolução 08/2023",
+  "atualizadoEm": "2023-01-01",
+  "artigos": [
+    {
+      "numero": "Art. 1º",
+      "caput": "A Assembleia Legislativa do Estado de Roraima, órgão supremo do Poder Legislativo, tem sua sede na Capital do Estado.",
+      "hotFCC": false
+    },
+    {
+      "numero": "Art. 2º",
+      "caput": "A Assembleia Legislativa reunir-se-á, anualmente, na Capital do Estado, de 15 de fevereiro a 30 de junho e de 1º de agosto a 15 de dezembro.",
+      "hotFCC": true,
+      "notaFCC": "Atenção às datas das sessões ordinárias."
+    },
+    {
+      "numero": "Art. 3º",
+      "caput": "O número de Deputados à Assembleia Legislativa corresponderá ao triplo da representação do Estado na Câmara dos Deputados e, atingido o número de trinta e seis, será acrescido de tantos quantos forem os Deputados Federais acima de doze.",
+      "hotFCC": false
+    }
+  ]
+}
