@@ -1,11 +1,14 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronRight, ArrowLeft, BookOpen, Settings2, ZoomIn, ZoomOut, EyeOff, Eye } from 'lucide-react'
+import { ChevronRight, ArrowLeft, BookOpen, Settings2, ZoomIn, ZoomOut, EyeOff, Eye, Bookmark, Trash2 } from 'lucide-react'
 import { TEXTOS_OFICIAIS } from '../data/texts'
+import { useAuth } from '../hooks/useAuth'
+import { subscribeToReaderProgress, setReadMarker, addHighlight, removeHighlight, type ReaderProgress, type HighlightColor } from '../lib/reader'
 
 type Theme = 'dark' | 'light' | 'sepia'
 
 export default function ReaderPage() {
+  const { user } = useAuth()
   const [selectedText, setSelectedText] = useState<string | null>(null)
   
   // Leitor preferences
@@ -14,7 +17,22 @@ export default function ReaderPage() {
   const [modoProva, setModoProva] = useState<boolean>(false)
   const [showSettings, setShowSettings] = useState<boolean>(false)
 
+  // Leitor Progress (Firestore)
+  const [progress, setProgress] = useState<ReaderProgress | null>(null)
+  const [activeArticleAction, setActiveArticleAction] = useState<string | null>(null)
+
   const activeText = TEXTOS_OFICIAIS.find(t => t.id === selectedText)
+
+  useEffect(() => {
+    if (!user || !selectedText) {
+      setProgress(null)
+      return
+    }
+    const unsub = subscribeToReaderProgress(user.uid, selectedText, (data) => {
+      setProgress(data)
+    })
+    return unsub
+  }, [user, selectedText])
 
   const themeClasses: Record<Theme, string> = {
     dark: 'bg-void text-white/90',
@@ -39,6 +57,32 @@ export default function ReaderPage() {
       note: 'text-[#8B6B42] bg-[#E8D6B6]',
     }
   }
+
+  const highlightColors: Record<HighlightColor, string> = {
+    yellow: 'bg-yellow-400/30 border-l-4 border-yellow-400',
+    orange: 'bg-orange-400/30 border-l-4 border-orange-400',
+    red: 'bg-red-400/30 border-l-4 border-red-400',
+  }
+
+  const handleSetMarker = async (articleId: string) => {
+    if (!user || !selectedText) return
+    await setReadMarker(user.uid, selectedText, articleId)
+    setActiveArticleAction(null)
+  }
+
+  const handleAddHighlight = async (articleId: string, color: HighlightColor, text: string) => {
+    if (!user || !selectedText) return
+    await addHighlight(user.uid, selectedText, articleId, { color, text })
+    setActiveArticleAction(null)
+  }
+
+  const handleRemoveHighlight = async (articleId: string, highlightId: string) => {
+    if (!user || !selectedText) return
+    await removeHighlight(user.uid, selectedText, articleId, highlightId)
+    setActiveArticleAction(null)
+  }
+
+  const getArticleId = (num: string) => num.replace(/\W+/g, '-').toLowerCase()
 
   return (
     <div className={`pt-4 pb-24 h-full transition-colors duration-300 ${selectedText ? themeClasses[theme] : 'px-4'}`}>
@@ -150,27 +194,72 @@ export default function ReaderPage() {
             {/* Área de Leitura */}
             <div className="flex-1 overflow-y-auto px-6 pb-24" style={{ fontSize: `${fontSize}rem` }}>
               <div className="max-w-2xl mx-auto space-y-8 font-serif leading-[1.8]">
-                {activeText?.artigos.map((art, idx) => (
-                  <div 
-                    key={idx} 
-                    className={`relative ${art.hotFCC ? articleClasses[theme].hot + ' -mx-4 px-4 py-3 rounded-r-lg' : ''}`}
-                  >
-                    {!modoProva && (
-                      <span className={`font-bold mr-2 ${articleClasses[theme].num}`}>
-                        {art.numero}
-                      </span>
-                    )}
-                    <span className="opacity-90">{art.caput}</span>
-                    
-                    {/* Nota Estratégica (Hot Topic) */}
-                    {art.hotFCC && art.notaFCC && !modoProva && (
-                      <div className={`mt-3 px-3 py-2 text-sm rounded ${articleClasses[theme].note}`}>
-                        <span className="font-bold block mb-1 text-xs uppercase tracking-wider">🎯 Foco FCC</span>
-                        {art.notaFCC}
+                {activeText?.artigos.map((art, idx) => {
+                  const articleId = getArticleId(art.numero)
+                  const isMarker = progress?.marker?.articleId === articleId
+                  const highlights = progress?.highlights?.[articleId] || []
+                  // Visual layer: override default classes if there's a user highlight
+                  const hasUserHighlight = highlights.length > 0
+                  const userHighlightClass = hasUserHighlight ? highlightColors[highlights[0].color] : ''
+                  
+                  return (
+                    <div key={idx} className="relative">
+                      {isMarker && (
+                        <div className="absolute -left-6 top-1 text-teal animate-bounce">
+                          <Bookmark className="w-5 h-5 fill-current" />
+                        </div>
+                      )}
+                      
+                      <div 
+                        onClick={() => setActiveArticleAction(activeArticleAction === articleId ? null : articleId)}
+                        className={`cursor-pointer transition-colors ${userHighlightClass ? userHighlightClass + ' -mx-4 px-4 py-3 rounded-r-lg' : art.hotFCC ? articleClasses[theme].hot + ' -mx-4 px-4 py-3 rounded-r-lg' : ''}`}
+                      >
+                        {!modoProva && (
+                          <span className={`font-bold mr-2 ${articleClasses[theme].num}`}>
+                            {art.numero}
+                          </span>
+                        )}
+                        <span className="opacity-90">{art.caput}</span>
+                        
+                        {/* Nota Estratégica (Hot Topic) */}
+                        {art.hotFCC && art.notaFCC && !modoProva && (
+                          <div className={`mt-3 px-3 py-2 text-sm rounded ${articleClasses[theme].note}`}>
+                            <span className="font-bold block mb-1 text-xs uppercase tracking-wider">🎯 Foco FCC</span>
+                            {art.notaFCC}
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                ))}
+
+                      {/* Menu de Ações (Aparece ao Clicar) */}
+                      <AnimatePresence>
+                        {activeArticleAction === articleId && (
+                          <motion.div 
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="absolute z-10 -bottom-14 left-0 right-0 bg-void/95 border border-border shadow-xl rounded-xl p-2 flex items-center justify-between backdrop-blur"
+                          >
+                            <div className="flex gap-2">
+                              <button onClick={() => handleAddHighlight(articleId, 'yellow', art.caput)} className="w-8 h-8 rounded-full bg-yellow-400 hover:scale-110 transition-transform" />
+                              <button onClick={() => handleAddHighlight(articleId, 'orange', art.caput)} className="w-8 h-8 rounded-full bg-orange-400 hover:scale-110 transition-transform" />
+                              <button onClick={() => handleAddHighlight(articleId, 'red', art.caput)} className="w-8 h-8 rounded-full bg-red-400 hover:scale-110 transition-transform" />
+                              {hasUserHighlight && (
+                                <button onClick={() => handleRemoveHighlight(articleId, highlights[0].id)} className="w-8 h-8 flex items-center justify-center rounded-full bg-surface hover:bg-white/10 text-red-400 transition-colors">
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              )}
+                            </div>
+                            <div className="w-px h-6 bg-border mx-2" />
+                            <button onClick={() => handleSetMarker(articleId)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal/10 text-teal font-body text-sm hover:bg-teal/20 transition-colors">
+                              <Bookmark className="w-4 h-4" />
+                              <span>Marcar</span>
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           </motion.div>
