@@ -1,228 +1,815 @@
 {
-  "id": "constituicao-estadual-rr-poder-legislativo",
-  "titulo": "Constituição do Estado de Roraima — Poder Legislativo e Servidores",
-  "fonte": "Constituição do Estado de Roraima, promulgada em 31 de dezembro de 1991",
+  "id": "constituicao-estadual-rr-completa",
+  "titulo": "Constituição do Estado de Roraima (Arts. 30–67 e 111–116)",
+  "fonte": "PDF Oficial - al.rr.leg.br",
   "atualizadoEm": "2023-12-31",
-  "observacao": "Artigos 30–67 (Poder Legislativo) e 111–116 (Servidores Públicos)",
+  "observacao": "Arts. 30–67 (Poder Legislativo) e 111–116 (Servidores Públicos e Finanças)",
   "artigos": [
     {
       "numero": "Art. 30",
-      "titulo": "Composição do Poder Legislativo",
-      "caput": "O Poder Legislativo é exercido pela Assembleia Legislativa, composta de vinte e quatro Deputados Estaduais, eleitos pelo sistema proporcional, para mandato de quatro anos.",
+      "caput": "O Poder Legislativo é exercido pela Assembleia Legislativa, constituída de Deputados eleitos e investidos na forma da legislação federal para uma legislatura de quatro anos.",
+      "hotFCC": false,
       "tags": [
-        "Assembleia Legislativa",
-        "24 deputados",
-        "proporcional",
-        "4 anos",
-        "mandato"
+        "Constituição Estadual"
       ],
-      "hotFCC": true,
-      "notaFCC": "24 deputados, sistema PROPORCIONAL, mandato de 4 anos. FCC pode cobrar o sistema eleitoral ou o número de deputados."
+      "paragrafos": [
+        "§ 1º O número de Deputados Estaduais corresponderá ao triplo da representação do Estado na Câmara dos Deputados e, atingindo o número de 36 (trinta e seis), será acrescido de tantos quantos forem os Deputados Federais acima de doze.",
+        "§ 2º A Assembleia Legislativa se reunirá anualmente, na Capital do Estado, de 15 de fevereiro a 30 de junho e de 1º de agosto a 15 de dezembro.",
+        "§ 2º A Assembléia Legislativa reunir-se-á, anualmente, na Capital do Estado, de 15 de fevereiro a 30 de junho e de 1° de agosto a 22 de dezembro. Alteração feita pelo"
+      ]
     },
     {
       "numero": "Art. 31",
-      "titulo": "Período de Funcionamento",
-      "caput": "A Assembleia Legislativa reunir-se-á anualmente na Capital do Estado, de 15 de fevereiro a 30 de junho e de 1º de agosto a 22 de dezembro, independentemente de convocação.",
-      "paragrafos": [
-        "§ 1º A Sessão Legislativa não será interrompida sem a aprovação do projeto de lei de diretrizes orçamentárias.",
-        "§ 2º Nos intervalos das Sessões Legislativas, haverá Comissão Representativa da Assembleia Legislativa."
-      ],
+      "caput": "A Assembleia Legislativa constituirá Comissões Permanentes e Temporárias, constituídas na forma do Regimento Interno e com as atribuições nele previstas, conforme os termos do ato de sua criação.",
+      "hotFCC": false,
       "tags": [
-        "sessão legislativa",
-        "15 de fevereiro",
-        "30 de junho",
-        "1º de agosto",
-        "22 de dezembro",
-        "LDO",
-        "recesso"
+        "Constituição Estadual"
       ],
-      "hotFCC": true,
-      "notaFCC": "Datas exatas: 15/fev a 30/jun e 1º/ago a 22/dez. LDO trava o recesso. FCC cobra a data de início: 15 de fevereiro (não 2 de fevereiro como na CF federal)."
+      "paragrafos": [
+        "§ 1º Às Comissões, em razão da matéria de sua competência, cabe: I – discutir e votar Projetos de Lei que, segundo o Regimento Interno, não se inclua na competência originária do plenário, cabendo recurso para este, no prazo de 05 (cinco) dias da publicação, por iniciativa de 1/10 (um décimo) dos Deputados; II – convocar Secretários de Estado, dirigentes de autarquias, empresas públicas, sociedades de economia mista e fundações instituídas ou mantidas pelo poder público para prestarem pessoalmente, no prazo de 15 (quinze) dias, informações sobre assuntos previamente determinados, importando em crime de responsabilidade a ausência sem justificativa adequada; (Vide ADI 6636 RR/STF) III – convocar o Procurador-Geral da Justiça, o Procurador-Geral do Estado, o Defensor Público Geral e os Comandantes Militares para prestarem informações a respeito de assuntos previamente fixados, relacionados com a respectiva área; (Vide ADI 6636 RR/STF) IV – acompanhar a execução orçamentária; V – velar pela completa adequação dos atos do Poder Executivo que regulamentem dispositivos legais; VI – receber petições, reclamações, representações ou queixas de qualquer pessoa contra atos ou omissões das autoridades ou entidades públicas e; VII – apreciar planos de desenvolvimento e programas de obras do Estado e sobre eles emitir pareceres;",
+        "§ 2º As Comissões Parlamentares de Inquérito, observada a legislação, são específicas no que lhes couber; terão poderes de investigação própria das autoridades judiciais, além de outros previstos no Regimento Interno, serão criadas a requerimento de 1/3 (um terço) dos membros da Assembleia Legislativa, e sua aprovação dependerá de deliberação do Plenário, para apuração do fato determinado e por prazo certo, sendo suas conclusões, se for o caso, encaminhadas ao Ministério Público ou a outra autoridade competente, para que promova a responsabilidade civil, criminal ou administrativa dos infratores.",
+        "§ 2º As Comissões Parlamentares de Inquérito terão poderes de investigação próprios das autoridades judiciais, além de outros previstos no Regimento Interno, serão criadas a requerimento de 1/3 (um terço) dos membros da Assembleia Legislativa para apuração de fato determinado e por prazo certo, sendo suas conclusões, se for o caso, encaminhadas ao Ministério Público ou a outra autoridade competente para que promova a responsabilidade civil, criminal ou administrativa dos infratores. Alteração feita pelo"
+      ],
+      "incisos": [
+        "I - discutir e votar Projetos de Lei que, segundo o Regimento Interno, não se inclua na competência originária do plenário, cabendo recurso para este, no prazo de 05 (cinco) dias da publicação, por iniciativa de 1/10 (um décimo) dos Deputados;",
+        "II - convocar Secretários de Estado, dirigentes de autarquias, empresas públicas, sociedades de economia mista e fundações instituídas ou mantidas pelo poder público para prestarem pessoalmente, no prazo de 15 (quinze) dias, informações sobre assuntos previamente determinados, importando em crime de responsabilidade a ausência sem justificativa adequada; (Vide ADI 6636 RR/STF)",
+        "III - convocar o Procurador-Geral da Justiça, o Procurador-Geral do Estado, o Defensor Público Geral e os Comandantes Militares para prestarem informações a respeito de assuntos previamente fixados, relacionados com a respectiva área; (Vide ADI 6636 RR/STF)",
+        "IV - acompanhar a execução orçamentária;",
+        "V - velar pela completa adequação dos atos do Poder Executivo que regulamentem dispositivos legais;",
+        "VI - receber petições, reclamações, representações ou queixas de qualquer pessoa contra atos ou omissões das autoridades ou entidades públicas e;",
+        "VII - apreciar planos de desenvolvimento e programas de obras do Estado e sobre eles emitir pareceres;"
+      ]
+    },
+    {
+      "numero": "Art. 32",
+      "caput": "Cabe à Assembleia Legislativa, com sanção do Governador, dispor sobre todas as matérias de competência do Estado, especialmente sobre:",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ],
+      "incisos": [
+        "I - a organização administrativa e judiciaria do Ministério Público, da Defensoria Pública e da Procuradoria Geral do Estado;",
+        "I - a organização administrativa do Poder Executivo, do Poder Judiciaria do Ministério Público, da Defensoria Pública, respeitada a iniciativa; Alteração feita pelo"
+      ]
     },
     {
       "numero": "Art. 33",
-      "titulo": "Competência Privativa da ALERR",
-      "caput": "Compete privativamente à Assembleia Legislativa: I – eleger sua Mesa Diretora; II – elaborar seu Regimento Interno; III – criar, transformar e extinguir cargos e fixar remuneração dos servidores; IV – aprovar previamente a indicação do Procurador-Geral de Justiça; V – autorizar o Governador a ausentar-se do País; VI – conceder licença ao Governador por mais de 15 dias; VII – julgar as contas do Governador; VIII – processar e julgar o Governador por crimes de responsabilidade.",
+      "caput": "da competência exclusiva da Assembleia Legislativa:",
+      "hotFCC": false,
       "tags": [
-        "competência privativa",
-        "Mesa Diretora",
-        "Regimento Interno",
-        "PGJ",
-        "Governador",
-        "contas",
-        "impeachment"
+        "Constituição Estadual"
       ],
-      "hotFCC": true,
-      "notaFCC": "Competências privativas mais cobradas: aprovar PGJ (não nomear), conceder licença ao Governador por mais de 15 dias, julgar contas e processar o Governador por crimes de responsabilidade."
+      "incisos": [
+        "I - estabelecer limites globais para o montante da dívida mobiliária do Estado e dos Municípios;",
+        "I - estabelecer limites globais para o montante da dívida mobiliária do Estado e dos Municípios; Alteração feita pelo"
+      ]
+    },
+    {
+      "numero": "Art. 34",
+      "caput": "Os Deputados são invioláveis, por suas opiniões, palavras e votos.",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 34",
+      "caput": "Os Deputados são invioláveis, civil e penalmente, por quaisquer de suas opiniões, palavras e votos. Alteração feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 35",
+      "caput": "Os Deputados não poderão:",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ],
+      "incisos": [
+        "I - desde a expedição do diploma: a) firmar ou manter contrato com pessoa jurídica de Direito público, autarquias, empresa pública, sociedade de economia mista ou empresa concessionária de serviços públicos, salvo quando o contrato obedecer a cláusulas uniformes e; b) aceitar ou exercer cargo, função ou emprego remunerado, incluindo os exoneráveis ad nutum, nas entidades constantes da alínea anterior;",
+        "II - desde a posse: a) ser proprietários, controladores ou diretores de empresa que goze de favor decorrente de contrato com pessoa jurídica de Direito público, ou nela exercer função remunerada; b) patrocinar causa em que seja interessada qualquer das entidades a que se refere a alínea “a” do inciso I, e; c) ser titulares de mais de um cargo ou mandato eletivo federal, estadual ou municipal;"
+      ]
     },
     {
       "numero": "Art. 36",
-      "titulo": "Perda do Mandato de Deputado",
-      "caput": "Perderá o mandato o Deputado: I – que infringir qualquer das proibições estabelecidas no artigo anterior; II – cujo procedimento for declarado incompatível com o decoro parlamentar; III – que deixar de comparecer, em cada sessão legislativa, à terça parte das sessões ordinárias da Assembleia Legislativa, salvo licença ou missão por esta autorizada; IV – que perder ou tiver suspensos os direitos políticos; V – quando o decretar a Justiça Eleitoral; VI – que sofrer condenação criminal em sentença com trânsito em julgado.",
+      "caput": "Perderá o mandato o Deputado:",
+      "hotFCC": false,
       "tags": [
-        "perda do mandato",
-        "decoro",
-        "ausências",
-        "1/3 das sessões",
-        "condenação criminal",
-        "direitos políticos"
+        "Constituição Estadual"
       ],
-      "hotFCC": true,
-      "notaFCC": "Perda por ausências: mais de 1/3 das sessões ordinárias sem justificativa. FCC cobra essa fração. Condenação criminal com trânsito em julgado também acarreta perda."
+      "incisos": [
+        "I - que infringir qualquer das proibições estabelecidas no artigo anterior;",
+        "II - cujo procedimento for declarado incompatível com o decoro parlamentar;",
+        "III - que deixar de comparecer, em cada sessão legislativa, à terça parte das sessões ordinárias, salvo licença ou missão autorizada pela Assembleia Legislativa;",
+        "III - que deixar de comparecer, em cada sessão legislativa, à terça parte das sessões ordinárias, salvo licença médica, afastamento para tratar de assunto de interesse particular, missão oficial fora do estado, representação do Poder Legislativo participação em atividade legislativa, em comissão ou a serviço desta; Alteração feita pelo"
+      ]
+    },
+    {
+      "numero": "Art. 37",
+      "caput": "Não perderá o mandato o Deputado:",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ],
+      "incisos": [
+        "I - investido na função de Ministro de Estado, Governador de Território, Secretário de Estado do Distrito Federal, de Território, de Prefeitura de Capital ou de chefe de missão diplomática temporária;",
+        "I - investido na função de Ministro de Estado, Governador de Território, Secretário de Estado, do Distrito Federal, de Território, de Município no Estado, de Presidente de Fundação, Presidente de Órgão da Administração Indireta do Poder Executivo Estadual ou de Chefe de Missão Diplomática temporária; Alteração feita pelo"
+      ]
+    },
+    {
+      "numero": "Art. 38",
+      "caput": "O processo legislativo compreende a elaboração de:",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ],
+      "incisos": [
+        "I - Emendas à Constituição;",
+        "II - Leis Complementares;",
+        "III - Leis Ordinárias;",
+        "III - A",
+        " - Leis Delegadas; Inclusão feita pelo"
+      ]
+    },
+    {
+      "numero": "Art. 39",
+      "caput": "A Constituição poderá ser emendada mediante proposta:",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ],
+      "incisos": [
+        "I - de 2/3 (dois terços), no mínimo, dos membros da Assembleia Legislativa;",
+        "I - de 1/3 (um terço), no mínimo, dos membros da Assembleia Legislativa; Alteração feita pelo"
+      ]
+    },
+    {
+      "numero": "Art. 40",
+      "caput": "As Leis Complementares serão aprovadas, pela maioria absoluta dos membros da Assembleia Legislativa observados os demais termos da votação das Leis Ordinárias.",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 40",
+      "caput": "As Leis Complementares serão aprovadas pelo voto favorável da maioria absoluta dos membros da Assembleia Legislativa, em dois turnos de votação, observados os demais termos da votação das Leis Ordinárias. (NR) Alteração feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 40",
+      "caput": "As Leis Complementares serão aprovadas pelo voto favorável da maioria absoluta dos membros da Assembleia Legislativa, em turno único, observados os demais termos da votação das Leis Ordinárias. Alteração feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 41",
+      "caput": "A iniciativa das Leis Complementares e Ordinárias cabe a qualquer membro ou comissão da Assembleia Legislativa, ao Governador do Estado, ao Tribunal de Justiça, Tribunal de Contas, ao Procurador-Geral de Justiça, e aos cidadãos, na forma e nos casos previstos nesta Constituição.",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 41",
+      "caput": "A iniciativa das Leis Complementares e Ordinárias cabe a qualquer membro ou comissão da Assembleia Legislativa, ao Governador do Estado, ao Presidente Tribunal de Justiça, ao Presidente do Tribunal de Contas, ao Procurador-Geral de Justiça, ao Defensor Público Geral e aos cidadãos, na forma e nos casos previstos no art.61 da Constituição da República e nesta Constituição. Alteração feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 41",
+      "caput": "A iniciativa das Leis Complementares e Ordinárias cabe a qualquer membro ou comissão da Assembleia Legislativa, ao Governador do Estado, ao Presidente do Tribunal de Justiça, ao Presidente do Tribunal de Contas, ao Procurador-Geral de Contas, ao Procurador-Geral de Justiça, ao Defensor Público-Geral e aos cidadãos, na forma e nos casos previstos no art. 61 da Constituição da República e nesta Constituição. Alteração feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 41",
+      "caput": "A iniciativa das Leis Complementares e Ordinárias cabe a qualquer membro ou comissão da Assembleia Legislativa, ao Governador do Estado, ao Presidente do Tribunal de Justiça, ao Presidente do Tribunal de Contas, ao Reitor da Universidade Estadual, ao Procurador-Geral de Contas, ao Procurador-Geral de Justiça, ao Defensor Público- Geral e aos cidadãos, na forma e nos casos previstos no art. 61 da Constituição da República e nesta Constituição. Alteração feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 41",
+      "caput": "A. As leis delegadas serão elaboradas pelo Governador do Estado, que deverá solicitar a delegação à Assembleia Legislativa. Inclusão feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 42",
+      "caput": "O Governador poderá solicitar que os Projetos de sua iniciativa e exclusiva competência tramitem em regime de urgência.",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ],
+      "paragrafos": [
+        "§ 1º Se a Assembleia Legislativa não deliberar em até 45 (quarenta e cinco) dias o projeto de que trata este artigo, o mesmo será incluído na ordem do dia até que seja ultimada a sua votação.",
+        "§ 2º O prazo de 45 (quarenta e cinco) dias de que trata o",
+        "§1º não corre nos períodos de recesso da Assembleia Legislativa, nem se aplica aos projetos de código."
+      ]
     },
     {
       "numero": "Art. 43",
-      "titulo": "Processo Legislativo — Espécies",
-      "caput": "O processo legislativo compreende a elaboração de: I – emendas à Constituição Estadual; II – leis complementares; III – leis ordinárias; IV – leis delegadas; V – medidas provisórias; VI – decretos legislativos; VII – resoluções.",
+      "caput": "Aprovado o Projeto de Lei na forma regimental, será ele enviado ao Governador, que, aquiescendo, o sancionará e o promulgará.",
+      "hotFCC": false,
       "tags": [
-        "processo legislativo",
-        "espécies",
-        "emenda",
-        "lei complementar",
-        "lei ordinária",
-        "medida provisória",
-        "decreto legislativo",
-        "resolução"
+        "Constituição Estadual"
       ],
-      "hotFCC": true,
-      "notaFCC": "7 espécies de atos normativos. FCC pode cobrar quais espécies integram o processo legislativo estadual."
+      "paragrafos": [
+        "§ 1º Se o Governador julgar o projeto, no todo ou em parte, inconstitucional ou contrário do interesse público, vetá-lo-á, total ou parcialmente, dentro de 15 (quinze) dias úteis, contados a partir da data do recebimento, comunicando, dentro de 48 (quarenta e oito) horas ao Presidente da Assembleia Legislativa o motivo do Veto.",
+        "§ 1º Se o Governador julgar o projeto, no todo ou em parte, inconstitucional ou contrário do interesse público, vetá-lo-á, total ou parcialmente, dentro de 15 (quinze) dias úteis, contados a partir da data do recebimento, incluida esta, comunicando, dentro de 48 (quarenta e oito) horas do mencionado prazo ao Presidente da Assembleia Legislativa as razões do Veto e publicando-as. Alteração feita pelo"
+      ]
     },
     {
       "numero": "Art. 44",
-      "titulo": "Emenda à Constituição Estadual",
-      "caput": "A Constituição poderá ser emendada mediante proposta: I – de um terço, no mínimo, dos membros da Assembleia Legislativa; II – do Governador do Estado; III – de mais da metade das Câmaras Municipais do Estado, manifestando-se, cada uma delas, pela maioria relativa de seus membros.",
-      "paragrafos": [
-        "§ 2º A proposta será discutida e votada em dois turnos, considerando-se aprovada se obtiver, em ambos, três quintos dos votos dos membros da Assembleia Legislativa.",
-        "§ 4º Não será objeto de deliberação a proposta de emenda tendente a abolir: I – a forma federativa de Estado; II – o voto direto, secreto, universal e periódico; III – a separação dos Poderes; IV – os direitos e garantias individuais."
-      ],
+      "caput": "Ressalvados os projetos de iniciativa exclusiva, a matéria constante de Projeto de Lei rejeitado somente poderá ser renovada, na mesma sessão legislativa, mediante proposta da maioria absoluta dos membros da Assembleia Legislativa. Seção V Da Consultoria da Assembleia Legislativa Seção V Da Procuradoria Geral da Assembleia Legislativa Alteração feita pelo",
+      "hotFCC": false,
       "tags": [
-        "emenda constitucional",
-        "3/5",
-        "dois turnos",
-        "1/3",
-        "cláusula pétrea"
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 45",
+      "caput": "Consultoria Jurídica da Assembleia Legislativa compete exercer a representação judicial e o assessoramento técnico-jurídico ao Poder Legislativo.",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 45",
+      "caput": "A Procuradoria Geral da Assembleia Legislativa é a instituição que representa judicial e extrajudicialmente a Assembleia Legislativa, bem como a Mesa Diretora, as Comissões e os seus Membros em razão do exercício de suas funções institucionais e defesa das prerrogativas do mandato parlamentar, cabendo-lhe, com exclusividade, nos temos da Resolução Legislativa que dispuser sobre sua organização e funcionamento, as atividades de consultoria e assessoria jurídica do Poder Legislativo Estadual. Alteração feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 37",
+      "caput": "inciso XI, da Constituição da República e",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 46",
+      "caput": "O Tribunal de Contas, integrado por 7, (sete) Conselheiros, tem sede na Capital, quadro próprio de pessoal e Jurisdição em todo Estado, observado o disposto no art. 235, inciso III, da Constituição Federal.",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
       ],
-      "hotFCC": true,
-      "notaFCC": "EC estadual: aprovação por 3/5 em dois turnos (igual à federal). Quórum de iniciativa: 1/3 dos deputados. FCC pode cobrar o quórum de aprovação."
+      "paragrafos": [
+        "§ 1º Os Conselheiros do Tribunal de Contas serão nomeados dentre brasileiros que satisfaçam os seguintes requisitos: I – ter mais de 35 (trinta e cinco) e menos de 65 (sessenta e cinco) anos de idade; II – idoneidade moral e reputação ilibada; III – notórios conhecimentos jurídicos, contábeis, econômicos e financeiros ou de administração pública, e; IV – ter mais de 10 (dez) anos de exercício de função ou de efetiva atividade profissional que exija os conhecimentos mencionados no inciso anterior;",
+        "§ 2º Os Conselheiros do Tribunal de Contas do Estado serão escolhidos: I – um terço, pelo Governador do Estado, de sua livre escolha, indicados alternadamente, entre Auditores e membros do Ministério Público junto ao Tribunal de Contas, cujos nomes constarão em lista tríplice, segundo o critério de antiguidade e merecimento e; I – três, pelo Governador do Estado, cabendo a este indicar um de sua livre escolha, um dentre Auditores e um dentre membros do Ministério Público junto ao Tribunal, necessariamente; Alteração feita pelo"
+      ],
+      "incisos": [
+        "I - ter mais de 35 (trinta e cinco) e menos de 65 (sessenta e cinco) anos de idade;",
+        "II - idoneidade moral e reputação ilibada;",
+        "III - notórios conhecimentos jurídicos, contábeis, econômicos e financeiros ou de administração pública, e;",
+        "IV - ter mais de 10 (dez) anos de exercício de função ou de efetiva atividade profissional que exija os conhecimentos mencionados no inciso anterior;",
+        "I - um terço, pelo Governador do Estado, de sua livre escolha, indicados alternadamente, entre Auditores e membros do Ministério Público junto ao Tribunal de Contas, cujos nomes constarão em lista tríplice, segundo o critério de antiguidade e merecimento e;",
+        "I - três, pelo Governador do Estado, cabendo a este indicar um de sua livre escolha, um dentre Auditores e um dentre membros do Ministério Público junto ao Tribunal, necessariamente; Alteração feita pelo"
+      ]
+    },
+    {
+      "numero": "Art. 47",
+      "caput": "Os auditores, em número de 7 (sete), são nomeados mediante concurso público de provas e provas e títulos, dentre portadores de graduação em curso superior em Ciências Contábeis e Atuariais, Ciências Jurídicas e Sociais, Ciências Econômicas ou de Administração; quando em substituição a Conselheiros, têm as mesmas garantias e impedimentos dos titulares e, quando no exercício de suas atribuições funcionais, as de Juiz da mais alta entrância.",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 47",
+      "caput": "A. O Tribunal de Contas terá em sua Estrutura Organizacional um órgão ministerial especial, ao qual se aplicam os princípios institucionais da unidade, da indivisibilidade e da independência funcional, constituind,1-. e por 04 (quatro) Procuradores de Contas, cujas atribuições e atuação são definidas na Lei Orgânica. Inclusão feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 47",
+      "caput": "A. O Tribunal de Contas terá em sua Estrutura Organizacional o Ministério Público Especial, ao qual se aplicam os princípios da unidade, da indivisibilidade e da independência funcional, competindo-lhe a promoção da ordem jurídica, além de outras definidas em Lei. Alteração feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 47",
+      "caput": "A. O Ministério Público de Contas, órgão auxiliar da Assembléia Legislativa, é instituição permanente e essencial às Funções de Fiscalização e controle externo do Estado, incumbindo-lhe a defesa da ordem jurídica, do regime democrático e dos interesses sociais, individuais e indisponíveis. Alteração feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 47",
+      "caput": "A. Ao Ministério Público de Contas é assegurada autonomia administrativa, orçamentária, financeira e funcional. Alteração feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 47",
+      "caput": "A. (Revogado) Revogado pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 47",
+      "caput": "A. Ao Ministério Público de Contas é assegurada autonomia administrativa, orçamentária, financeira e funcional. (NR) Alteração feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 47",
+      "caput": "B. Ao Ministério Público de Contas é assegurada autonomia administrativa, orçamentária, Financeira e Funcional, cabendo-lhe: Inclusão feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 47",
+      "caput": "B. (Revogado) Revogado pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 47",
+      "caput": "B. Ao Ministério Público de Contas é assegurada autonomia administrativa, orçamentária, Financeira e Funcional, cabendo-lhe: Alteração feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 47",
+      "caput": "B. (Revogado) Revogado pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 47",
+      "caput": "C. O Ministério Público de Contas, integrado por 3 (três) Procuradores de Contas e 1 (um) Procurador-Geral de Contas, possui sede na capital e exerce, no que couber, as atribuições previstas no",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 47",
+      "caput": "C. (Revogado) Revogado pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 47",
+      "caput": "C. O Ministério Público de Contas, integrado por 3 (três) Procuradores de Contas e 1 (um) Procurador-Geral de Contas, possui sede na capital e exerce, no que couber, as atribuições previstas no",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 47",
+      "caput": "C. (Revogado) Revogado pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 47",
+      "caput": "D. O Ministério Público de Contas tem por Chefe o Procurador-Geral de Contas, nomeado pelo Governador cio Estado, após arguição e aprovação pela Assembleia Legislativa do Estado, dentre integranies da carreira indicados em lista tríplice, mediante eleição para mandato de 2 (dois) anos, permitida uma recondução, por igual período,. na forma de sua lei Orgânica Inclusão feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 47",
+      "caput": "D. (Revogado) Revogado pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 47",
+      "caput": "D. O Ministério Público de Contas tem por Chefe o Procurador-Geral de Contas, nomeado pelo Governador cio Estado, após arguição e aprovação pela Assembleia Legislativa do Estado, dentre integrantes da carreira indicados em lista tríplice, mediante eleição para mandato de 2 (dois) anos, permitida uma recondução, por igual período,. na forma de sua lei Orgânica. Alteração feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 47",
+      "caput": "D. (Revogado) Revogado pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 47",
+      "caput": "E. O Ministério Público de Contas será organizado em carreira, cujo ingresso se fará no cargo inicial de Procurador de Contas, através de concurso de provas e títulos, assegurada a participação da Ordem dos Advogados do Brasil em sua realização e observada, nas nomeações, a ordem de classificação. Inclusão feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 47",
+      "caput": "E. (Revogado) Revogado pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 47",
+      "caput": "E. O Ministério Público de Contas será organizado em carreira, cujo ingresso se fará no cargo inicial de Procurador de Contas, através de concurso de provas e títulos, assegurada a participação da Ordem dos Advogados do Brasil em sua realização e observada, nas nomeações, a ordem de classificação. Alteração feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 47",
+      "caput": "E. (Revogado) Revogado pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 48",
+      "caput": "O Tribunal de Contas, quando do encerramento do exercício financeiro, prestará contas da execução orçamentária anual à Assembleia Legislativa. Seção VII Da Fiscalização Contábil, Fin anceira e Orçamentária",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 49",
+      "caput": "A fiscalização contábil, financeira, orçamentária, operacional e patrimonial do Estado das entidades da Administração Direta e Indireta, e das fundações instituídas ou mantidas pelo Poder Público, quanto à legalidade, legitimidade, economicidade, aplicações de subvenções e renuncia de receitas, será exercida pela Assembleia Legislativa, mediante controle externo do Tribunal de contas do Estado e controle interno de cada Poder, observadas as disposições da Constituição Federal.",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 49",
+      "caput": "A fiscalização contábil, financeira. orçamentária. operacional e patrimonial do Estado e das entidades da Administração Direta e Indireta, quanto à legalidade, legitimidade, economicidade, aplicação das subvenções e renúncia de receitas, será exercida pela Assembleia Legislativa, mediante controle externo, e pelo sistema de controle interno de cada Poder observada as disposições da Constituição Federal. Alteração feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 50",
+      "caput": "Os atos de improbidade administrativa acarretarão suspensão dos direitos políticos, perda da função pública, indisponibilidade dos bens e ressarcimento ao erário, na forma e gradação previstas em Lei, sem prejuízo da ação penal cabível.",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 50",
+      "caput": "Os atos de improbidade administrativa importarão suspensão dos direitos políticos, perda da função pública, indisponibilidade dos bens e ressarcimento ao erário, na forma e gradação previstas em Lei Federal, sem prejuízo da ação penal cabível. Alteração feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 51",
+      "caput": "Os Poderes do Estado e do Município, incluídos os órgãos que os compõem, publicarão trimestralmente no Diário Oficial do Estado o montante das despesas com publicidade pagas ou contratadas naquele período com cada agência ou veículo de comunicação.",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 52",
+      "caput": "Nenhum Projeto de Lei que implique a criação ou o aumento de despesapública será sancionado sem que dele conste a indicação dos recursos disponíveis próprios, para atender aos novos encargos.",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 53",
+      "caput": "As Instituições Financeiras do Estado são obrigadas a prestar as informações administrativas que lhes forem requeridas pela Assembleia Legislativa ou Comissão Parlamentar especialmente instituída para essa finalidade, ressalvado o sigilo bancário. Seção II Do Governador e d o Vice-Governador do Estado",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 54",
+      "caput": "O Poder Executivo é exercido pelo Governador do Estado com auxílio dos Secretários de Estado.",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 55",
+      "caput": "Governador e o Vice-Governador do Estado serão eleitos simultaneamente, atendido o disposto na Constituição Federal e legislação eleitoral vigente.",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ],
+      "paragrafos": [
+        "§ 1º Em face ao princípio da continuidade, aplicado à Administração Pública, o Chefe do Poder Executivo Estadual ou Municipal eleito, poderá indicar equipe de transição do novo governo até 60 (sessenta) dias antes do dia da posse. Inclusão feita pelo"
+      ]
     },
     {
       "numero": "Art. 56",
-      "titulo": "Posse do Governador",
-      "caput": "O Governador e o Vice-Governador tomarão posse em sessão da Assembleia Legislativa, prestando o compromisso de manter, defender, cumprir e fazer cumprir a Constituição Federal e a do Estado, observar as leis e promover o bem-estar geral.",
-      "paragrafos": [
-        "Parágrafo único: Se decorridos dez dias da data fixada para a posse, o Governador ou o Vice-Governador, salvo motivo de força maior, não tiver assumido o cargo, este será declarado vago."
-      ],
+      "caput": "O Governador e o Vice-Governador tomarão posse emsessão da AssembleiaLegislativa, prestando compromisso de manter, defender, cumprir e fazer cumprira Constituição Federal e a do Estado, observar as Leis e promover o bem-estar geral. Parágrafo único Se, decorridos 10 (dez) dias da data fixada para a posse, o Governador e o Vice-Governador, salvo motivo de força maior, não tiverem assumido os cargos, estes serão declarados vagos pela Assembleia Legislativa.",
+      "hotFCC": false,
       "tags": [
-        "posse",
-        "Governador",
-        "Vice-Governador",
-        "Assembleia Legislativa",
-        "10 dias",
-        "vacância"
+        "Constituição Estadual"
       ],
-      "hotFCC": true,
-      "notaFCC": "Posse ocorre na Assembleia Legislativa. Prazo: 10 dias para assumir, salvo força maior. Após 10 dias sem posse: cargo declarado vago."
+      "paragrafos": [
+        "Parágrafo único Se, decorridos 10 (dez) dias da data fixada para a posse, o Governador e o Vice-Governador, salvo motivo de força maior, não tiverem assumido os cargos, estes serão declarados vagos pela Assembleia Legislativa."
+      ]
     },
     {
       "numero": "Art. 57",
-      "titulo": "Substituição e Sucessão do Governador",
-      "caput": "O Governador do Estado será substituído, em caso de impedimento, e sucedido, em caso de vacância, pelo Vice-Governador. § 1º Ocorrendo vacância dos cargos de Governador e Vice-Governador, far-se-á eleição noventa dias depois de aberta a última vaga. § 2º Ocorrendo as vagas nos últimos dois anos do período governamental, a eleição para ambos os cargos será feita pela Assembleia Legislativa, trinta dias depois da última vaga.",
-      "paragrafos": [
-        "Parágrafo único: Na ausência do Vice-Governador, o Presidente da Assembleia Legislativa substituirá o Governador."
-      ],
+      "caput": "O Vice-Governador substituirá o Governador nos seus impedimentos e o sucederá na vaga.",
+      "hotFCC": false,
       "tags": [
-        "substituição",
-        "Governador",
-        "Vice-Governador",
-        "Presidente da ALERR",
-        "vacância",
-        "eleição"
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 57",
+      "caput": "O Vice-Governador substituirá o Governador em suas ausências, afastamentos, impedimentos, com transmissão obrigatória do Cargo, e o sucederá na vaga. Alteração feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 58",
+      "caput": "Perderá o mandato o Governador que assumir outro cargo ou função pública na administração direta ou indireta, ressalvada a posse em virtude de concurso público e observado o disposto no artigo 38, I, IV e V, da Constituição Federal. Parágrafo único Não perderá o mandato o Vice-Governador quando investido na função de Secretário de Estado, ou de Presidente de Órgão da Administração Indireta do Poder Executivo Estadual, ou atribuição definida em Lei Complementar Estadual. Inclusão feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
       ],
-      "hotFCC": true,
-      "notaFCC": "Ordem de substituição: VP → Presidente da ALERR. Dupla vacância nos últimos 2 anos: eleição indireta pela ALERR em 30 dias."
+      "paragrafos": [
+        "Parágrafo único Não perderá o mandato o Vice-Governador quando investido na função de Secretário de Estado, ou de Presidente de Órgão da Administração Indireta do Poder Executivo Estadual, ou atribuição definida em Lei Complementar Estadual. Inclusão feita pelo"
+      ]
+    },
+    {
+      "numero": "Art. 59",
+      "caput": "O Governador e o Vice-Governador não poderão ausentar-se do Estado por mais de 15 (quinze dias) consecutivos, e do País em qualquer tempo, sem prévia autorização da Assembleia Legislativa, sob pena de perda do cargo.",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 60",
+      "caput": "O Governador e o Vice-Governador deverão ser domiciliados na Capital do Estado, onde exercerão as suas funções.",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 61",
+      "caput": "O Governador e o Vice-Governador, no ato da posse e ao término do mandato, farão declaração pública de seus bens em Cartório de Títulos e Documentos, sob pena de responsabilidade.",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 61",
+      "caput": "A. Cessada a investidura no cargo de Governador do Estado, quem o tiver exercido, em caráter permanente, fará jus, a título de representação, a um subsídio mensal e vitalício equivalente a 70% do pago ao titular, percebido em espécie. Inclusão feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 61",
+      "caput": "B. Nos 04 (quatro) anos posteriores, ao término do exercício do mandato, o Governador terá também direito à segurança policial militar ou civil, a sua escolha, com o efetivo máximo de 02 (dois) homens. Inclusão feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 61",
+      "caput": "B. Nos 04 (quatro) anos posteriores, ao término do exercício do mandato, o Governador terá também direito à segurança policial militar ou civil, a sua escolha, com o efetivo máximo de 06 (seis) homens. Alteração feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 61",
+      "caput": "B. Nos 04 (quatro) anos posteriores, ao término do exercício do mandato, o Governador terá também direito à segurança policial militar, policial civil ou policial penal, a sua escolha, com o efetivo máximo de 06 (seis) homens. Alteração feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 62",
+      "caput": "São atribuições privativas do Governador do Estado:",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ],
+      "incisos": [
+        "I - representar o Estado perante o Governo da União e as demais Unidades da Federação, bem como em suas relações jurídicas, políticas e administrativas, exercendo com auxílio dos Secretários de Estado a direção superior da Administração Estadual;",
+        "II - nomear e exonerar os Secretários de Estado, dirigentes de empresas de economia mista, autarquias e fundações, o Comandante Geral da Polícia Militar, o Procurador Geral do Estado, o titular da Defensoria Pública e o Procurador Geral de Justiça, observado quanto a este o disposto nesta Constituição e na Lei Orgânica do Ministério Público estadual;",
+        "II - nomear e exonerar os Secretários de Estado, dirigentes de empresas de economia mista. autarquias e fundações, os Comandantes-Gerais da Polícia Militar e do Corpo de Bombeiros Militar, o Procurador-Geral do Estado, o titular da Defensoria Pública e o Procurador Geral da Justiça. observado quanto a este o disposto nesta Constituição e na Lei Orgânica do Ministério Público Estadual; Alteração feita pelo"
+      ]
+    },
+    {
+      "numero": "Art. 63",
+      "caput": "da competência privativa do Governador a iniciativa de Leis que disponham sobre:",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ],
+      "incisos": [
+        "I - Plano Plurianual, Diretrizes Orçamentárias, Orçamento, matéria fiscal e tributária;",
+        "II - criação e extinção de cargos, funções, empregos públicos na administração direta, autárquica e fundacional, ou aumento de despesa pública, no âmbito do Poder Executivo;",
+        "III - servidores públicos do Estado, seu regime jurídico, provimento de cargos públicos, estabilidade e aposentadoria de funcionários civis e reforma e transferência de integrantes da Polícia Militar para a inatividade;",
+        "III - servidores públicos do Estado, seu regime jurídico, provimento de cargos públicos, estabilidade e aposentadoria de funcionários civis e reforma e transferência de integrantes da Polícia Militar e do Corpo de Bombeiros Militar para a inatividade; Alteração feita pelo"
+      ]
+    },
+    {
+      "numero": "Art. 64",
+      "caput": "São crimes de responsabilidade os atos ou omissões do Governador do Estado que atentem contra a Constituição Federal, esta Constituição e, especialmente, contra: (Vide ADI 5895 RR/STF)",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ],
+      "incisos": [
+        "I - a existência da União, do Estado ou os interesses peculiares dos Municípios; (Vide ADI 5895 RR/STF)",
+        "II - o livre exercício do Poder Legislativo, do Poder Judiciário, e do Ministério Público;",
+        "II - o livre exercício do Poder Legislativo, do Poder Judiciário, do Ministério Público e da Defensoria Pública; Alteração feita pelo"
+      ]
+    },
+    {
+      "numero": "Art. 65",
+      "caput": "O Governador será submetido a processo e julgamento:",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ],
+      "paragrafos": [
+        "§ 1º O Governador será suspenso de suas funções quando incorrer: I – em infrações penais comuns, se recebida a denúncia ou queixa-crime pelo Superior Tribunal de Justiça e; II – em crimes de responsabilidade, após a instauração do processo pela Assembleia Legislativa; (Vide ADI 4805 RR/STF)",
+        "§ 2º Se, decorrido o prazo de 180 (cento e oitenta) dias,o julgamento não estiver concluído, cessará o afastamento, sem prejuízo do regular prosseguimento do processo; (Vide ADI 5895 RR/STF)",
+        "§ 3º Enquanto não sobrevier sentença condenatória nas infrações penais comuns o Governador não estará sujeito à prisão.",
+        "§ 3º (Revogado) Revogado pelo"
+      ],
+      "incisos": [
+        "I - nos crimes de responsabilidade perante a Assembleia Legislativa e; (Vide ADI 4805 RR/STF)",
+        "II - nos crimes comuns perante o Superior Tribunal de Justiça, depois de declarada por aquela, pelo voto de 2/3 (dois terços) de seus membros, a procedência da acusação; (Vide ADI 4805 RR/STF)",
+        "I - em infrações penais comuns, se recebida a denúncia ou queixa-crime pelo Superior Tribunal de Justiça e;",
+        "II - em crimes de responsabilidade, após a instauração do processo pela Assembleia Legislativa; (Vide ADI 4805 RR/STF)"
+      ]
+    },
+    {
+      "numero": "Art. 66",
+      "caput": "Os Secretários de Estado serão escolhidos entre brasileiros maiores de 21 (vinte e um) anos e no exercício dos direitos políticos.",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 67",
+      "caput": "Os Secretários de Estado, auxiliares diretos e da confiança do Governador, serão responsáveis pelos atos que praticarem ou referendarem no exercício do cargo. CAPÍTULO III DO PODER JUDICIÁRIO Seção",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
     },
     {
       "numero": "Art. 111",
-      "titulo": "Acesso a Cargos Públicos",
-      "caput": "Os cargos, empregos e funções públicas são acessíveis aos brasileiros que preencham os requisitos estabelecidos em lei, assim como aos estrangeiros, na forma da lei.",
+      "caput": "Lei Complementar disporá sobre as finanças públicas em obediência aos princípios previstos na Constituição Federal e na legislação federal complementar.",
+      "hotFCC": false,
       "tags": [
-        "cargo público",
-        "acesso",
-        "brasileiros",
-        "estrangeiros"
-      ],
-      "hotFCC": false
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 111",
+      "caput": "Lei Complementar disporá sobre as finanças públicas do Estado em observância aos princípios da Constituição da República e desta, e observará legislação federal, quando aplicável pelo Estado. Alteração feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
     },
     {
       "numero": "Art. 112",
-      "titulo": "Concurso Público e Estágio Probatório",
-      "caput": "A investidura em cargo ou emprego público depende de aprovação prévia em concurso público de provas ou de provas e títulos, de acordo com a natureza e a complexidade do cargo ou emprego, na forma prevista em lei, ressalvadas as nomeações para cargo em comissão declarado em lei de livre nomeação e exoneração.",
-      "paragrafos": [
-        "§ 1º O prazo de validade do concurso público será de até dois anos, prorrogável uma vez, por igual período.",
-        "§ 2º Durante o prazo improrrogável previsto no edital de convocação, aquele aprovado em concurso público será convocado com prioridade sobre novos concursados."
-      ],
+      "caput": "Os princípios norteadores do art. 165 da Constituição Federal serão obedecidos pelo Estado no estabelecimento de suas Diretrizes Orçamentárias, bem como o Plano Plurianual e os Orçamentos Anuais.",
+      "hotFCC": false,
       "tags": [
-        "concurso público",
-        "investidura",
-        "validade",
-        "2 anos",
-        "prioridade"
-      ],
-      "hotFCC": true,
-      "notaFCC": "Validade do concurso: até 2 anos, prorrogável uma vez. Total máximo: 4 anos. Aprovado tem prioridade sobre novos concursados."
+        "Constituição Estadual"
+      ]
     },
     {
       "numero": "Art. 113",
-      "titulo": "Estabilidade do Servidor",
-      "caput": "O servidor nomeado para cargo de provimento efetivo em virtude de concurso público adquirirá estabilidade após três anos de efetivo exercício.",
-      "paragrafos": [
-        "§ 1º O servidor público estável só perderá o cargo: I – em virtude de sentença judicial transitada em julgado; II – mediante processo administrativo em que lhe seja assegurada ampla defesa; III – mediante procedimento de avaliação periódica de desempenho, na forma de lei complementar, assegurada ampla defesa.",
-        "§ 4º Como condição para a aquisição da estabilidade, é obrigatória a avaliação especial de desempenho por comissão instituída para essa finalidade."
-      ],
+      "caput": "Os Projetos de Lei relativos ao Plano Plurianual, às Diretrizes Orçamentárias, ao Orçamento Anual e aos Créditos Adicionais, bem como suas emendas, serão apreciados pela Assembleia Legislativa, na forma do Regimento Interno.",
+      "hotFCC": false,
       "tags": [
-        "estabilidade",
-        "3 anos",
-        "sentença judicial",
-        "PAD",
-        "avaliação de desempenho",
-        "perda do cargo"
-      ],
-      "hotFCC": true,
-      "notaFCC": "Estabilidade: 3 anos. 3 formas de perda: sentença judicial, PAD, avaliação de desempenho. Avaliação especial é condição para aquisição."
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 113",
+      "caput": "Os projetos de lei relativos ao Plano Plurianual, às Diretrizes Orçamentárias, ao Orçamento Anual e aos Créditos Adicionais, bem como suas emendas, serão apreciados pela Assembleia Legislativa, na forma do Regimento Interno. Alteração feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 113",
+      "caput": "Os projetos de lei relativos ao plano plurianual, às diretrizes orçamentárias, ao orçamento anual e aos créditos adicionais, bem como suas emendas, serão apreciados pela Assembleia Legislativa, na forma do Regimento Interno. Alteração feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 113",
+      "caput": "A. As emendas individuais impositivas apresentadas ao projeto de lei orçamentária anual poderão alocar recursos a Município por meio de: Inclusão feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
     },
     {
       "numero": "Art. 114",
-      "titulo": "Acumulação de Cargos",
-      "caput": "É vedada a acumulação remunerada de cargos públicos, exceto quando houver compatibilidade de horários, observado em qualquer caso o disposto no inciso XI do art. 37 da Constituição Federal: I – a de dois cargos de professor; II – a de um cargo de professor com outro técnico ou científico; III – a de dois cargos ou empregos privativos de profissionais de saúde, com profissões regulamentadas.",
+      "caput": "Os recursos correspondentes às dotações orçamentárias, compreendidos os créditos suplementares e especiais destinados aos órgãos dos Poderes Legislativo, Judiciário, ao Ministério Público, e o Tribunal de Contas do Estado, lhes serão repassados até o dia 20 (vinte) de cada mês.",
+      "hotFCC": false,
       "tags": [
-        "acumulação de cargos",
-        "professor",
-        "saúde",
-        "compatibilidade de horários"
-      ],
-      "hotFCC": true,
-      "notaFCC": "Acumulação permitida: 2 professores / 1 professor + 1 técnico-científico / 2 de saúde. Sempre com compatibilidade de horários e respeito ao teto."
+        "Constituição Estadual"
+      ]
+    },
+    {
+      "numero": "Art. 114",
+      "caput": "Os recursos correspondentes às dotações orçamentárias, compreendidos os créditos suplementares e especiais destinados aos Poderes Legislativo, Judiciário, ao Ministério Público, à Defensoria Pública e ao Tribunal de Contas do Estado, ser-lhes-ão repassados até o dia 20 (vinte) de cada mês em forma de duodécimos. Alteração feita pelo",
+      "hotFCC": false,
+      "tags": [
+        "Constituição Estadual"
+      ]
     },
     {
       "numero": "Art. 115",
-      "titulo": "Direito de Greve",
-      "caput": "Ao servidor público é assegurado o direito de greve, que será exercido nos termos e nos limites definidos em lei complementar.",
+      "caput": "Os recursos que, em decorrência de veto, emenda ou rejeição do Projeto de Lei Orçamentária Anual, ficarem sem despesas correspondentes, poderão ser utilizados, conforme o caso, mediante créditos especiais ou suplementares, com prévia e específica autorização legislativa.",
+      "hotFCC": false,
       "tags": [
-        "greve",
-        "servidor público",
-        "lei complementar"
-      ],
-      "hotFCC": false
+        "Constituição Estadual"
+      ]
     },
     {
       "numero": "Art. 116",
-      "titulo": "Direito de Associação Sindical",
-      "caput": "É garantido ao servidor público o direito de associação sindical.",
+      "caput": "obrigatória a inclusão no orçamento das entidades de Direito público de verba, necessária ao pagamento de débitos constantes de precatórios judiciários apresentados até a data de 1º (primeiro) de julho, obrigando-se a realizar o pagamento no 1º (primeiro) semestre do exercício seguinte. TÍTUL O VI DA ORDEM EC ONÔMICA E FINANCEIRA CAPÍTULO",
+      "hotFCC": false,
       "tags": [
-        "associação sindical",
-        "servidor público"
-      ],
-      "hotFCC": false
+        "Constituição Estadual"
+      ]
     }
   ]
 }
