@@ -30,10 +30,12 @@ export function useLongPress({
   const timerRef = useRef<number | null>(null)
   const startPosRef = useRef<{ x: number; y: number } | null>(null)
   const triggeredRef = useRef(false)
+  const movedRef = useRef(false)
 
   const start = useCallback(
     (x: number, y: number) => {
       triggeredRef.current = false
+      movedRef.current = false
       startPosRef.current = { x, y }
       timerRef.current = window.setTimeout(() => {
         triggeredRef.current = true
@@ -46,12 +48,15 @@ export function useLongPress({
 
   const move = useCallback(
     (x: number, y: number) => {
-      if (!startPosRef.current || timerRef.current === null) return
+      if (!startPosRef.current) return
       const dx = x - startPosRef.current.x
       const dy = y - startPosRef.current.y
       if (Math.sqrt(dx * dx + dy * dy) > movementThreshold) {
-        window.clearTimeout(timerRef.current)
-        timerRef.current = null
+        movedRef.current = true
+        if (timerRef.current !== null) {
+          window.clearTimeout(timerRef.current)
+          timerRef.current = null
+        }
       }
     },
     [movementThreshold]
@@ -66,8 +71,9 @@ export function useLongPress({
 
   const end = useCallback(() => {
     const wasTriggered = triggeredRef.current
+    const wasMoved = movedRef.current
     cancel()
-    if (!wasTriggered && onClick) onClick()
+    if (!wasTriggered && !wasMoved && onClick) onClick()
   }, [cancel, onClick])
 
   return {
