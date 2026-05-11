@@ -1,11 +1,33 @@
+import { useState } from 'react'
 import { useDashboardStats } from '../hooks/useDashboardStats'
 import RadarChart from '../components/RadarChart'
 import Heatmap from '../components/Heatmap'
 import { FCC_WEIGHTS, HOT_TOPICS } from '../data/strategy'
+import { EDITAL_TOPICS, TOPIC_STATE_DOT, type TopicState } from '../data/edital_topics'
+import { setTopicProgress } from '../lib/progress'
+import { useAuth } from '../hooks/useAuth'
 import { DISCIPLINE_LABELS, type Discipline } from '../types'
 
+const STATE_CYCLE: TopicState[] = ['unseen', 'seen', 'practiced', 'confident']
+const STATE_LABEL: Record<TopicState, string> = {
+  unseen: '·',
+  seen: 'V',
+  practiced: 'P',
+  confident: '★',
+}
+const STATE_RING: Record<TopicState, string> = {
+  unseen: 'ring-white/10',
+  seen: 'ring-sky-400/60',
+  practiced: 'ring-amber-400/60',
+  confident: 'ring-teal/60',
+}
+
+const RADAR_DISCIPLINES: Discipline[] = ['portugues', 'constitucional', 'administrativo', 'afo', 'legislacao']
+
 export default function DashboardPage() {
+  const { user } = useAuth()
   const stats = useDashboardStats()
+  const [expandedDiscipline, setExpandedDiscipline] = useState<Discipline | null>(null)
 
   if (stats.loading) {
     return (
@@ -15,34 +37,28 @@ export default function DashboardPage() {
     )
   }
 
-  // Calculate percentages for the radar chart
-  const geralDisciplines: Discipline[] = [
-    'portugues', 'constitucional', 'administrativo', 'afo', 'legislacao'
-  ]
-  
-  const sumGeralCards = geralDisciplines.reduce((acc, d) => acc + stats.cardsByDiscipline[d], 0) || 1
-  
-  const radarData = geralDisciplines.map(d => {
-    const cardPct = stats.cardsByDiscipline[d] / sumGeralCards
-    // Benchmark is the relative weight in conhecimentos gerais.
-    // Português (30), Const (20), Adm (20), AFO (15), Legislação (10). Sum = 95.
-    const benchPct = FCC_WEIGHTS[d] / 0.95
-    
-    // Normalize to 0-1 for radar chart. Scale to make differences visible.
-    const scale = 2.0 
-    
+  const radarData = RADAR_DISCIPLINES.map(d => {
+    const coverage = stats.disciplineCoverage.find(c => c.discipline === d)
+    const fccNorm = (FCC_WEIGHTS[d] ?? 0) / 0.95
     return {
-      label: d.substring(0, 5).toUpperCase(),
-      value: Math.min(1, cardPct * scale),
-      benchmark: Math.min(1, benchPct * scale)
+      label: DISCIPLINE_LABELS[d].substring(0, 5).toUpperCase(),
+      value: Math.min(1, (coverage?.pct ?? 0)),
+      benchmark: Math.min(1, fccNorm),
     }
   })
+
+  const handleTopicClick = async (topicId: string, currentState: TopicState | undefined) => {
+    if (!user) return
+    const idx = STATE_CYCLE.indexOf(currentState ?? 'unseen')
+    const next = STATE_CYCLE[(idx + 1) % STATE_CYCLE.length]
+    await setTopicProgress(user.uid, topicId, next)
+  }
 
   return (
     <div className="px-4 pt-4 pb-8 space-y-6">
       <header>
         <h1 className="font-display text-2xl tracking-wider text-teal">DASHBOARD</h1>
-        <p className="font-body text-white/40 text-[11px] uppercase tracking-wider mt-1">Estatísticas e progresso</p>
+        <p className="font-body text-white/40 text-[11px] uppercase tracking-wider mt-1">Cobertura do edital</p>
       </header>
 
       {/* Top Numbers */}
@@ -53,10 +69,12 @@ export default function DashboardPage() {
           <p className="font-body text-[10px] text-teal mt-1">{stats.activeCards} ativos</p>
         </div>
         <div className="bg-surface border border-border rounded-2xl p-4">
-          <p className="font-mono text-[10px] text-white/40 uppercase tracking-wider mb-1">Revisões</p>
-          <p className="font-display text-2xl text-white">{stats.reviewedCards}</p>
+          <p className="font-mono text-[10px] text-white/40 uppercase tracking-wider mb-1">Tópicos Vistos</p>
+          <p className="font-display text-2xl text-white">
+            {stats.disciplineCoverage.reduce((acc, c) => acc + c.seen, 0)}
+          </p>
           <p className="font-body text-[10px] text-amber mt-1">
-            {stats.totalCards ? Math.round((stats.reviewedCards / stats.totalCards) * 100) : 0}% engajados
+            de {EDITAL_TOPICS.length} no edital
           </p>
         </div>
       </section>
@@ -64,13 +82,90 @@ export default function DashboardPage() {
       {/* Radar Chart */}
       <section className="bg-surface border border-border rounded-2xl p-4">
         <h2 className="font-mono text-[10px] text-white/60 uppercase tracking-wider mb-4 flex items-center justify-between">
-          <span>Volume vs Peso FCC</span>
+          <span>Cobertura vs Peso FCC</span>
           <span className="flex items-center gap-2 text-[9px]">
-            <span className="flex items-center gap-1"><div className="w-2 h-2 bg-teal/40 rounded-sm" /> Cards</span>
-            <span className="flex items-center gap-1"><div className="w-2 h-0 border-t border-amber border-dashed" /> Edital</span>
+            <span className="flex items-center gap-1"><div className="w-2 h-2 bg-teal/40 rounded-sm" /> Cobertura</span>
+            <span className="flex items-center gap-1"><div className="w-2 h-0 border-t border-amber border-dashed" /> Peso FCC</span>
           </span>
         </h2>
         <RadarChart data={radarData} />
+      </section>
+
+      {/* Topic Progress by Discipline */}
+      <section className="space-y-3">
+        <h2 className="font-mono text-[10px] text-white/60 uppercase tracking-wider ml-1">
+          Progresso por Tópico
+        </h2>
+        <div className="space-y-2">
+          {RADAR_DISCIPLINES.map(d => {
+            const topics = EDITAL_TOPICS.filter(t => t.discipline === d)
+            const coverage = stats.disciplineCoverage.find(c => c.discipline === d)
+            const confidentPct = coverage && coverage.total > 0
+              ? Math.round((coverage.confident / coverage.total) * 100)
+              : 0
+            const isExpanded = expandedDiscipline === d
+
+            return (
+              <div key={d} className="bg-surface border border-border rounded-2xl overflow-hidden">
+                <button
+                  className="w-full px-4 py-3 flex items-center justify-between"
+                  onClick={() => setExpandedDiscipline(isExpanded ? null : d)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="text-left">
+                      <p className="font-body text-sm text-white/90">{DISCIPLINE_LABELS[d]}</p>
+                      <p className="font-mono text-[10px] text-amber mt-0.5">
+                        {Math.round((FCC_WEIGHTS[d] ?? 0) * 100)}% da prova
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="text-right">
+                      <p className="font-mono text-sm text-teal">{confidentPct}%</p>
+                      <p className="font-mono text-[10px] text-white/40">dominado</p>
+                    </div>
+                    <svg
+                      className={`w-4 h-4 text-white/30 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </button>
+
+                {isExpanded && (
+                  <div className="border-t border-border px-4 py-3 space-y-2">
+                    <p className="font-mono text-[9px] text-white/30 uppercase tracking-widest mb-3">
+                      Toque para avançar: · → V → P → ★ → ·
+                    </p>
+                    {topics.map(topic => {
+                      const state: TopicState = stats.topicProgress[topic.id] ?? 'unseen'
+                      return (
+                        <button
+                          key={topic.id}
+                          onClick={() => handleTopicClick(topic.id, state)}
+                          className={`w-full flex items-center gap-3 p-2.5 rounded-xl ring-1 transition-all text-left ${STATE_RING[state]} bg-white/2`}
+                        >
+                          <div className={`w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold ring-1 ${STATE_RING[state]} ${TOPIC_STATE_DOT[state]}`}>
+                            <span className="text-void">{STATE_LABEL[state]}</span>
+                          </div>
+                          <div className="min-w-0">
+                            <p className={`font-body text-xs leading-snug ${state === 'unseen' ? 'text-white/40' : 'text-white/80'}`}>
+                              {topic.label}
+                              {topic.hotFCC && (
+                                <span className="ml-1.5 text-[9px] text-red-400 font-mono uppercase tracking-wider">hot</span>
+                              )}
+                            </p>
+                          </div>
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
       </section>
 
       {/* Heatmap */}
@@ -79,25 +174,6 @@ export default function DashboardPage() {
           Atividade (60 dias)
         </h2>
         <Heatmap data={stats.activityHeatmap} />
-      </section>
-
-      {/* Lista do Edital */}
-      <section className="space-y-3">
-        <h2 className="font-mono text-[10px] text-white/60 uppercase tracking-wider ml-1">Cobertura do Edital</h2>
-        <div className="bg-surface border border-border rounded-2xl overflow-hidden">
-          {geralDisciplines.map((d, i) => (
-            <div key={d} className={`px-4 py-3 flex items-center justify-between ${i !== 0 ? 'border-t border-border' : ''}`}>
-              <div>
-                <p className="font-body text-sm text-white/90">{DISCIPLINE_LABELS[d]}</p>
-                <p className="font-mono text-[10px] text-amber mt-0.5">{Math.round(FCC_WEIGHTS[d] * 100)}% da prova</p>
-              </div>
-              <div className="text-right">
-                <p className="font-mono text-sm text-teal">{stats.cardsByDiscipline[d]}</p>
-                <p className="font-mono text-[10px] text-white/40 mt-0.5">cards</p>
-              </div>
-            </div>
-          ))}
-        </div>
       </section>
 
       {/* Hot Topics */}

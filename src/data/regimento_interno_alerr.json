@@ -1,24 +1,304 @@
 {
-  "id": "regimento_interno_alerr",
-  "titulo": "Regimento Interno ALERR",
-  "fonte": "Resolução 08/2023",
-  "atualizadoEm": "2023-01-01",
+  "id": "regimento-interno-alerr",
+  "titulo": "Regimento Interno da ALERR",
+  "fonte": "Resolução nº 08, de 13 de dezembro de 2023",
+  "atualizadoEm": "2025-12-22",
+  "alteracoes": [
+    "Resolução Legislativa nº 15/2025 (vigência a partir de 22/12/2025)",
+    "Resolução Legislativa nº 18/2024",
+    "Resolução Legislativa nº 8/2025"
+  ],
   "artigos": [
     {
       "numero": "Art. 1º",
-      "caput": "A Assembleia Legislativa do Estado de Roraima, órgão supremo do Poder Legislativo, tem sua sede na Capital do Estado.",
-      "hotFCC": false
+      "titulo": "Da Sede",
+      "caput": "O Poder Legislativo Estadual é exercido pela Assembleia Legislativa, constituída de deputados estaduais, representantes do povo roraimense, eleitos e empossados para mandato de 4 (quatro) anos, para exercer suas atribuições, nos termos previstos neste Regimento, observados os dispositivos constitucionais, tendo sua sede em Boa Vista, Capital do Estado, e funcionamento no Palácio Antônio Augusto Martins.",
+      "paragrafos": [
+        "§ 1º Havendo motivo relevante ou de força maior, a Assembleia Legislativa poderá, por deliberação da Mesa, ad referendum da maioria absoluta dos deputados, reunir-se em ponto diverso do território estadual.",
+        "§ 2º As dependências da sede da Assembleia Legislativa poderão ser cedidas para atos oficiais, manifestações cívicas e culturais, reuniões e eventos de interesse da sociedade por decisão do presidente da Mesa Diretora.",
+        "§ 3º Fica assegurado o acesso ao público às sessões da Assembleia, podendo ser limitado nos casos previstos em ato normativo específico."
+      ],
+      "tags": [
+        "sede",
+        "palácio",
+        "mandato",
+        "deputados"
+      ],
+      "hotFCC": true,
+      "notaFCC": "FCC cobra o nome correto da sede: Palácio Antônio Augusto Martins. Sessão itinerante exige ad referendum da maioria absoluta."
     },
     {
       "numero": "Art. 2º",
-      "caput": "A Assembleia Legislativa reunir-se-á, anualmente, na Capital do Estado, de 15 de fevereiro a 30 de junho e de 1º de agosto a 15 de dezembro.",
-      "hotFCC": true,
-      "notaFCC": "Atenção às datas das sessões ordinárias."
+      "titulo": "Da Legislatura",
+      "caput": "Cada legislatura terá a duração de quatro anos.",
+      "tags": [
+        "legislatura",
+        "mandato"
+      ],
+      "hotFCC": false
     },
     {
       "numero": "Art. 3º",
-      "caput": "O número de Deputados à Assembleia Legislativa corresponderá ao triplo da representação do Estado na Câmara dos Deputados e, atingido o número de trinta e seis, será acrescido de tantos quantos forem os Deputados Federais acima de doze.",
-      "hotFCC": false
+      "titulo": "Das Sessões Legislativas",
+      "caput": "A Assembleia Legislativa reunir-se-á durante as sessões legislativas: I – ordinárias, de 15 de fevereiro a 30 de junho e de 1º de agosto a 22 de dezembro; e II – extraordinárias, quando, com este caráter, for convocada.",
+      "paragrafos": [
+        "§ 1º As reuniões marcadas para as datas a que se refere o inciso I serão transferidas para o primeiro dia útil subsequente quando recaírem em sábados, domingos ou feriados.",
+        "§ 2º A Sessão Legislativa Ordinária não será interrompida enquanto não for aprovada a Lei de Diretrizes Orçamentárias (LDO) e a Lei Orçamentária Anual (LOA).",
+        "§ 3º Quando convocada extraordinariamente, a Assembleia Legislativa somente deliberará sobre a matéria objeto da convocação, sendo vedado o pagamento de parcela indenizatória.",
+        "§ 4º Durante o recesso, haverá Comissão Representativa da Assembleia Legislativa, constituída na última Sessão Ordinária de cada período legislativo."
+      ],
+      "tags": [
+        "sessão legislativa",
+        "ordinária",
+        "extraordinária",
+        "recesso",
+        "LDO",
+        "LOA",
+        "indenização",
+        "jetom"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Datas exatas: 15/fev a 30/jun e 1º/ago a 22/dez. Extraordinária NÃO gera indenização (jetom). LDO e LOA trancam o recesso."
+    },
+    {
+      "numero": "Art. 4º",
+      "titulo": "Do Quórum de Deliberação",
+      "caput": "As deliberações de matérias em tramitação na Assembleia Legislativa serão tomadas por maioria dos votos, presente a maioria absoluta dos seus membros, salvo os casos em que se exigir quórum específico.",
+      "tags": [
+        "quórum",
+        "maioria absoluta",
+        "deliberação",
+        "votação"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Regra geral: maioria dos votos com maioria absoluta presente (13 de 24). Exceções têm quórum específico."
+    },
+    {
+      "numero": "Art. 5º e 6º",
+      "titulo": "Das Sessões Preparatórias",
+      "caput": "As sessões preparatórias serão realizadas antes do início da primeira Sessão Legislativa Ordinária de cada legislatura, para: I – posse dos deputados; II – eleição da Mesa Diretora; e III – instalação da legislatura.",
+      "tags": [
+        "sessão preparatória",
+        "posse",
+        "Mesa Diretora",
+        "legislatura"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Sessão preparatória tem três finalidades específicas: posse, eleição da Mesa e instalação da legislatura."
+    },
+    {
+      "numero": "Art. 11",
+      "titulo": "Composição da Mesa Diretora",
+      "caput": "A Mesa Diretora da Assembleia Legislativa, à qual incumbe a direção dos trabalhos legislativos e dos serviços administrativos da Casa, é composta por 01 (um) presidente, 03 (três) vice-presidentes, 04 (quatro) secretários, 01 (um) corregedor-geral, 01 (um) ouvidor-geral, e 01(uma) secretária especial da mulher.",
+      "tags": [
+        "Mesa Diretora",
+        "composição",
+        "presidente",
+        "vice-presidente",
+        "secretário",
+        "corregedor",
+        "ouvidor"
+      ],
+      "hotFCC": true,
+      "notaFCC": "11 membros no total. FCC coloca 5, 7 ou 9 como alternativas erradas. Memorize: 1+3+4+1+1+1 = 11."
+    },
+    {
+      "numero": "Art. 12",
+      "titulo": "Mandato da Mesa Diretora",
+      "caput": "A eleição da Mesa Diretora, para mandato de dois anos, é realizada a partir da posse dos deputados, permitida uma única reeleição ou recondução para o mesmo cargo, limite cuja observância independe de os mandatos consecutivos referirem-se à mesma legislatura.",
+      "tags": [
+        "Mesa Diretora",
+        "mandato",
+        "reeleição",
+        "dois anos"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Mandato = 2 anos. Permitida UMA reeleição para o mesmo cargo. FCC coloca 4 anos ou reeleição ilimitada como alternativas erradas."
+    },
+    {
+      "numero": "Art. 21",
+      "titulo": "Sessão Solene para Posse do Governador",
+      "caput": "A Assembleia Legislativa, na legislatura correspondente, fará Sessão Solene, independentemente de convocação, para recebimento do compromisso de posse do governador e do vice-governador, nos termos do art. 56 e art. 30, §4º, da Constituição Estadual, às 17h, no dia 6 (seis) do mês de janeiro da primeira Sessão Legislativa Ordinária.",
+      "tags": [
+        "sessão solene",
+        "posse",
+        "governador",
+        "quórum",
+        "independentemente"
+      ],
+      "hotFCC": true,
+      "notaFCC": "SESSÃO SOLENE DISPENSA QUÓRUM — 'independentemente de convocação' e sem exigência de número mínimo de deputados. Questão clássica FCC."
+    },
+    {
+      "numero": "Art. 23",
+      "titulo": "Composição da Mesa Diretora (confirmação)",
+      "caput": "A Mesa Diretora da Assembleia Legislativa é composta por: I – 01 (um) presidente; II – 03 (três) vice-presidentes; III – 04 (quatro) secretários; IV – 01 (um) corregedor-geral; V – 01 (um) ouvidor-geral; e VI – 01 (uma) secretária Especial da Mulher.",
+      "paragrafos": [
+        "Parágrafo único: Para iniciar a Sessão, na ausência do presidente, os demais membros da Mesa se substituirão pela ordem de precedência e, na ausência de todos, a Sessão poderá ser iniciada pelo(a) parlamentar mais idoso(a) dentre os presentes."
+      ],
+      "tags": [
+        "Mesa Diretora",
+        "composição",
+        "substituição",
+        "precedência"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Confirma 11 membros. Na ausência de todos da Mesa: parlamentar mais idoso inicia a sessão."
+    },
+    {
+      "numero": "Art. 37",
+      "titulo": "Competência do 1º Secretário",
+      "caput": "Compete ao 1º secretário: I – inspecionar e superintender os serviços administrativos; II – ler os ofícios das autoridades e as proposições para discussão ou votação; III – fazer a chamada dos deputados; IV – receber as correspondências destinadas à Assembleia; V – despachar a matéria do Pequeno Expediente; VI – fazer a correspondência oficial da Assembleia.",
+      "tags": [
+        "1º secretário",
+        "expediente",
+        "pequeno expediente",
+        "correspondência"
+      ],
+      "hotFCC": true,
+      "notaFCC": "1º Secretário lê o Expediente e despacha o Pequeno Expediente. FCC troca com o 2º Secretário (que lê a Ata)."
+    },
+    {
+      "numero": "Art. 38",
+      "titulo": "Competência do 2º Secretário",
+      "caput": "Compete ao 2º secretário: I – fiscalizar a redação das atas e proceder à sua leitura no Plenário; II – assinar, depois do 1º secretário, os atos da Mesa; III – redigir a ata das sessões secretas; e IV – auxiliar o 1º secretário.",
+      "tags": [
+        "2º secretário",
+        "ata",
+        "leitura",
+        "plenário"
+      ],
+      "hotFCC": true,
+      "notaFCC": "2º Secretário lê a ATA. 1º Secretário lê o EXPEDIENTE. Par de confusão clássico da FCC."
+    },
+    {
+      "numero": "Art. 58",
+      "titulo": "Comissões Permanentes",
+      "caput": "As Comissões Permanentes são: I – de Constituição, Justiça e Redação Final; II – de Administração, Serviços Públicos e Previdência; III – de Defesa Social, Segurança Pública e Sistema Penitenciário; IV – de Educação, Desportos e Lazer; V – da Juventude, Cultura e Turismo; VI – de Saúde e Saneamento; VII – de Orçamento, Fiscalização Financeira, Tributação e Controle; VIII – de Tomada de Contas; IX – de Defesa do Consumidor e do Contribuinte; X – de Agricultura, Pecuária, Pesca, Aquicultura e Política Rural; XI – de Terras, Colonização e Zoneamento Territorial; XII – dos Povos Originários e Tradicionais; XIII – de Meio Ambiente e Desenvolvimento Sustentável; XIV – de Indústria, Empreendedorismo, Comércio e Serviços; XV – de Relações Internacionais, de Ciência, Tecnologia e Inovação; XVI – de Viação, Transportes e Obras; XVII – de Defesa dos Direitos da Família, da Mulher, da Criança, do Adolescente e de Ação Social; XVIII – de Defesa dos Direitos Humanos, Minorias e Legislação Participativa; XIX – de Defesa dos Direitos da Pessoa com Deficiência e do Idoso; XX – de Ética Parlamentar; XXI – de Defesa e Proteção aos Direitos dos Animais; XXII – de Minas e Energia; XXIII – de Defesa das Prerrogativas Parlamentares.",
+      "tags": [
+        "comissões permanentes",
+        "ética parlamentar",
+        "orçamento",
+        "constituição"
+      ],
+      "hotFCC": false,
+      "notaFCC": "23 Comissões Permanentes no total. A Comissão de Ética Parlamentar (XX) é a mais cobrada."
+    },
+    {
+      "numero": "Art. 130",
+      "titulo": "Das Sessões — Espécies",
+      "caput": "As reuniões do Plenário são denominadas sessões da Assembleia e dividem-se em: I – preparatórias; II – solenes; III – especiais; IV – itinerantes; V – ordinárias; e VI – extraordinárias.",
+      "tags": [
+        "sessões",
+        "espécies",
+        "preparatória",
+        "solene",
+        "especial",
+        "itinerante",
+        "ordinária",
+        "extraordinária"
+      ],
+      "hotFCC": true,
+      "notaFCC": "São 6 espécies. A ITINERANTE é a mais esquecida pelos candidatos. FCC cobra a lista completa."
+    },
+    {
+      "numero": "Art. 131",
+      "titulo": "Sessão Ordinária — Dias e Horários",
+      "caput": "As sessões ordinárias realizar-se-ão nas terças, quartas e quintas-feiras, das 9h às 12h.",
+      "paragrafos": [
+        "§ 1º Para a realização da sessão ordinária, é necessária a presença de 1/3 (um terço) dos deputados.",
+        "§ 2º Verificada a presença do quórum regimental, o presidente declarará aberta a sessão."
+      ],
+      "tags": [
+        "sessão ordinária",
+        "terça",
+        "quarta",
+        "quinta",
+        "9h",
+        "12h",
+        "quórum",
+        "1/3",
+        "abertura"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Terças, quartas e quintas das 9h às 12h (3 horas). Quórum de abertura: 1/3 = 8 deputados."
+    },
+    {
+      "numero": "Art. 132",
+      "titulo": "Ordem do Dia — Quóruns de Discussão e Votação",
+      "caput": "A Ordem do Dia terá a duração de até 60 (sessenta) minutos, prorrogável por deliberação do Plenário.",
+      "paragrafos": [
+        "§ 1º Para discussão das proposições, é necessária a presença de 1/3 (um terço) dos deputados.",
+        "§ 2º Para votação/deliberação das proposições, é necessária a presença da maioria absoluta dos deputados.",
+        "§ 3º A discussão de uma proposição poderá ser adiada por até 5 (cinco) sessões ordinárias.",
+        "§ 4º O adiamento da votação só é permitido para a sessão seguinte."
+      ],
+      "tags": [
+        "ordem do dia",
+        "discussão",
+        "votação",
+        "1/3",
+        "maioria absoluta",
+        "quórum",
+        "60 minutos",
+        "adiamento"
+      ],
+      "hotFCC": true,
+      "notaFCC": "DISCUSSÃO: 1/3 (8 dep.) — pode adiar até 5 sessões. VOTAÇÃO: maioria absoluta (13 dep.) — adiamento só para sessão seguinte. Par mais cobrado de quórum."
+    },
+    {
+      "numero": "Art. 133",
+      "titulo": "Estrutura da Sessão Ordinária",
+      "caput": "A sessão ordinária obedecerá à seguinte estrutura: I – Expediente (até 80 minutos): a) Pequeno Expediente (20 minutos): leitura e votação da ata e leitura do expediente; b) Grande Expediente (60 minutos): oradores inscritos e lideranças. II – Ordem do Dia (até 60 minutos, prorrogável). III – Explicações Pessoais (até 5 minutos por orador, se houver tempo).",
+      "tags": [
+        "sessão ordinária",
+        "estrutura",
+        "pequeno expediente",
+        "grande expediente",
+        "ordem do dia",
+        "explicações pessoais",
+        "ata",
+        "20 minutos",
+        "60 minutos",
+        "80 minutos"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Pequeno Expediente (20min): ata + expediente. Grande Expediente (60min): oradores. Ordem do Dia (60min): votações. Explicações Pessoais: 5 min por orador. Total: até 3 horas."
+    },
+    {
+      "numero": "Art. 134",
+      "titulo": "Sessão Itinerante",
+      "caput": "A sessão itinerante realizar-se-á em local diverso da sede da Assembleia Legislativa, obrigatoriamente dentro do território do Estado de Roraima.",
+      "tags": [
+        "sessão itinerante",
+        "fora da sede",
+        "território",
+        "Roraima"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Itinerante = fora do Palácio Antônio Augusto Martins, MAS dentro do território de Roraima. FCC pode dizer que pode ser fora do estado — errado."
+    },
+    {
+      "numero": "Art. 135",
+      "titulo": "Convocação Extraordinária no Recesso",
+      "caput": "Durante o recesso, a Assembleia Legislativa poderá ser convocada extraordinariamente: I – por ato do Governador do Estado; II – por ato do Presidente da Assembleia Legislativa; ou III – por requerimento da maioria absoluta dos membros da Assembleia.",
+      "paragrafos": [
+        "§ 1º A convocação extraordinária será feita por motivo de urgência ou relevante interesse público.",
+        "§ 2º A Assembleia somente deliberará sobre as matérias constantes no edital de convocação.",
+        "§ 3º É vedado o pagamento de parcela indenizatória nas sessões extraordinárias."
+      ],
+      "tags": [
+        "recesso",
+        "convocação extraordinária",
+        "governador",
+        "presidente",
+        "maioria absoluta",
+        "urgência",
+        "indenização",
+        "jetom"
+      ],
+      "hotFCC": true,
+      "notaFCC": "Três convocantes: Governador, Presidente da ALERR ou maioria absoluta (13 dep.). NÃO gera jetom. Só delibera sobre matérias do edital."
     }
   ]
 }
