@@ -8,6 +8,7 @@
     "Resolução Legislativa nº 18/2024",
     "Resolução Legislativa nº 8/2025"
   ],
+  "observacao": "Exibe apenas os artigos com maior probabilidade de cobrança pela FCC (hotFCC: true). Artigos omitidos (7-10, 13-20, 24-36, 39-57, 59-129) são administrativos/procedimentais de baixíssimo risco. Texto completo em al.rr.leg.br",
   "artigos": [
     {
       "numero": "Art. 1º",
