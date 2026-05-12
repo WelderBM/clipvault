@@ -120,4 +120,28 @@ export const DISCIPLINE_STRATEGIES: DisciplineStrategy[] = [
       'Sessão extraordinária = SEM pagamento de jetom extra',
     ],
   },
+  {
+    discipline: 'ti',
+    topTopics: [
+      { topic: 'LGPD — controlador decide finalidade; operador executa', fccFreq: '95%' },
+      { topic: 'Banco de dados relacionais — SQL, normalização, ACID', fccFreq: '90%' },
+      { topic: 'Segurança da informação — CID, criptografia, OWASP Top 10', fccFreq: '85%' },
+      { topic: 'Redes de computadores — OSI, TCP/IP, protocolos', fccFreq: '85%' },
+      { topic: 'Programação orientada a objetos — SOLID, Design Patterns', fccFreq: '80%' },
+      { topic: 'Algoritmos e estruturas de dados — complexidade Big O', fccFreq: '75%' },
+      { topic: 'Engenharia de software — Scrum, Kanban, UML', fccFreq: '70%' },
+      { topic: 'Desenvolvimento web — REST, HTTP, React/TypeScript', fccFreq: '70%' },
+      { topic: 'Cloud computing — IaaS/PaaS/SaaS, escalabilidade', fccFreq: '60%' },
+      { topic: 'DevOps — CI/CD, Docker, Git flow', fccFreq: '55%' },
+    ],
+    traps: [
+      'LGPD: CONTROLADOR decide finalidade e meios; OPERADOR trata conforme instruções',
+      'SQL: INNER JOIN ≠ LEFT JOIN — FCC cobra NULLs em outer joins',
+      'Normalização: 3FN elimina dependências transitivas; BCNF é mais restrita que 3FN',
+      'OSI tem 7 camadas; TCP/IP tem 4 — FCC mistura as duas nomenclaturas',
+      'Scrum: PRODUCT OWNER define prioridade; SCRUM MASTER remove impedimentos — papéis distintos',
+      'REST: PUT = substituição total; PATCH = atualização parcial',
+      'Criptografia assimétrica: chave PÚBLICA cifra, chave PRIVADA decifra (e vice-versa na assinatura)',
+    ],
+  },
 ]
