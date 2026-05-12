@@ -46,8 +46,8 @@ export default function MainLayout() {
           <span className="text-[10px] font-mono tracking-wider">FCC</span>
         </NavLink>
 
-        <NavLink 
-          to="/reader" 
+        <NavLink
+          to="/reader"
           className={({isActive}) => `flex flex-col items-center justify-center w-full h-full gap-1 transition-colors ${isActive ? 'text-teal' : 'text-white/40 hover:text-white/70'}`}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -55,6 +55,18 @@ export default function MainLayout() {
             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
           </svg>
           <span className="text-[10px] font-mono tracking-wider">LEITOR</span>
+        </NavLink>
+
+        <NavLink
+          to="/review"
+          className={({isActive}) => `flex flex-col items-center justify-center w-full h-full gap-1 transition-colors ${isActive ? 'text-teal' : 'text-white/40 hover:text-white/70'}`}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 2a7 7 0 0 1 7 7c0 2.5-1.3 4.7-3.3 6l-.7.5V17H9v-1.5l-.7-.5A7 7 0 0 1 5 9a7 7 0 0 1 7-7z"/>
+            <line x1="9" y1="21" x2="15" y2="21"/>
+            <line x1="9" y1="19" x2="15" y2="19"/>
+          </svg>
+          <span className="text-[10px] font-mono tracking-wider">REVISÃO</span>
         </NavLink>
       </nav>
     </div>

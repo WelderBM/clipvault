@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { EDITAL_TOPICS } from '../data/edital_topics'
 import { batchSetTopicProgress } from '../lib/progress'
+import { batchSetReviewContent, type ReviewContent } from '../lib/review'
 import type { TopicState } from '../data/edital_topics'
 
 interface Props {
@@ -11,56 +12,106 @@ interface Props {
 
 const VALID_TOPIC_IDS = new Set(EDITAL_TOPICS.map(t => t.id))
 const VALID_STATES = new Set<string>(['unseen', 'seen', 'practiced', 'confident'])
+const REVIEW_FORMAT_KEYS = new Set(['mindMap', 'text', 'flashcards', 'checklist', 'table', 'cloze'])
 
 interface ParseResult {
   updates: Record<string, TopicState> | null
+  reviewUpdates: Record<string, Omit<ReviewContent, 'topicId' | 'updatedAt'>> | null
   errors: string[]
 }
 
 function parse(raw: string): ParseResult {
   const trimmed = raw.trim()
-  if (!trimmed) return { updates: null, errors: [] }
+  if (!trimmed) return { updates: null, reviewUpdates: null, errors: [] }
 
   let json: unknown
   try {
     json = JSON.parse(trimmed)
   } catch (e) {
-    return { updates: null, errors: [e instanceof Error ? e.message : 'JSON inválido'] }
+    return { updates: null, reviewUpdates: null, errors: [e instanceof Error ? e.message : 'JSON inválido'] }
   }
 
   if (typeof json !== 'object' || json === null || Array.isArray(json)) {
-    return { updates: null, errors: ['O JSON precisa ser um objeto com a chave "topicProgress".'] }
+    return { updates: null, reviewUpdates: null, errors: ['O JSON precisa ser um objeto.'] }
   }
 
   const obj = json as Record<string, unknown>
-  if (!('topicProgress' in obj) || typeof obj.topicProgress !== 'object' || obj.topicProgress === null) {
-    return { updates: null, errors: ['Chave "topicProgress" não encontrada ou inválida.'] }
-  }
-
-  const raw_tp = obj.topicProgress as Record<string, unknown>
-  const updates: Record<string, TopicState> = {}
   const errors: string[] = []
+  let updates: Record<string, TopicState> | null = null
+  let reviewUpdates: Record<string, Omit<ReviewContent, 'topicId' | 'updatedAt'>> | null = null
 
-  for (const [id, state] of Object.entries(raw_tp)) {
-    if (!VALID_TOPIC_IDS.has(id)) {
-      errors.push(`"${id}" não é um topicId reconhecido`)
-      continue
+  // Parse topicProgress (optional — only validate if present)
+  if ('topicProgress' in obj) {
+    if (typeof obj.topicProgress !== 'object' || obj.topicProgress === null) {
+      errors.push('"topicProgress" deve ser um objeto.')
+    } else {
+      const raw_tp = obj.topicProgress as Record<string, unknown>
+      const u: Record<string, TopicState> = {}
+      for (const [id, state] of Object.entries(raw_tp)) {
+        if (!VALID_TOPIC_IDS.has(id)) {
+          errors.push(`topicProgress: "${id}" não reconhecido`)
+          continue
+        }
+        if (!VALID_STATES.has(state as string)) {
+          errors.push(`topicProgress "${id}": estado "${state}" inválido`)
+          continue
+        }
+        u[id] = state as TopicState
+      }
+      if (Object.keys(u).length > 0) updates = u
     }
-    if (!VALID_STATES.has(state as string)) {
-      errors.push(`"${id}": estado "${state}" inválido (use unseen/seen/practiced/confident)`)
-      continue
-    }
-    updates[id] = state as TopicState
   }
 
-  return { updates: Object.keys(updates).length > 0 ? updates : null, errors }
+  // Parse reviewContent (optional)
+  if ('reviewContent' in obj) {
+    if (typeof obj.reviewContent !== 'object' || obj.reviewContent === null) {
+      errors.push('"reviewContent" deve ser um objeto.')
+    } else {
+      const raw_rc = obj.reviewContent as Record<string, unknown>
+      const ru: Record<string, Omit<ReviewContent, 'topicId' | 'updatedAt'>> = {}
+      for (const [id, val] of Object.entries(raw_rc)) {
+        if (!VALID_TOPIC_IDS.has(id)) {
+          errors.push(`reviewContent: "${id}" não reconhecido`)
+          continue
+        }
+        if (typeof val !== 'object' || val === null) {
+          errors.push(`reviewContent "${id}": deve ser um objeto`)
+          continue
+        }
+        const entry = val as Record<string, unknown>
+        if (typeof entry.title !== 'string' || !entry.title) {
+          errors.push(`reviewContent "${id}": campo "title" obrigatório`)
+          continue
+        }
+        const hasFormat = REVIEW_FORMAT_KEYS.size > 0 &&
+          [...REVIEW_FORMAT_KEYS].some(k => k in entry)
+        if (!hasFormat) {
+          errors.push(`reviewContent "${id}": nenhum formato encontrado (mindMap/text/flashcards/checklist/table/cloze)`)
+          continue
+        }
+        ru[id] = entry as Omit<ReviewContent, 'topicId' | 'updatedAt'>
+      }
+      if (Object.keys(ru).length > 0) reviewUpdates = ru
+    }
+  }
+
+  if (!updates && !reviewUpdates && errors.length === 0) {
+    errors.push('JSON não contém "topicProgress" nem "reviewContent".')
+  }
+
+  return { updates, reviewUpdates, errors }
 }
 
 const PLACEHOLDER = `{
   "topicProgress": {
     "pt-interpretacao": "seen",
-    "pt-crase": "practiced",
-    "adm-principios": "confident"
+    "pt-crase": "practiced"
+  },
+  "reviewContent": {
+    "pt-crase": {
+      "title": "Crase",
+      "checklist": ["Crase = prep. 'a' + artigo 'a'", "Teste: trocar por 'para a'"]
+    }
   }
 }`
 
@@ -68,21 +119,29 @@ export default function ProgressImportSheet({ uid, currentProgress, onClose }: P
   const [raw, setRaw] = useState('')
   const [mode, setMode] = useState<'merge' | 'replace'>('merge')
   const [applying, setApplying] = useState(false)
-  const [result, setResult] = useState<{ applied: number; skipped: number } | null>(null)
+  const [result, setResult] = useState<{ applied: number; skipped: number; contents: number } | null>(null)
   const [applyError, setApplyError] = useState<string | null>(null)
 
   const parsed = useMemo(() => parse(raw), [raw])
   const hasInput = raw.trim().length > 0
-  const canApply = parsed.updates !== null && !applying
+  const canApply = (parsed.updates !== null || parsed.reviewUpdates !== null) && !applying
 
   const handleApply = async () => {
-    if (!canApply || !parsed.updates) return
+    if (!canApply) return
     setApplying(true)
     setApplyError(null)
     setResult(null)
     try {
-      const r = await batchSetTopicProgress(uid, parsed.updates, mode, currentProgress)
-      setResult(r)
+      let applied = 0, skipped = 0, contents = 0
+      if (parsed.updates) {
+        const r = await batchSetTopicProgress(uid, parsed.updates, mode, currentProgress)
+        applied = r.applied
+        skipped = r.skipped
+      }
+      if (parsed.reviewUpdates) {
+        contents = await batchSetReviewContent(uid, parsed.reviewUpdates)
+      }
+      setResult({ applied, skipped, contents })
     } catch (e) {
       setApplyError(e instanceof Error ? e.message : 'Falha ao aplicar.')
     } finally {
@@ -112,9 +171,9 @@ export default function ProgressImportSheet({ uid, currentProgress, onClose }: P
         </div>
 
         <p className="text-xs font-body text-white/50 leading-relaxed">
-          Cole o JSON exportado pelo chat de estudo. Chave{' '}
-          <code className="font-mono text-teal/80">topicProgress</code> com{' '}
-          <code className="font-mono text-white/60">topicId → estado</code>.
+          Cole o JSON do chat de estudo. Aceita{' '}
+          <code className="font-mono text-teal/80">topicProgress</code> e/ou{' '}
+          <code className="font-mono text-teal/80">reviewContent</code>.
         </p>
 
         <div className="flex flex-col gap-1.5">
@@ -140,10 +199,15 @@ export default function ProgressImportSheet({ uid, currentProgress, onClose }: P
                 ))}
               </ul>
             )}
-            {parsed.updates && (
-              <span className="text-white/50">
-                {Object.keys(parsed.updates).length} tópico{Object.keys(parsed.updates).length !== 1 ? 's' : ''} reconhecido{Object.keys(parsed.updates).length !== 1 ? 's' : ''}
-              </span>
+            {(parsed.updates || parsed.reviewUpdates) && (
+              <div className="text-white/50 space-y-0.5">
+                {parsed.updates && (
+                  <p>{Object.keys(parsed.updates).length} estado{Object.keys(parsed.updates).length !== 1 ? 's' : ''} reconhecido{Object.keys(parsed.updates).length !== 1 ? 's' : ''}</p>
+                )}
+                {parsed.reviewUpdates && (
+                  <p>{Object.keys(parsed.reviewUpdates).length} conteúdo{Object.keys(parsed.reviewUpdates).length !== 1 ? 's' : ''} de revisão</p>
+                )}
+              </div>
             )}
           </div>
         )}
@@ -152,12 +216,15 @@ export default function ProgressImportSheet({ uid, currentProgress, onClose }: P
         {result && (
           <div className="flex flex-col gap-0.5 text-xs font-body">
             {result.applied > 0 && (
-              <span className="text-teal">✓ {result.applied} tópico{result.applied !== 1 ? 's' : ''} avançado{result.applied !== 1 ? 's' : ''}</span>
+              <span className="text-teal">✓ {result.applied} estado{result.applied !== 1 ? 's' : ''} avançado{result.applied !== 1 ? 's' : ''}</span>
             )}
             {result.skipped > 0 && (
               <span className="text-white/40">– {result.skipped} ignorado{result.skipped !== 1 ? 's' : ''} (já no nível ou superior)</span>
             )}
-            {result.applied === 0 && result.skipped === 0 && (
+            {result.contents > 0 && (
+              <span className="text-teal">✓ {result.contents} conteúdo{result.contents !== 1 ? 's' : ''} de revisão importado{result.contents !== 1 ? 's' : ''}</span>
+            )}
+            {result.applied === 0 && result.skipped === 0 && result.contents === 0 && (
               <span className="text-white/40">Nenhuma alteração.</span>
             )}
           </div>
@@ -167,27 +234,29 @@ export default function ProgressImportSheet({ uid, currentProgress, onClose }: P
           <div className="text-xs font-body text-rose-400">{applyError}</div>
         )}
 
-        {/* Mode toggle */}
-        <div className="flex items-center gap-3">
-          <span className="font-mono text-[11px] text-white/40 uppercase tracking-wider">Modo:</span>
-          <div className="flex rounded-xl overflow-hidden border border-border text-xs font-body">
-            <button
-              onClick={() => setMode('merge')}
-              className={`px-3 py-1.5 transition-colors ${mode === 'merge' ? 'bg-teal/20 text-teal' : 'text-white/40 hover:text-white/60'}`}
-            >
-              Mesclar
-            </button>
-            <button
-              onClick={() => setMode('replace')}
-              className={`px-3 py-1.5 transition-colors border-l border-border ${mode === 'replace' ? 'bg-amber/20 text-amber' : 'text-white/40 hover:text-white/60'}`}
-            >
-              Substituir
-            </button>
+        {/* Mode toggle — only relevant when topicProgress is present */}
+        {parsed.updates && (
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-[11px] text-white/40 uppercase tracking-wider">Estados:</span>
+            <div className="flex rounded-xl overflow-hidden border border-border text-xs font-body">
+              <button
+                onClick={() => setMode('merge')}
+                className={`px-3 py-1.5 transition-colors ${mode === 'merge' ? 'bg-teal/20 text-teal' : 'text-white/40 hover:text-white/60'}`}
+              >
+                Mesclar
+              </button>
+              <button
+                onClick={() => setMode('replace')}
+                className={`px-3 py-1.5 transition-colors border-l border-border ${mode === 'replace' ? 'bg-amber/20 text-amber' : 'text-white/40 hover:text-white/60'}`}
+              >
+                Substituir
+              </button>
+            </div>
+            <span className="text-[10px] font-body text-white/25">
+              {mode === 'merge' ? 'só avança' : 'sobrescreve'}
+            </span>
           </div>
-          <span className="text-[10px] font-body text-white/25">
-            {mode === 'merge' ? 'só avança estados' : 'sobrescreve qualquer estado'}
-          </span>
-        </div>
+        )}
 
         <button
           onClick={handleApply}
