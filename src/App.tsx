@@ -6,6 +6,7 @@ import ArchivePage from './pages/ArchivePage'
 import DashboardPage from './pages/DashboardPage'
 import StrategyPage from './pages/StrategyPage'
 import ReaderPage from './pages/ReaderPage'
+import ReviewPage from './pages/ReviewPage'
 import MainLayout from './components/MainLayout'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -33,6 +34,7 @@ function AppRoutes() {
         <Route path="dashboard" element={<DashboardPage />} />
         <Route path="strategy" element={<StrategyPage />} />
         <Route path="reader" element={<ReaderPage />} />
+        <Route path="review" element={<ReviewPage />} />
       </Route>
       <Route path="/archive" element={<ProtectedRoute><ArchivePage /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
