@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDashboardStats } from '../hooks/useDashboardStats'
 import RadarChart from '../components/RadarChart'
 import Heatmap from '../components/Heatmap'
@@ -15,13 +15,50 @@ import { DISCIPLINE_LABELS, type Discipline } from '../types'
 const STATE_CYCLE: TopicState[] = ['unseen', 'seen', 'practiced', 'confident']
 const ALL_STATES: TopicState[] = ['unseen', 'seen', 'practiced', 'confident']
 const RADAR_DISCIPLINES: Discipline[] = ['portugues', 'constitucional', 'administrativo', 'afo', 'legislacao']
+const UNDO_DELAY_MS = 8000
 
 export default function DashboardPage() {
   const { user } = useAuth()
   const stats = useDashboardStats()
+
   const [expandedDiscipline, setExpandedDiscipline] = useState<Discipline | null>(null)
   const [showImport, setShowImport] = useState(false)
   const [stateFilter, setStateFilter] = useState<TopicState | null>(null)
+
+  // Undo toast: single pending change buffered before Firestore write
+  const [pending, setPending] = useState<{ topicId: string; from: TopicState; to: TopicState } | null>(null)
+  const pendingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Batch edit mode
+  const [editMode, setEditMode] = useState(false)
+  const [batchEdits, setBatchEdits] = useState<Record<string, TopicState>>({})
+  const [savingBatch, setSavingBatch] = useState(false)
+
+  // Optimistic progress: pending change overlaid on Firestore state
+  const effectiveProgress = useMemo<Record<string, TopicState>>(() =>
+    pending
+      ? { ...stats.topicProgress, [pending.topicId]: pending.to }
+      : stats.topicProgress
+  , [stats.topicProgress, pending])
+
+  // Display progress: batch edits overlaid on top (edit mode only)
+  const displayProgress = useMemo<Record<string, TopicState>>(() =>
+    editMode ? { ...effectiveProgress, ...batchEdits } : effectiveProgress
+  , [effectiveProgress, editMode, batchEdits])
+
+  const pendingTopic = useMemo(() =>
+    pending ? EDITAL_TOPICS.find(t => t.id === pending.topicId) ?? null : null
+  , [pending])
+
+  // Flush pending write immediately (entering edit mode or clicking a different topic)
+  const flushPending = (p: typeof pending) => {
+    if (!p || !user) return
+    clearTimeout(pendingTimeoutRef.current!)
+    setTopicProgress(user.uid, p.topicId, p.to)
+    setPending(null)
+  }
+
+  useEffect(() => () => { clearTimeout(pendingTimeoutRef.current!) }, [])
 
   if (stats.loading) {
     return (
@@ -31,9 +68,8 @@ export default function DashboardPage() {
     )
   }
 
-  // State counts across all topics
   const stateCounts = { unseen: 0, seen: 0, practiced: 0, confident: 0 } as Record<TopicState, number>
-  EDITAL_TOPICS.forEach(t => { stateCounts[stats.topicProgress[t.id] ?? 'unseen']++ })
+  EDITAL_TOPICS.forEach(t => { stateCounts[displayProgress[t.id] ?? 'unseen']++ })
 
   const radarData = RADAR_DISCIPLINES.map(d => {
     const coverage = stats.disciplineCoverage.find(c => c.discipline === d)
@@ -45,24 +81,83 @@ export default function DashboardPage() {
     }
   })
 
-  const handleTopicClick = async (topicId: string, currentState: TopicState | undefined) => {
+  const handleTopicClick = (topicId: string) => {
     if (!user) return
-    const idx = STATE_CYCLE.indexOf(currentState ?? 'unseen')
-    const next = STATE_CYCLE[(idx + 1) % STATE_CYCLE.length]
-    await setTopicProgress(user.uid, topicId, next)
+
+    if (editMode) {
+      const baseState = displayProgress[topicId] ?? 'unseen'
+      const next = STATE_CYCLE[(STATE_CYCLE.indexOf(baseState) + 1) % STATE_CYCLE.length]
+      setBatchEdits(prev => ({ ...prev, [topicId]: next }))
+      return
+    }
+
+    // Flush any different-topic pending immediately before queuing this one
+    if (pending && pending.topicId !== topicId) {
+      flushPending(pending)
+    }
+
+    clearTimeout(pendingTimeoutRef.current!)
+
+    const baseState = pending?.topicId === topicId ? pending.to : (effectiveProgress[topicId] ?? 'unseen')
+    const next = STATE_CYCLE[(STATE_CYCLE.indexOf(baseState) + 1) % STATE_CYCLE.length]
+    const originalFrom = pending?.topicId === topicId ? pending.from : (stats.topicProgress[topicId] ?? 'unseen')
+
+    setPending({ topicId, from: originalFrom, to: next })
+
+    pendingTimeoutRef.current = setTimeout(() => {
+      setTopicProgress(user.uid, topicId, next)
+      setPending(null)
+    }, UNDO_DELAY_MS)
   }
 
-  // Filtered flat list (when stateFilter is active)
+  const handleUndo = () => {
+    clearTimeout(pendingTimeoutRef.current!)
+    setPending(null)
+  }
+
+  const enterEditMode = () => {
+    if (pending) flushPending(pending)
+    setEditMode(true)
+  }
+
+  const handleSaveBatch = async () => {
+    if (!user || Object.keys(batchEdits).length === 0) return
+    setSavingBatch(true)
+    try {
+      await Promise.all(
+        Object.entries(batchEdits).map(([topicId, state]) =>
+          setTopicProgress(user.uid, topicId, state)
+        )
+      )
+      setBatchEdits({})
+      setEditMode(false)
+    } finally {
+      setSavingBatch(false)
+    }
+  }
+
+  const handleCancelBatch = () => {
+    setBatchEdits({})
+    setEditMode(false)
+  }
+
   const filteredTopics = stateFilter
-    ? EDITAL_TOPICS.filter(t => (stats.topicProgress[t.id] ?? 'unseen') === stateFilter)
+    ? EDITAL_TOPICS.filter(t => (displayProgress[t.id] ?? 'unseen') === stateFilter)
     : null
 
+  const batchCount = Object.keys(batchEdits).length
+
   const TopicButton = ({ topic }: { topic: typeof EDITAL_TOPICS[0] }) => {
-    const state: TopicState = stats.topicProgress[topic.id] ?? 'unseen'
+    const state: TopicState = displayProgress[topic.id] ?? 'unseen'
+    const hasPendingBatch = editMode && topic.id in batchEdits
     return (
       <button
-        onClick={() => handleTopicClick(topic.id, state)}
-        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/[0.02] border border-white/5 text-left active:scale-[0.98] transition-transform"
+        onClick={() => handleTopicClick(topic.id)}
+        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left active:scale-[0.98] transition-transform border ${
+          hasPendingBatch
+            ? 'bg-amber/5 border-amber/30'
+            : 'bg-white/[0.02] border-white/5'
+        }`}
       >
         <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${TOPIC_STATE_DOT[state]}`} />
         <div className="flex-1 min-w-0">
@@ -76,7 +171,9 @@ export default function DashboardPage() {
             <p className="font-mono text-[10px] text-white/30 mt-0.5">{DISCIPLINE_LABELS[topic.discipline]}</p>
           )}
         </div>
-        <span className={`font-mono text-[10px] flex-shrink-0 px-1.5 py-0.5 rounded border ${TOPIC_STATE_COLORS[state]}`}>
+        <span className={`font-mono text-[10px] flex-shrink-0 px-1.5 py-0.5 rounded border ${
+          hasPendingBatch ? 'border-amber/40 text-amber' : TOPIC_STATE_COLORS[state]
+        }`}>
           {TOPIC_STATE_LABELS[state]}
         </span>
       </button>
@@ -84,29 +181,58 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="px-4 pt-4 pb-8 space-y-6">
+    <div className={`px-4 pt-4 space-y-6 ${editMode ? 'pb-36' : 'pb-8'}`}>
       {/* Header */}
       <header className="flex items-start justify-between">
         <div>
           <h1 className="font-display text-2xl tracking-wider text-teal">DASHBOARD</h1>
-          <p className="font-body text-white/40 text-[11px] uppercase tracking-wider mt-1">Cobertura do edital</p>
+          <p className={`font-body text-[11px] uppercase tracking-wider mt-1 ${editMode ? 'text-amber/70' : 'text-white/40'}`}>
+            {editMode ? 'Modo de correção' : 'Cobertura do edital'}
+          </p>
         </div>
-        <button
-          onClick={() => setShowImport(true)}
-          className="mt-1 p-2 text-white/30 hover:text-white/60 transition-colors"
-          aria-label="Importar progresso"
-          title="Importar JSON do chat de estudo"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="17 8 12 3 7 8" />
-            <line x1="12" y1="3" x2="12" y2="15" />
-          </svg>
-        </button>
+        <div className="flex items-center gap-1 mt-1">
+          <button
+            onClick={editMode ? handleCancelBatch : enterEditMode}
+            className={`p-2 transition-colors ${editMode ? 'text-amber/70 hover:text-amber' : 'text-white/30 hover:text-white/60'}`}
+            aria-label={editMode ? 'Cancelar correções' : 'Corrigir progresso'}
+            title={editMode ? 'Cancelar correções' : 'Corrigir progresso em lote'}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </button>
+          {!editMode && (
+            <button
+              onClick={() => setShowImport(true)}
+              className="p-2 text-white/30 hover:text-white/60 transition-colors"
+              aria-label="Importar progresso"
+              title="Importar JSON do chat de estudo"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+            </button>
+          )}
+        </div>
       </header>
 
+      {/* Edit mode hint banner */}
+      {editMode && (
+        <div className="bg-amber/5 border border-amber/20 rounded-2xl px-4 py-3 text-xs font-body text-amber/80 leading-relaxed">
+          Toque nos tópicos para corrigir o estado. As alterações ficam pendentes até você salvar.
+          {batchCount > 0 && (
+            <span className="ml-1 font-mono">
+              · {batchCount} alteraç{batchCount === 1 ? 'ão' : 'ões'} pendente{batchCount !== 1 ? 's' : ''}
+            </span>
+          )}
+        </div>
+      )}
+
       {/* Sprint */}
-      <SprintSection topicProgress={stats.topicProgress} onTopicClick={handleTopicClick} />
+      <SprintSection topicProgress={displayProgress} onTopicClick={id => handleTopicClick(id)} />
 
       {/* State counts */}
       <section className="grid grid-cols-2 gap-3">
@@ -221,7 +347,7 @@ export default function DashboardPage() {
                   {isExpanded && (
                     <div className="border-t border-border px-4 py-3 space-y-1.5">
                       <p className="font-mono text-[9px] text-white/25 uppercase tracking-widest mb-3">
-                        Toque para avançar estado
+                        {editMode ? 'Toque para alterar estado' : 'Toque para avançar estado'}
                       </p>
                       {topics.map(topic => <TopicButton key={topic.id} topic={topic} />)}
                     </div>
@@ -261,6 +387,45 @@ export default function DashboardPage() {
           currentProgress={stats.topicProgress}
           onClose={() => setShowImport(false)}
         />
+      )}
+
+      {/* Undo toast — floats above nav bar, clears after 8s */}
+      {pending && pendingTopic && !editMode && (
+        <div className="fixed bottom-[72px] left-4 right-4 z-50 flex items-center gap-3 bg-surface border border-border rounded-2xl px-4 py-3 shadow-xl">
+          <div className="flex-1 min-w-0">
+            <p className="font-body text-xs text-white/70 truncate">{pendingTopic.label}</p>
+            <p className="font-mono text-[10px] text-white/35 mt-0.5">
+              {TOPIC_STATE_LABELS[pending.from]} → {TOPIC_STATE_LABELS[pending.to]}
+            </p>
+          </div>
+          <button
+            onClick={handleUndo}
+            className="font-mono text-xs text-teal flex-shrink-0 px-3 py-1.5 rounded-xl border border-teal/30 hover:bg-teal/10 transition-colors active:scale-95"
+          >
+            Desfazer
+          </button>
+        </div>
+      )}
+
+      {/* Batch edit save bar — docked above nav bar */}
+      {editMode && (
+        <div className="fixed bottom-[64px] left-0 right-0 z-50 px-4 py-2 bg-void/90 backdrop-blur-sm border-t border-amber/20">
+          <div className="flex gap-3">
+            <button
+              onClick={handleCancelBatch}
+              className="flex-1 py-3 rounded-2xl font-body text-sm text-white/50 border border-border hover:text-white/70 transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleSaveBatch}
+              disabled={batchCount === 0 || savingBatch}
+              className="flex-1 py-3 rounded-2xl font-body font-semibold text-sm bg-teal text-void disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-all"
+            >
+              {savingBatch ? 'Salvando…' : batchCount > 0 ? `Salvar (${batchCount})` : 'Salvar'}
+            </button>
+          </div>
+        </div>
       )}
     </div>
   )
