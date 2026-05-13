@@ -47,6 +47,33 @@ export interface ReviewContent {
   updatedAt?: unknown
 }
 
+// Firestore doesn't support nested arrays (string[][]). table.rows is serialized
+// as { c: string[] }[] on write and restored to string[][] on read.
+type StoredRow = { c: string[] }
+
+function serialize(content: Omit<ReviewContent, 'topicId' | 'updatedAt'>): object {
+  if (!content.table) return content
+  return {
+    ...content,
+    table: {
+      headers: content.table.headers,
+      rows: content.table.rows.map(row => ({ c: row })),
+    },
+  }
+}
+
+function deserialize(data: Record<string, unknown>): ReviewContent {
+  const d = data as unknown as ReviewContent & { table?: { headers: string[]; rows: (StoredRow | string[])[] } }
+  if (!d.table) return d as ReviewContent
+  return {
+    ...d,
+    table: {
+      headers: d.table.headers,
+      rows: d.table.rows.map((r) => (Array.isArray(r) ? r : (r as StoredRow).c)),
+    },
+  }
+}
+
 export function subscribeReviewContent(
   uid: string,
   onData: (content: Record<string, ReviewContent>) => void
@@ -55,7 +82,7 @@ export function subscribeReviewContent(
   return onSnapshot(ref, (snap) => {
     const result: Record<string, ReviewContent> = {}
     snap.docs.forEach((d) => {
-      result[d.id] = d.data() as ReviewContent
+      result[d.id] = deserialize(d.data())
     })
     onData(result)
   })
@@ -67,7 +94,7 @@ export async function setReviewContent(
   content: Omit<ReviewContent, 'topicId' | 'updatedAt'>
 ): Promise<void> {
   const ref = doc(db, 'users', uid, 'reviewContent', topicId)
-  await setDoc(ref, { ...content, topicId, updatedAt: serverTimestamp() })
+  await setDoc(ref, { ...serialize(content), topicId, updatedAt: serverTimestamp() })
 }
 
 export async function batchSetReviewContent(
