@@ -23,13 +23,14 @@ function ClozeItemView({ item, revealed }: { item: ClozeItem; revealed: boolean 
     answers[i].trim().toLowerCase() === item.answers[i]?.toLowerCase()
 
   return (
-    <div className="bg-surface border border-border rounded-xl p-4 space-y-3">
-      <p className="font-body text-sm text-white/80 leading-relaxed flex flex-wrap items-baseline gap-x-1 gap-y-2">
+    <div className="bg-surface border border-border rounded-xl p-4 lg:p-5 space-y-3">
+      <p className="font-body text-sm lg:text-base text-white/80 leading-relaxed flex flex-wrap items-baseline gap-x-1 gap-y-3">
         {tokens.map((token, ti) => {
           if (token.type === 'text') return <span key={ti}>{token.value}</span>
           const bi = token.index
           const correct = checked && isCorrect(bi)
           const wrong = checked && !isCorrect(bi)
+          const maxLen = Math.max(8, (item.answers[bi]?.length ?? 8) + 2)
           return (
             <input
               key={ti}
@@ -40,11 +41,13 @@ function ClozeItemView({ item, revealed }: { item: ClozeItem; revealed: boolean 
                 next[bi] = e.target.value
                 setAnswers(next)
               }}
-              className={`inline-block w-20 border-b text-center bg-transparent text-sm font-mono focus:outline-none transition-colors ${
-                revealed ? 'border-teal/40 text-teal'
-                : correct ? 'border-teal/60 text-teal'
-                : wrong ? 'border-rose-500/60 text-rose-400'
-                : 'border-white/30 text-white'
+              // min-w adapts to answer length; text-base on desktop for legibility
+              style={{ minWidth: `${maxLen}ch` }}
+              className={`inline-block border-b text-center bg-transparent text-sm lg:text-base font-mono focus:outline-none transition-colors px-1 ${
+                revealed   ? 'border-teal/40 text-teal'
+                : correct  ? 'border-teal/60 text-teal'
+                : wrong    ? 'border-rose-500/60 text-rose-400'
+                :             'border-white/30 text-white'
               }`}
             />
           )
@@ -53,19 +56,19 @@ function ClozeItemView({ item, revealed }: { item: ClozeItem; revealed: boolean 
       {!revealed && !checked && (
         <button
           onClick={() => setChecked(true)}
-          className="font-body text-xs text-white/50 border border-white/15 rounded-lg px-3 py-1.5 hover:text-white/70 transition-colors"
+          className="font-body text-xs text-white/50 border border-white/15 rounded-lg px-3 py-1.5 hover:text-white/70 transition-colors active:scale-95"
         >
           Verificar
         </button>
       )}
       {checked && !revealed && (
-        <div className="flex gap-2 items-center text-xs font-body">
-          <span className={`${answers.every((_, i) => isCorrect(i)) ? 'text-teal' : 'text-rose-400'}`}>
+        <div className="flex gap-3 items-center text-sm font-body">
+          <span className={answers.every((_, i) => isCorrect(i)) ? 'text-teal' : 'text-rose-400'}>
             {answers.filter((_, i) => isCorrect(i)).length}/{blankCount} corretos
           </span>
           <button
             onClick={() => { setChecked(false); setAnswers(Array(blankCount).fill('')) }}
-            className="text-white/30 hover:text-white/50 ml-2 transition-colors"
+            className="text-white/30 hover:text-white/50 transition-colors"
           >
             Limpar
           </button>
@@ -88,9 +91,11 @@ export default function ClozeViewer({ items }: { items: ClozeItem[] }) {
           {revealed ? 'Ocultar respostas' : 'Revelar tudo'}
         </button>
       </div>
-      {items.map((item, i) => (
-        <ClozeItemView key={i} item={item} revealed={revealed} />
-      ))}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        {items.map((item, i) => (
+          <ClozeItemView key={i} item={item} revealed={revealed} />
+        ))}
+      </div>
     </div>
   )
 }

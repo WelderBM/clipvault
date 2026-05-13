@@ -8,6 +8,7 @@ export default function ChecklistViewer({ items }: { items: string[] }) {
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Progress bar */}
       <div className="flex items-center gap-3">
         <div className="flex-1 h-1.5 rounded-full bg-white/5 overflow-hidden">
           <div
@@ -20,12 +21,13 @@ export default function ChecklistViewer({ items }: { items: string[] }) {
         </span>
       </div>
 
-      <div className="space-y-2">
+      {/* Two-column grid on desktop */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
         {items.map((item, i) => (
           <button
             key={i}
             onClick={() => toggle(i)}
-            className="w-full flex items-start gap-3 text-left p-3 rounded-xl bg-surface border border-border active:scale-[0.98] transition-transform"
+            className="flex items-start gap-3 text-left p-3 rounded-xl bg-surface border border-border active:scale-[0.98] transition-transform"
           >
             <div className={`mt-0.5 w-5 h-5 rounded-md border flex-shrink-0 flex items-center justify-center transition-colors ${
               checked[i] ? 'bg-teal/20 border-teal/40' : 'border-white/20'
