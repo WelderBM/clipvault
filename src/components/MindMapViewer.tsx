@@ -1,95 +1,56 @@
-import { useRef, useEffect, useState } from 'react'
-import Tree from 'react-d3-tree'
+import { useState } from 'react'
 import type { MindMapNode } from '../lib/review'
-import type { RenderCustomNodeElementFn } from 'react-d3-tree'
 
-const FONT_SIZE = 13
-const CHAR_W = 7.5
-const PAD = 20
-const NODE_H = 38
-
-const renderNode: RenderCustomNodeElementFn = ({ nodeDatum, toggleNode }) => {
-  const label = nodeDatum.name
-  const hasChildren = (nodeDatum.children?.length ?? 0) > 0
-  const isCollapsed = nodeDatum.__rd3t?.collapsed ?? false
-  const width = Math.max(90, label.length * CHAR_W + PAD * 2)
+function MindNode({ node, depth = 0 }: { node: MindMapNode; depth?: number }) {
+  const [open, setOpen] = useState(depth < 2)
+  const hasKids = (node.children?.length ?? 0) > 0
 
   return (
-    <g onClick={hasChildren ? toggleNode : undefined} style={{ cursor: hasChildren ? 'pointer' : 'default' }}>
-      <rect
-        x={-width / 2}
-        y={-NODE_H / 2}
-        width={width}
-        height={NODE_H}
-        rx={9}
-        fill="#0d1821"
-        stroke={isCollapsed ? '#14b8a6' : '#1e3a4a'}
-        strokeWidth={isCollapsed ? 2 : 1}
-      />
-      <text
-        textAnchor="middle"
-        dominantBaseline="central"
-        style={{
-          fontSize: FONT_SIZE,
-          fill: 'rgba(255,255,255,0.88)',
-          fontFamily: 'Inter, system-ui, sans-serif',
-          userSelect: 'none',
-        }}
+    <div>
+      <button
+        onClick={() => hasKids ? setOpen(o => !o) : undefined}
+        disabled={!hasKids}
+        className={`
+          flex items-start gap-2 w-full text-left rounded-xl transition-colors
+          ${depth === 0
+            ? 'px-4 py-3 bg-teal/10 border border-teal/25 mb-4'
+            : 'px-3 py-2 hover:bg-white/[0.04]'}
+          ${hasKids ? 'cursor-pointer' : 'cursor-default'}
+        `}
       >
-        {label}
-      </text>
-      {hasChildren && (
-        <text
-          x={width / 2 - 10}
-          y={0}
-          textAnchor="middle"
-          dominantBaseline="central"
-          style={{ fontSize: 10, fill: '#14b8a6', userSelect: 'none' }}
-        >
-          {isCollapsed ? '+' : '−'}
-        </text>
+        <span className={`flex-shrink-0 mt-0.5 text-xs font-mono w-3 leading-none ${
+          depth === 0 ? 'text-teal/60' : 'text-white/30'
+        }`}>
+          {hasKids ? (open ? '▾' : '▸') : '·'}
+        </span>
+        <span className={`font-body leading-snug ${
+          depth === 0
+            ? 'text-teal font-semibold text-base lg:text-lg'
+            : depth === 1
+            ? 'text-white/90 text-sm lg:text-[15px] font-medium'
+            : 'text-white/65 text-sm'
+        }`}>
+          {node.name}
+        </span>
+      </button>
+
+      {hasKids && open && (
+        <div className={`border-l border-border/40 ml-[14px] pl-4 pb-1 space-y-0.5 ${
+          depth === 0 ? 'mb-2' : ''
+        }`}>
+          {node.children!.map((child, i) => (
+            <MindNode key={i} node={child} depth={depth + 1} />
+          ))}
+        </div>
       )}
-    </g>
+    </div>
   )
 }
 
 export default function MindMapViewer({ data }: { data: MindMapNode }) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [translate, setTranslate] = useState({ x: 80, y: 190 })
-
-  useEffect(() => {
-    if (!containerRef.current) return
-    const { height } = containerRef.current.getBoundingClientRect()
-    setTranslate({ x: 90, y: height / 2 })
-  }, [])
-
   return (
-    <div
-      ref={containerRef}
-      // touch-action: none tells the browser not to intercept touch events
-      // for scrolling, allowing D3 zoom to capture pan/pinch gestures
-      style={{ height: 380, touchAction: 'none', userSelect: 'none' }}
-      className="overflow-hidden rounded-xl border border-border"
-    >
-      <Tree
-        data={data}
-        orientation="horizontal"
-        pathFunc="step"
-        translate={translate}
-        zoom={1.0}
-        zoomable
-        draggable
-        renderCustomNodeElement={renderNode}
-        pathClassFunc={() => 'rd3t-link-dark'}
-        separation={{ siblings: 1.3, nonSiblings: 1.8 }}
-        nodeSize={{ x: 210, y: 58 }}
-      />
-      <style>{`
-        .rd3t-link-dark { stroke: #1e3a4a !important; stroke-width: 1.5 !important; fill: none !important; }
-        .rd3t-tree-container { touch-action: none !important; }
-        .rd3t-tree-container svg { background: #03080F !important; touch-action: none !important; }
-        .rd3t-tree-container * { touch-action: none !important; }
-      `}</style>
+    <div className="overflow-y-auto max-h-[480px] lg:max-h-[560px]">
+      <MindNode node={data} depth={0} />
     </div>
   )
 }
