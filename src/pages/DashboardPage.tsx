@@ -391,7 +391,7 @@ export default function DashboardPage() {
 
       {/* Undo toast — floats above nav bar, clears after 8s */}
       {pending && pendingTopic && !editMode && (
-        <div className="fixed bottom-[72px] left-4 right-4 z-50 flex items-center gap-3 bg-surface border border-border rounded-2xl px-4 py-3 shadow-xl">
+        <div className="fixed bottom-[72px] left-4 right-4 lg:bottom-6 lg:left-[calc(14rem+1rem)] lg:right-6 lg:max-w-sm z-50 flex items-center gap-3 bg-surface border border-border rounded-2xl px-4 py-3 shadow-xl">
           <div className="flex-1 min-w-0">
             <p className="font-body text-xs text-white/70 truncate">{pendingTopic.label}</p>
             <p className="font-mono text-[10px] text-white/35 mt-0.5">
@@ -407,9 +407,9 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Batch edit save bar — docked above nav bar */}
+      {/* Batch edit save bar — docked above nav bar (mobile) / floating bottom right (desktop) */}
       {editMode && (
-        <div className="fixed bottom-[64px] left-0 right-0 z-50 px-4 py-2 bg-void/90 backdrop-blur-sm border-t border-amber/20">
+        <div className="fixed bottom-[64px] left-0 right-0 lg:bottom-6 lg:left-[calc(14rem+1rem)] lg:right-6 z-50 px-4 py-2 lg:px-0 lg:py-0 bg-void/90 lg:bg-transparent backdrop-blur-sm lg:backdrop-blur-none border-t border-amber/20 lg:border-0">
           <div className="flex gap-3">
             <button
               onClick={handleCancelBatch}
