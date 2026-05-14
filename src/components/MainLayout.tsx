@@ -6,7 +6,7 @@ const NAV_ITEMS = [
     to: '/',
     end: true,
     label: 'Cards',
-    short: 'CARDS',
+    short: 'Cards',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
@@ -18,7 +18,7 @@ const NAV_ITEMS = [
   {
     to: '/dashboard',
     label: 'Dashboard',
-    short: 'DASH',
+    short: 'Dash',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/>
@@ -41,7 +41,7 @@ const NAV_ITEMS = [
   {
     to: '/reader',
     label: 'Leitor',
-    short: 'LEITOR',
+    short: 'Leitor',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
@@ -52,7 +52,7 @@ const NAV_ITEMS = [
   {
     to: '/review',
     label: 'Revisão',
-    short: 'REVISÃO',
+    short: 'Revisão',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M12 2a7 7 0 0 1 7 7c0 2.5-1.3 4.7-3.3 6l-.7.5V17H9v-1.5l-.7-.5A7 7 0 0 1 5 9a7 7 0 0 1 7-7z"/>
@@ -64,7 +64,7 @@ const NAV_ITEMS = [
   {
     to: '/semana',
     label: 'Semana',
-    short: 'SEMANA',
+    short: 'Semana',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
@@ -78,7 +78,7 @@ const NAV_ITEMS = [
 
 export default function MainLayout() {
   return (
-    <div className="min-h-screen bg-void text-white flex">
+    <div className="min-h-screen bg-void text-white flex overflow-x-hidden">
 
       {/* ── Sidebar (desktop lg+) ── */}
       <aside className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:w-56 border-r border-border bg-void z-40">
@@ -120,30 +120,33 @@ export default function MainLayout() {
       </aside>
 
       {/* ── Main content area ── */}
-      <div className="flex-1 flex flex-col lg:ml-56">
+      <div className="flex-1 min-w-0 flex flex-col lg:ml-56">
         <ConnectivityBanner />
 
-        {/* Centered content column */}
-        <div className="flex-1 pb-[64px] lg:pb-0 lg:max-w-2xl lg:w-full lg:mx-auto">
-          <Outlet />
+        {/* Scroll container */}
+        <div className="flex-1 pb-[64px] lg:pb-0">
+          {/* Desktop centering wrapper */}
+          <div className="lg:max-w-2xl lg:mx-auto">
+            <Outlet />
+          </div>
         </div>
       </div>
 
       {/* ── Bottom nav (mobile only) ── */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-[64px] bg-void/95 backdrop-blur border-t border-border flex items-center justify-around px-2 z-40">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-[64px] bg-void/95 backdrop-blur border-t border-border flex items-stretch z-40">
         {NAV_ITEMS.map(item => (
           <NavLink
             key={item.to}
             to={item.to}
             end={item.end}
             className={({ isActive }) =>
-              `flex flex-col items-center justify-center w-full h-full gap-1 transition-colors ${
-                isActive ? 'text-teal' : 'text-white/40 hover:text-white/70'
+              `flex flex-col items-center justify-center flex-1 gap-0.5 transition-colors ${
+                isActive ? 'text-teal' : 'text-white/40'
               }`
             }
           >
             {item.icon}
-            <span className="text-[10px] font-mono tracking-wider">{item.short}</span>
+            <span className="text-[9px] font-mono">{item.short}</span>
           </NavLink>
         ))}
       </nav>
