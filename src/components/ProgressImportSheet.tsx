@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { EDITAL_TOPICS } from '../data/edital_topics'
+import { EDITAL_TOPICS, TOPIC_STATE_LABELS } from '../data/edital_topics'
 import { batchSetTopicProgress, setTopicProgress } from '../lib/progress'
 import { batchSetReviewContent, type ReviewContent } from '../lib/review'
 import { importWeeklyLogs } from '../lib/weekly'
@@ -260,6 +260,28 @@ export default function ProgressImportSheet({ uid, currentProgress, onClose }: P
                   <p>{Object.keys(parsed.weeklyUpdates).length} semana{Object.keys(parsed.weeklyUpdates).length !== 1 ? 's' : ''} de registro</p>
                 )}
               </div>
+            )}
+            {parsed.updates && !result && (
+              <details className="text-xs font-body">
+                <summary className="text-white/40 cursor-pointer hover:text-white/60 py-1 select-none">
+                  Ver tópicos ({Object.keys(parsed.updates).length})
+                </summary>
+                <div className="mt-2 space-y-1 max-h-40 overflow-y-auto pr-1">
+                  {Object.entries(parsed.updates).map(([id, newState]) => {
+                    const current = currentProgress[id] ?? 'unseen'
+                    const topic = EDITAL_TOPICS.find(t => t.id === id)
+                    return (
+                      <div key={id} className="flex items-center gap-2">
+                        <span className="truncate flex-1 text-white/50">{topic?.label ?? id}</span>
+                        <span className="text-white/25 flex-shrink-0 text-[10px]">
+                          {TOPIC_STATE_LABELS[current]} →
+                        </span>
+                        <span className="text-teal flex-shrink-0 text-[10px]">{TOPIC_STATE_LABELS[newState]}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </details>
             )}
           </div>
         )}
