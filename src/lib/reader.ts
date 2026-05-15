@@ -1,4 +1,4 @@
-import { doc, setDoc, getDoc, onSnapshot } from 'firebase/firestore'
+import { doc, setDoc, getDoc } from 'firebase/firestore'
 import { db } from './firebase'
 import { Timestamp } from 'firebase/firestore'
 
@@ -25,18 +25,12 @@ export interface ReaderProgress {
 const readerRef = (uid: string, documentId: string) => 
   doc(db, 'users', uid, 'reader_progress', documentId)
 
-export function subscribeToReaderProgress(
+export async function getReaderProgress(
   uid: string,
-  documentId: string,
-  cb: (progress: ReaderProgress | null) => void
-) {
-  return onSnapshot(readerRef(uid, documentId), (snap) => {
-    if (snap.exists()) {
-      cb(snap.data() as ReaderProgress)
-    } else {
-      cb(null)
-    }
-  })
+  documentId: string
+): Promise<ReaderProgress | null> {
+  const snap = await getDoc(readerRef(uid, documentId))
+  return snap.exists() ? (snap.data() as ReaderProgress) : null
 }
 
 export async function setReadMarker(uid: string, documentId: string, articleId: string) {

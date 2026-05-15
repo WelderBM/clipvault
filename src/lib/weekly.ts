@@ -18,6 +18,7 @@ export const DAY_LABELS: Record<DayKey, string> = {
 const JS_DAY_TO_KEY: DayKey[] = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']
 
 export interface WeeklyEntry {
+  id?: string        // crypto.randomUUID() — ausente em entradas antigas
   date: string       // "2026-05-12"
   dayKey: DayKey
   discipline: Discipline

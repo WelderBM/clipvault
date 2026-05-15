@@ -18,9 +18,17 @@ export interface DocumentoOficial {
   artigos: Artigo[];
 }
 
-// Using Vite's import.meta.glob to load all JSON files in the directory dynamically
-const jsonModules = import.meta.glob('./*.json', { eager: true });
+const jsonModules = import.meta.glob('./*.json')
 
-export const TEXTOS_OFICIAIS: DocumentoOficial[] = Object.values(jsonModules).map(
-  (module: any) => (module.default || module) as DocumentoOficial
-);
+export async function loadTextoOficial(id: string): Promise<DocumentoOficial | null> {
+  const key = `./${id}.json`
+  const loader = jsonModules[key]
+  if (!loader) return null
+  const mod = await loader() as { default: DocumentoOficial }
+  return mod.default
+}
+
+export async function loadAllTextos(): Promise<DocumentoOficial[]> {
+  const mods = await Promise.all(Object.values(jsonModules).map(l => l()))
+  return (mods as { default: DocumentoOficial }[]).map(m => m.default)
+}

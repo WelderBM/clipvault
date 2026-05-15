@@ -3,7 +3,6 @@ import { useAuth } from './useAuth'
 import { useCards } from './useCards'
 import { subscribeTopicProgress } from '../lib/progress'
 import { EDITAL_TOPICS, type TopicState } from '../data/edital_topics'
-import { FCC_WEIGHTS } from '../data/strategy'
 import type { Discipline } from '../types'
 import { DISCIPLINES } from '../types'
 
@@ -53,10 +52,9 @@ export function useDashboardStats(): DashboardStats {
     return unsub
   }, [user])
 
-  return useMemo(() => {
+  // Memo 1: card-derived stats (recalculates only when cards change)
+  const cardStats = useMemo(() => {
     const allCards = [...activeCards, ...archivedCards]
-    const loading = loadingActive || loadingArchived || loadingProgress
-
     const cardsByDiscipline: Record<Discipline, number> = {} as Record<Discipline, number>
     DISCIPLINES.forEach(d => { cardsByDiscipline[d] = 0 })
 
@@ -83,10 +81,18 @@ export function useDashboardStats(): DashboardStats {
       }
     })
 
-    // Build coverage per discipline based on topic progress
-    const disciplineCoverage: DisciplineCoverage[] = DISCIPLINES.filter(
-      d => d !== 'historia' && d !== 'geografia' // minor disciplines, keep in list but not radar
-    ).map(d => {
+    return {
+      totalCards: allCards.length,
+      activeCount: activeCards.length,
+      reviewedCards: allCards.filter(c => (c.reviewCount ?? 0) > 0).length,
+      cardsByDiscipline,
+      activityHeatmap: last60Days.map(date => ({ date, count: activityMap.get(date)! })),
+    }
+  }, [activeCards, archivedCards])
+
+  // Memo 2: topic coverage (recalculates only when topicProgress changes)
+  const disciplineCoverage = useMemo((): DisciplineCoverage[] =>
+    DISCIPLINES.filter(d => d !== 'historia' && d !== 'geografia').map(d => {
       const topics = EDITAL_TOPICS.filter(t => t.discipline === d)
       const total = topics.length
       let seen = 0, practiced = 0, confident = 0
@@ -96,26 +102,25 @@ export function useDashboardStats(): DashboardStats {
         else if (state === 'practiced') { seen++; practiced++ }
         else if (state === 'confident') { seen++; practiced++; confident++ }
       })
-      const fccWeight = FCC_WEIGHTS[d] ?? 0
-      // pct: weighted score: unseen=0, seen=0.33, practiced=0.67, confident=1.0
       const rawScore = topics.reduce((acc, t) => {
         const state = topicProgress[t.id] ?? 'unseen'
         const scores = { unseen: 0, seen: 0.33, practiced: 0.67, confident: 1 }
         return acc + scores[state]
       }, 0)
       const pct = total > 0 ? rawScore / total : 0
-      return { discipline: d, total, seen, practiced, confident, pct, fccWeight } as DisciplineCoverage & { fccWeight: number }
-    }) as DisciplineCoverage[]
+      return { discipline: d, total, seen, practiced, confident, pct } as DisciplineCoverage
+    })
+  , [topicProgress])
 
-    return {
-      totalCards: allCards.length,
-      activeCards: activeCards.length,
-      reviewedCards: allCards.filter(c => (c.reviewCount ?? 0) > 0).length,
-      cardsByDiscipline,
-      topicProgress,
-      disciplineCoverage,
-      activityHeatmap: last60Days.map(date => ({ date, count: activityMap.get(date)! })),
-      loading,
-    }
-  }, [activeCards, archivedCards, loadingActive, loadingArchived, topicProgress, loadingProgress])
+  // Memo 3: combine into final shape
+  return useMemo(() => ({
+    totalCards: cardStats.totalCards,
+    activeCards: cardStats.activeCount,
+    reviewedCards: cardStats.reviewedCards,
+    cardsByDiscipline: cardStats.cardsByDiscipline,
+    activityHeatmap: cardStats.activityHeatmap,
+    topicProgress,
+    disciplineCoverage,
+    loading: loadingActive || loadingArchived || loadingProgress,
+  }), [cardStats, topicProgress, disciplineCoverage, loadingActive, loadingArchived, loadingProgress])
 }

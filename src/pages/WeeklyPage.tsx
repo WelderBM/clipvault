@@ -51,11 +51,14 @@ export default function WeeklyPage() {
 
   const removeEntry = async (entry: WeeklyEntry) => {
     if (!user || !currentLog) return
-    const updated = currentLog.entries.filter(e => !(e.date === entry.date && e.discipline === entry.discipline))
+    const updated = entry.id
+      ? currentLog.entries.filter(e => e.id !== entry.id)
+      : currentLog.entries.filter(e => !(e.date === entry.date && e.discipline === entry.discipline))
     await saveWeeklyLog(user.uid, currentWeekKey, updated)
   }
 
   const addingDayKey = addingDate ? getDayKey(new Date(addingDate + 'T12:00:00Z')) : null
+  const currentWeekEntryCount = currentLog?.entries.length ?? 0
 
   return (
     <div className="px-4 pt-4 pb-24">
@@ -65,6 +68,11 @@ export default function WeeklyPage() {
         <p className="font-body text-white/40 text-[11px] uppercase tracking-wider mt-1">
           Registro semanal do cursinho
         </p>
+        {currentWeekEntryCount > 0 && (
+          <p className="font-mono text-[11px] text-teal/70 mt-0.5">
+            {currentWeekEntryCount} aula{currentWeekEntryCount !== 1 ? 's' : ''} registrada{currentWeekEntryCount !== 1 ? 's' : ''} esta semana
+          </p>
+        )}
       </header>
 
       {/* Week navigation */}

@@ -4,6 +4,7 @@ import {
   collection,
   onSnapshot,
   serverTimestamp,
+  writeBatch,
   type Unsubscribe,
 } from 'firebase/firestore'
 import { db } from './firebase'
@@ -101,10 +102,15 @@ export async function batchSetReviewContent(
   uid: string,
   updates: Record<string, Omit<ReviewContent, 'topicId' | 'updatedAt'>>
 ): Promise<number> {
-  await Promise.all(
-    Object.entries(updates).map(([topicId, content]) =>
-      setReviewContent(uid, topicId, content)
-    )
-  )
-  return Object.keys(updates).length
+  const entries = Object.entries(updates)
+  for (let i = 0; i < entries.length; i += 500) {
+    const chunk = entries.slice(i, i + 500)
+    const batch = writeBatch(db)
+    for (const [topicId, content] of chunk) {
+      const ref = doc(db, 'users', uid, 'reviewContent', topicId)
+      batch.set(ref, { ...serialize(content), topicId, updatedAt: serverTimestamp() })
+    }
+    await batch.commit()
+  }
+  return entries.length
 }

@@ -35,6 +35,7 @@ export default function WeeklyEntrySheet({
     setSaving(true)
     try {
       const newEntry: WeeklyEntry = {
+        id: crypto.randomUUID(),
         date, dayKey, discipline,
         topicIds: selectedTopics,
         note: note.trim() || undefined,

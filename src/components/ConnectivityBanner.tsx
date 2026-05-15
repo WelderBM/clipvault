@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react'
 import { WifiOff, Database } from 'lucide-react'
 
+// Module-level ref avoids localStorage (throws in incognito / strict privacy)
+const lastOnlineRef = { value: Date.now() }
+
 export default function ConnectivityBanner() {
   const [isOnline, setIsOnline] = useState(navigator.onLine)
-  const [lastOnline, setLastOnline] = useState<number | null>(() => {
-    const stored = localStorage.getItem('lastOnline')
-    return stored ? parseInt(stored, 10) : null
-  })
+  const [lastOnline, setLastOnline] = useState<number | null>(() => lastOnlineRef.value)
 
   useEffect(() => {
     if (isOnline) {
       const now = Date.now()
+      lastOnlineRef.value = now
       setLastOnline(now)
-      localStorage.setItem('lastOnline', now.toString())
     }
   }, [isOnline])
 

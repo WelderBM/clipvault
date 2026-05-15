@@ -40,7 +40,7 @@ function urgencyScore(card: Card): number {
   const importance = card.importance ?? 1
   const lastTouchMs =
     card.lastReviewed?.toMillis?.() ?? card.createdAt?.toMillis?.() ?? 0
-  const daysSince = Math.max(0, (Date.now() - lastTouchMs) / 86_400_000)
+  const daysSince = Math.min(7, Math.max(0, (Date.now() - lastTouchMs) / 86_400_000))
   return importance * Math.log1p(daysSince)
 }
 

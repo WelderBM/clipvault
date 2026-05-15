@@ -15,7 +15,7 @@ import { DISCIPLINE_LABELS, type Discipline } from '../types'
 const STATE_CYCLE: TopicState[] = ['unseen', 'seen', 'practiced', 'confident']
 const ALL_STATES: TopicState[] = ['unseen', 'seen', 'practiced', 'confident']
 const RADAR_DISCIPLINES: Discipline[] = ['portugues', 'constitucional', 'administrativo', 'afo', 'legislacao']
-const UNDO_DELAY_MS = 8000
+const UNDO_DELAY_MS = 5000
 
 export default function DashboardPage() {
   const { user } = useAuth()
@@ -389,9 +389,9 @@ export default function DashboardPage() {
         />
       )}
 
-      {/* Undo toast — floats above nav bar, clears after 8s */}
+      {/* Undo toast — floats above nav bar, clears after 5s */}
       {pending && pendingTopic && !editMode && (
-        <div className="fixed bottom-[72px] left-4 right-4 lg:bottom-6 lg:left-[calc(14rem+1rem)] lg:right-6 lg:max-w-sm z-50 flex items-center gap-3 bg-surface border border-border rounded-2xl px-4 py-3 shadow-xl">
+        <div className="fixed bottom-[72px] left-4 right-4 lg:bottom-6 lg:left-[calc(14rem+1rem)] lg:right-6 lg:max-w-sm z-50 flex items-center gap-3 bg-surface border border-border rounded-2xl px-4 py-3 shadow-xl relative overflow-hidden">
           <div className="flex-1 min-w-0">
             <p className="font-body text-xs text-white/70 truncate">{pendingTopic.label}</p>
             <p className="font-mono text-[10px] text-white/35 mt-0.5">
@@ -404,6 +404,13 @@ export default function DashboardPage() {
           >
             Desfazer
           </button>
+          {/* Progress bar draining over UNDO_DELAY_MS */}
+          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal/20 rounded-b-2xl overflow-hidden">
+            <div
+              className="h-full bg-teal/60 rounded-b-2xl"
+              style={{ animation: `shrink ${UNDO_DELAY_MS}ms linear forwards` }}
+            />
+          </div>
         </div>
       )}
 

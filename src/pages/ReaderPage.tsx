@@ -1,16 +1,22 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronRight, ArrowLeft, BookOpen, Settings2, ZoomIn, ZoomOut, EyeOff, Eye, Bookmark, Trash2 } from 'lucide-react'
-import { TEXTOS_OFICIAIS } from '../data/texts'
+import { loadAllTextos, type DocumentoOficial } from '../data/texts'
 import { useAuth } from '../hooks/useAuth'
-import { subscribeToReaderProgress, setReadMarker, addHighlight, removeHighlight, type ReaderProgress, type HighlightColor } from '../lib/reader'
+import { getReaderProgress, setReadMarker, addHighlight, removeHighlight, type ReaderProgress, type HighlightColor } from '../lib/reader'
 
 type Theme = 'dark' | 'light' | 'sepia'
 
 export default function ReaderPage() {
   const { user } = useAuth()
   const [selectedText, setSelectedText] = useState<string | null>(null)
-  
+  const [textos, setTextos] = useState<DocumentoOficial[]>([])
+  const [loadingTextos, setLoadingTextos] = useState(true)
+
+  useEffect(() => {
+    loadAllTextos().then(t => { setTextos(t); setLoadingTextos(false) })
+  }, [])
+
   // Leitor preferences
   const [theme, setTheme] = useState<Theme>('dark')
   const [fontSize, setFontSize] = useState<number>(1) // rem multiplier
@@ -20,18 +26,31 @@ export default function ReaderPage() {
   // Leitor Progress (Firestore)
   const [progress, setProgress] = useState<ReaderProgress | null>(null)
   const [activeArticleAction, setActiveArticleAction] = useState<string | null>(null)
+  const [menuAbove, setMenuAbove] = useState(false)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
 
-  const activeText = TEXTOS_OFICIAIS.find(t => t.id === selectedText)
+  const handleArticleClick = useCallback((articleId: string, el: HTMLElement) => {
+    if (activeArticleAction === articleId) {
+      setActiveArticleAction(null)
+      return
+    }
+    const container = scrollContainerRef.current
+    if (container) {
+      const containerBottom = container.getBoundingClientRect().bottom
+      const elBottom = el.getBoundingClientRect().bottom
+      setMenuAbove(containerBottom - elBottom < 120)
+    }
+    setActiveArticleAction(articleId)
+  }, [activeArticleAction])
+
+  const activeText = textos.find(t => t.id === selectedText)
 
   useEffect(() => {
     if (!user || !selectedText) {
       setProgress(null)
       return
     }
-    const unsub = subscribeToReaderProgress(user.uid, selectedText, (data) => {
-      setProgress(data)
-    })
-    return unsub
+    getReaderProgress(user.uid, selectedText).then(setProgress)
   }, [user, selectedText])
 
   const themeClasses: Record<Theme, string> = {
@@ -100,7 +119,12 @@ export default function ReaderPage() {
             </header>
 
             <div className="flex flex-col gap-3">
-              {TEXTOS_OFICIAIS.map((text) => (
+              {loadingTextos && (
+                <div className="flex justify-center py-8">
+                  <div className="w-6 h-6 border-2 border-teal/30 border-t-teal rounded-full animate-spin" />
+                </div>
+              )}
+              {textos.map((text) => (
                 <button
                   key={text.id}
                   onClick={() => setSelectedText(text.id)}
@@ -192,7 +216,7 @@ export default function ReaderPage() {
             </AnimatePresence>
 
             {/* Área de Leitura */}
-            <div className="flex-1 overflow-y-auto px-6 pb-24" style={{ fontSize: `${fontSize}rem` }}>
+            <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-6 pb-24" style={{ fontSize: `${fontSize}rem` }}>
               <div className="max-w-2xl mx-auto space-y-8 font-serif leading-[1.8]">
                 {activeText?.artigos.map((art, idx) => {
                   const articleId = getArticleId(art.numero)
@@ -201,7 +225,7 @@ export default function ReaderPage() {
                   // Visual layer: override default classes if there's a user highlight
                   const hasUserHighlight = highlights.length > 0
                   const userHighlightClass = hasUserHighlight ? highlightColors[highlights[0].color] : ''
-                  
+
                   return (
                     <div key={idx} className="relative">
                       {isMarker && (
@@ -209,9 +233,9 @@ export default function ReaderPage() {
                           <Bookmark className="w-5 h-5 fill-current" />
                         </div>
                       )}
-                      
-                      <div 
-                        onClick={() => setActiveArticleAction(activeArticleAction === articleId ? null : articleId)}
+
+                      <div
+                        onClick={e => handleArticleClick(articleId, e.currentTarget)}
                         className={`cursor-pointer transition-colors ${userHighlightClass ? userHighlightClass + ' -mx-4 px-4 py-3 rounded-r-lg' : art.hotFCC ? articleClasses[theme].hot + ' -mx-4 px-4 py-3 rounded-r-lg' : ''}`}
                       >
                         {!modoProva && (
@@ -237,7 +261,7 @@ export default function ReaderPage() {
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            className="absolute z-10 -bottom-14 left-0 right-0 bg-void/95 border border-border shadow-xl rounded-xl p-2 flex items-center justify-between backdrop-blur"
+                            className={`absolute z-10 left-0 right-0 bg-void/95 border border-border shadow-xl rounded-xl p-2 flex items-center justify-between backdrop-blur ${menuAbove ? 'bottom-full mb-2' : '-bottom-14'}`}
                           >
                             <div className="flex gap-2">
                               <button onClick={() => handleAddHighlight(articleId, 'yellow', art.caput)} className="w-8 h-8 rounded-full bg-yellow-400 hover:scale-110 transition-transform" />
