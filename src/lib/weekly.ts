@@ -35,6 +35,15 @@ export function getDayKey(date: Date): DayKey {
   return JS_DAY_TO_KEY[date.getUTCDay()]
 }
 
+// Returns today's date as YYYY-MM-DD using LOCAL time (avoids UTC offset shifting the day)
+export function todayLocalStr(): string {
+  const d = new Date()
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
 export function getWeekKey(date: Date): string {
   const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
   const dayNum = d.getUTCDay() || 7

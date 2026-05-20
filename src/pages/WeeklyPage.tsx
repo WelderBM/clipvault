@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import {
   subscribeWeeklyLogs, saveWeeklyLog,
-  getWeekKey, getWeekDays, formatDateStr, getDayKey, DAY_LABELS,
+  getWeekKey, getWeekDays, formatDateStr, getDayKey, todayLocalStr, DAY_LABELS,
   type WeeklyLog, type WeeklyEntry,
 } from '../lib/weekly'
 import { subscribeTopicProgress } from '../lib/progress'
@@ -113,7 +113,7 @@ export default function WeeklyPage() {
           const dayNum = day.getUTCDate()
           const monthStr = MONTH_SHORT[day.getUTCMonth()]
           const entries = currentLog?.entries.filter(e => e.date === dateStr) ?? []
-          const isToday = dateStr === formatDateStr(new Date())
+          const isToday = dateStr === todayLocalStr()
 
           return (
             <div
