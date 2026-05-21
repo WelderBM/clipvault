@@ -36,6 +36,17 @@ export default function DashboardPage() {
     await setTopicProgress(user.uid, sessionPickerTopic, sessionType)
   }
 
+  const filteredTopics = useMemo(() => {
+    if (!retentionFilter || stats.loading) return null
+    return EDITAL_TOPICS.filter(t => {
+      const score = stats.retentionScores[t.id]
+      if (retentionFilter === 'needs_review') {
+        return score !== undefined && score < 0.55
+      }
+      return score !== undefined && score >= 0.80
+    })
+  }, [retentionFilter, stats.retentionScores, stats.loading])
+
   if (stats.loading) {
     return (
       <div className="min-h-screen bg-void flex items-center justify-center">
@@ -64,18 +75,6 @@ export default function DashboardPage() {
       benchmark: Math.min(1, fccNorm),
     }
   })
-
-  const filteredTopics = useMemo(() => {
-    if (!retentionFilter) return null
-    return EDITAL_TOPICS.filter(t => {
-      const score = stats.retentionScores[t.id]
-      if (retentionFilter === 'needs_review') {
-        return score !== undefined && score < 0.55
-      }
-      // fresh: score ≥ 0.80
-      return score !== undefined && score >= 0.80
-    })
-  }, [retentionFilter, stats.retentionScores])
 
   const TopicButton = ({ topic }: { topic: typeof EDITAL_TOPICS[0] }) => {
     const score = stats.retentionScores[topic.id]
