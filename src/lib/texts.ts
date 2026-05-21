@@ -4,8 +4,6 @@ import {
   setDoc,
   onSnapshot,
   serverTimestamp,
-  query,
-  orderBy,
   type Unsubscribe,
 } from 'firebase/firestore'
 import { db } from './firebase'
@@ -61,10 +59,9 @@ export function subscribeTextos(
   cb: (textos: TextoOficial[]) => void
 ): Unsubscribe {
   const ref = collection(db, 'users', uid, 'texts')
-  const q = query(ref, orderBy('disciplina'), orderBy('ordem'))
-  return onSnapshot(q, snap => {
+  return onSnapshot(ref, snap => {
     cb(snap.docs.map(d => d.data() as TextoOficial))
-  })
+  }, () => cb([]))
 }
 
 export async function importTexto(

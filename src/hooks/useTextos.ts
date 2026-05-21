@@ -14,7 +14,10 @@ export function useTextos(uid: string | undefined) {
     }
     setLoading(true)
     const unsub = subscribeTextos(uid, data => {
-      setTextos(data)
+      const sorted = [...data].sort((a, b) =>
+        a.disciplina.localeCompare(b.disciplina) || a.ordem - b.ordem
+      )
+      setTextos(sorted)
       setLoading(false)
     })
     return unsub
