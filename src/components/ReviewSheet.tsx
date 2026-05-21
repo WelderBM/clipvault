@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { ReviewContent } from '../lib/review'
-import { TOPIC_STATE_DOT, type TopicState } from '../data/edital_topics'
+import { getTopicDotClass } from '../data/edital_topics'
 import { DISCIPLINE_LABELS, type Discipline } from '../types'
 import MindMapViewer from './MindMapViewer'
 import FlashcardViewer from './FlashcardViewer'
@@ -39,12 +39,12 @@ function TextViewer({ sections }: { sections: NonNullable<ReviewContent['text']>
 
 interface Props {
   content: ReviewContent
-  topicState?: TopicState
+  retentionScore?: number
   discipline: Discipline
   onClose: () => void
 }
 
-export default function ReviewSheet({ content, topicState, discipline, onClose }: Props) {
+export default function ReviewSheet({ content, retentionScore, discipline, onClose }: Props) {
   const tabs: Tab[] = [
     content.mindMap          ? { id: 'map',   label: 'Mapa'    } : null,
     content.text             ? { id: 'text',  label: 'Texto'   } : null,
@@ -55,7 +55,7 @@ export default function ReviewSheet({ content, topicState, discipline, onClose }
   ].filter((t): t is Tab => t !== null)
 
   const [activeTab, setActiveTab] = useState(tabs[0]?.id ?? 'map')
-  const dot = topicState ? TOPIC_STATE_DOT[topicState] : 'bg-white/20'
+  const dot = getTopicDotClass(retentionScore)
 
   return (
     /*
@@ -80,7 +80,7 @@ export default function ReviewSheet({ content, topicState, discipline, onClose }
               <span className="font-mono text-[10px] text-white/40 uppercase tracking-wider">
                 {DISCIPLINE_LABELS[discipline]}
               </span>
-              {topicState && <div className={`w-2 h-2 rounded-full ${dot}`} />}
+              {retentionScore !== undefined && <div className={`w-2 h-2 rounded-full ${dot}`} />}
             </div>
           </div>
           <button

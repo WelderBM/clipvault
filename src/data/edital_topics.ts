@@ -685,3 +685,12 @@ export const TOPIC_STATE_DOT: Record<TopicState, string> = {
   practiced: 'bg-amber-400',
   confident: 'bg-teal',
 }
+
+// Dynamic dot class based on retention score (0-1)
+export function getTopicDotClass(score: number | undefined): string {
+  if (score === undefined) return 'bg-white/15'
+  if (score >= 0.80) return 'bg-teal'
+  if (score >= 0.55) return 'bg-sky-400'
+  if (score >= 0.30) return 'bg-amber animate-pulse'
+  return 'bg-rose-400 animate-pulse'
+}

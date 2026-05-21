@@ -5,8 +5,8 @@ import {
   getWeekKey, getWeekDays, formatDateStr, getDayKey, todayLocalStr, DAY_LABELS,
   type WeeklyLog, type WeeklyEntry,
 } from '../lib/weekly'
-import { subscribeTopicProgress } from '../lib/progress'
-import { EDITAL_TOPICS, TOPIC_STATE_DOT, type TopicState } from '../data/edital_topics'
+import { subscribeTopicProgress, calcRetentionScore, type TopicProgress } from '../lib/progress'
+import { EDITAL_TOPICS, getTopicDotClass } from '../data/edital_topics'
 import { DISCIPLINE_LABELS } from '../types'
 import WeeklyEntrySheet from '../components/WeeklyEntrySheet'
 
@@ -27,7 +27,7 @@ export default function WeeklyPage() {
   const { user } = useAuth()
   const [weekOffset, setWeekOffset] = useState(0)
   const [weeklyLogs, setWeeklyLogs] = useState<Record<string, WeeklyLog>>({})
-  const [topicProgress, setTopicProgress] = useState<Record<string, TopicState>>({})
+  const [topicProgress, setTopicProgress] = useState<Record<string, TopicProgress>>({})
   const [addingDate, setAddingDate] = useState<string | null>(null)
 
   const todayWeekKey = useMemo(() => getWeekKey(new Date()), [])
@@ -164,8 +164,9 @@ export default function WeeklyPage() {
                               {DISCIPLINE_LABELS[entry.discipline]}
                             </span>
                             {entry.topicIds.map(id => {
-                              const state: TopicState = topicProgress[id] ?? 'unseen'
-                              return <div key={id} className={`w-1.5 h-1.5 rounded-full ${TOPIC_STATE_DOT[state]}`} />
+                              const prog = topicProgress[id]
+                              const score = prog ? calcRetentionScore(prog.lastSessionType, prog.lastStudiedAt.toDate()) : undefined
+                              return <div key={id} className={`w-1.5 h-1.5 rounded-full ${getTopicDotClass(score)}`} />
                             })}
                           </div>
                           {topicLabels.length > 0 && (

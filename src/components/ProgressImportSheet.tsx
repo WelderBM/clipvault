@@ -1,27 +1,30 @@
 import { useMemo, useState } from 'react'
-import { EDITAL_TOPICS, TOPIC_STATE_LABELS } from '../data/edital_topics'
-import { batchSetTopicProgress, setTopicProgress } from '../lib/progress'
+import { EDITAL_TOPICS } from '../data/edital_topics'
+import {
+  batchSetTopicProgress, setTopicProgress, legacyStateToSessionType,
+  HALF_LIFE_DAYS, SESSION_TYPE_SHORT,
+  type SessionType, type ProgressUpdateEntry, type TopicProgress,
+} from '../lib/progress'
 import { batchSetReviewContent, type ReviewContent } from '../lib/review'
 import { importWeeklyLogs } from '../lib/weekly'
-import type { TopicState } from '../data/edital_topics'
 import { DISCIPLINES, type Discipline } from '../types'
 
 interface Props {
   uid: string
-  currentProgress: Record<string, TopicState>
+  currentProgress: Record<string, TopicProgress>
   onClose: () => void
 }
 
 const VALID_TOPIC_IDS = new Set(EDITAL_TOPICS.map(t => t.id))
-const VALID_STATES = new Set<string>(['unseen', 'seen', 'practiced', 'confident'])
+const VALID_SESSION_TYPES = new Set<string>(['seen', 'socratic', 'questions', 'questions_ok', 'confident'])
+const VALID_LEGACY_STATES = new Set<string>(['unseen', 'seen', 'practiced', 'confident'])
 const REVIEW_FORMAT_KEYS = new Set(['mindMap', 'text', 'flashcards', 'checklist', 'table', 'cloze'])
 const VALID_DISCIPLINES = new Set<string>(DISCIPLINES)
 const WEEK_KEY_RE = /^\d{4}-W\d{2}$/
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
-const STATE_RANK: Record<string, number> = { unseen: 0, seen: 1, practiced: 2, confident: 3 }
 
 interface ParseResult {
-  updates: Record<string, TopicState> | null
+  updates: Record<string, ProgressUpdateEntry> | null
   reviewUpdates: Record<string, Omit<ReviewContent, 'topicId' | 'updatedAt'>> | null
   weeklyUpdates: Record<string, { entries: { date: string; discipline: Discipline; topicIds: string[]; note?: string }[] }> | null
   errors: string[]
@@ -44,7 +47,7 @@ function parse(raw: string): ParseResult {
 
   const obj = json as Record<string, unknown>
   const errors: string[] = []
-  let updates: Record<string, TopicState> | null = null
+  let updates: Record<string, ProgressUpdateEntry> | null = null
   let reviewUpdates: Record<string, Omit<ReviewContent, 'topicId' | 'updatedAt'>> | null = null
   let weeklyUpdates: Record<string, { entries: { date: string; discipline: Discipline; topicIds: string[]; note?: string }[] }> | null = null
 
@@ -53,11 +56,32 @@ function parse(raw: string): ParseResult {
       errors.push('"topicProgress" deve ser um objeto.')
     } else {
       const raw_tp = obj.topicProgress as Record<string, unknown>
-      const u: Record<string, TopicState> = {}
-      for (const [id, state] of Object.entries(raw_tp)) {
+      const u: Record<string, ProgressUpdateEntry> = {}
+      for (const [id, value] of Object.entries(raw_tp)) {
         if (!VALID_TOPIC_IDS.has(id)) { errors.push(`topicProgress: "${id}" não reconhecido`); continue }
-        if (!VALID_STATES.has(state as string)) { errors.push(`topicProgress "${id}": estado "${state}" inválido`); continue }
-        u[id] = state as TopicState
+        if (typeof value === 'string') {
+          // Legacy string or new SessionType string
+          if (!VALID_LEGACY_STATES.has(value) && !VALID_SESSION_TYPES.has(value)) {
+            errors.push(`topicProgress "${id}": estado "${value}" inválido`); continue
+          }
+          const sessionType = VALID_SESSION_TYPES.has(value)
+            ? value as SessionType
+            : legacyStateToSessionType(value)
+          u[id] = { sessionType }
+        } else if (typeof value === 'object' && value !== null) {
+          // New object format: { sessionType, lastStudiedAt? }
+          const entry = value as Record<string, unknown>
+          if (typeof entry.sessionType !== 'string' || !VALID_SESSION_TYPES.has(entry.sessionType)) {
+            errors.push(`topicProgress "${id}": sessionType inválido`); continue
+          }
+          let lastStudiedAt: Date | undefined
+          if (typeof entry.lastStudiedAt === 'string' && DATE_RE.test(entry.lastStudiedAt)) {
+            lastStudiedAt = new Date(entry.lastStudiedAt + 'T12:00:00')
+          }
+          u[id] = { sessionType: entry.sessionType as SessionType, lastStudiedAt }
+        } else {
+          errors.push(`topicProgress "${id}": valor inválido`); continue
+        }
       }
       if (Object.keys(u).length > 0) updates = u
     }
@@ -162,17 +186,29 @@ export default function ProgressImportSheet({ uid, currentProgress, onClose }: P
     try {
       let applied = 0, skipped = 0, contents = 0, weeks = 0
 
-      const effectiveProgress = { ...currentProgress }
+      const effectiveProgressIds = new Set(Object.keys(currentProgress))
 
       if (parsed.updates) {
-        const r = await batchSetTopicProgress(uid, parsed.updates, mode, currentProgress)
-        applied = r.applied
-        skipped = r.skipped
-        for (const [id, state] of Object.entries(parsed.updates)) {
-          const curr = currentProgress[id] ?? 'unseen'
-          if (mode === 'replace' || (STATE_RANK[state] ?? 0) > (STATE_RANK[curr] ?? 0)) {
-            effectiveProgress[id] = state
+        const toApply: Record<string, ProgressUpdateEntry> = {}
+        for (const [id, update] of Object.entries(parsed.updates)) {
+          const current = currentProgress[id]
+          if (mode === 'replace' || !current) {
+            toApply[id] = update
+            effectiveProgressIds.add(id)
+          } else {
+            const currentRank = HALF_LIFE_DAYS[current.lastSessionType] ?? 0
+            const newRank = HALF_LIFE_DAYS[update.sessionType] ?? 0
+            if (newRank > currentRank) {
+              toApply[id] = update
+              effectiveProgressIds.add(id)
+            } else {
+              skipped++
+            }
           }
+        }
+        if (Object.keys(toApply).length > 0) {
+          const r = await batchSetTopicProgress(uid, toApply)
+          applied = r.applied
         }
       }
 
@@ -185,7 +221,7 @@ export default function ProgressImportSheet({ uid, currentProgress, onClose }: P
         weeks = Object.keys(parsed.weeklyUpdates).length
         await Promise.all(
           topicIds
-            .filter(id => (effectiveProgress[id] ?? 'unseen') === 'unseen')
+            .filter(id => !effectiveProgressIds.has(id))
             .map(id => setTopicProgress(uid, id, 'seen'))
         )
       }
@@ -251,7 +287,7 @@ export default function ProgressImportSheet({ uid, currentProgress, onClose }: P
             {(parsed.updates || parsed.reviewUpdates || parsed.weeklyUpdates) && (
               <div className="text-white/50 space-y-0.5">
                 {parsed.updates && (
-                  <p>{Object.keys(parsed.updates).length} estado{Object.keys(parsed.updates).length !== 1 ? 's' : ''} reconhecido{Object.keys(parsed.updates).length !== 1 ? 's' : ''}</p>
+                  <p>{Object.keys(parsed.updates).length} tópico{Object.keys(parsed.updates).length !== 1 ? 's' : ''} reconhecido{Object.keys(parsed.updates).length !== 1 ? 's' : ''}</p>
                 )}
                 {parsed.reviewUpdates && (
                   <p>{Object.keys(parsed.reviewUpdates).length} conteúdo{Object.keys(parsed.reviewUpdates).length !== 1 ? 's' : ''} de revisão</p>
@@ -267,16 +303,16 @@ export default function ProgressImportSheet({ uid, currentProgress, onClose }: P
                   Ver tópicos ({Object.keys(parsed.updates).length})
                 </summary>
                 <div className="mt-2 space-y-1 max-h-40 overflow-y-auto pr-1">
-                  {Object.entries(parsed.updates).map(([id, newState]) => {
-                    const current = currentProgress[id] ?? 'unseen'
+                  {Object.entries(parsed.updates).map(([id, update]) => {
+                    const current = currentProgress[id]
                     const topic = EDITAL_TOPICS.find(t => t.id === id)
                     return (
                       <div key={id} className="flex items-center gap-2">
                         <span className="truncate flex-1 text-white/50">{topic?.label ?? id}</span>
                         <span className="text-white/25 flex-shrink-0 text-[10px]">
-                          {TOPIC_STATE_LABELS[current]} →
+                          {current ? SESSION_TYPE_SHORT[current.lastSessionType] : 'Não visto'} →
                         </span>
-                        <span className="text-teal flex-shrink-0 text-[10px]">{TOPIC_STATE_LABELS[newState]}</span>
+                        <span className="text-teal flex-shrink-0 text-[10px]">{SESSION_TYPE_SHORT[update.sessionType]}</span>
                       </div>
                     )
                   })}
@@ -289,7 +325,7 @@ export default function ProgressImportSheet({ uid, currentProgress, onClose }: P
         {result && (
           <div className="flex flex-col gap-0.5 text-xs font-body">
             {result.applied > 0 && (
-              <span className="text-teal">✓ {result.applied} estado{result.applied !== 1 ? 's' : ''} avançado{result.applied !== 1 ? 's' : ''}</span>
+              <span className="text-teal">✓ {result.applied} tópico{result.applied !== 1 ? 's' : ''} atualizado{result.applied !== 1 ? 's' : ''}</span>
             )}
             {result.skipped > 0 && (
               <span className="text-white/40">– {result.skipped} ignorado{result.skipped !== 1 ? 's' : ''} (já no nível ou superior)</span>

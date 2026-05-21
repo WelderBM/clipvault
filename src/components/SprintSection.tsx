@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import { SPRINT_PHASES, getDaysToExam, getCurrentPhase, getPhaseProgress } from '../data/sprint'
-import { EDITAL_TOPICS, TOPIC_STATE_LABELS, TOPIC_STATE_DOT, type TopicState } from '../data/edital_topics'
+import { EDITAL_TOPICS, getTopicDotClass } from '../data/edital_topics'
 import { FCC_WEIGHTS } from '../data/strategy'
+import { getRetentionLabel, type TopicProgress } from '../lib/progress'
 import type { Discipline } from '../types'
 
 interface Props {
-  topicProgress: Record<string, TopicState>
-  onTopicClick: (id: string, state: TopicState | undefined) => void
+  retentionScores: Record<string, number>
+  topicProgress: Record<string, TopicProgress>
+  onTopicClick: (id: string) => void
 }
 
-export default function SprintSection({ topicProgress, onTopicClick }: Props) {
+export default function SprintSection({ retentionScores, topicProgress: _topicProgress, onTopicClick }: Props) {
   const [expanded, setExpanded] = useState(true)
   const daysToExam = getDaysToExam()
   const currentPhase = getCurrentPhase()
@@ -18,10 +20,14 @@ export default function SprintSection({ topicProgress, onTopicClick }: Props) {
   const criticalTopics = EDITAL_TOPICS
     .filter(t => t.hotFCC)
     .filter(t => {
-      const s = topicProgress[t.id] ?? 'unseen'
-      return s === 'unseen' || s === 'seen'
+      const score = retentionScores[t.id]
+      return score === undefined || score < 0.55
     })
-    .sort((a, b) => (FCC_WEIGHTS[b.discipline as Discipline] ?? 0) - (FCC_WEIGHTS[a.discipline as Discipline] ?? 0))
+    .sort((a, b) => {
+      const urgencyA = (FCC_WEIGHTS[a.discipline as Discipline] ?? 0.05) * (1 - (retentionScores[a.id] ?? 0))
+      const urgencyB = (FCC_WEIGHTS[b.discipline as Discipline] ?? 0.05) * (1 - (retentionScores[b.id] ?? 0))
+      return urgencyB - urgencyA
+    })
 
   const formatDate = (str: string) => {
     const [, m, d] = str.split('-').map(Number)
@@ -103,18 +109,19 @@ export default function SprintSection({ topicProgress, onTopicClick }: Props) {
               </p>
               <div className="space-y-1.5">
                 {criticalTopics.slice(0, 6).map(topic => {
-                  const state: TopicState = topicProgress[topic.id] ?? 'unseen'
+                  const score = retentionScores[topic.id]
+                  const { label, color } = score !== undefined
+                    ? getRetentionLabel(score)
+                    : { label: 'Não visto', color: 'text-white/25' }
                   return (
                     <button
                       key={topic.id}
-                      onClick={() => onTopicClick(topic.id, state)}
+                      onClick={() => onTopicClick(topic.id)}
                       className="w-full flex items-center gap-3 px-3 py-2 rounded-xl bg-white/[0.02] border border-white/5 text-left active:scale-[0.98] transition-transform"
                     >
-                      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${TOPIC_STATE_DOT[state]}`} />
+                      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${getTopicDotClass(score)}`} />
                       <p className="flex-1 font-body text-xs text-white/70 truncate">{topic.label}</p>
-                      <span className="font-mono text-[10px] text-white/30 flex-shrink-0">
-                        {TOPIC_STATE_LABELS[state]}
-                      </span>
+                      <span className={`font-mono text-[10px] flex-shrink-0 ${color}`}>{label}</span>
                     </button>
                   )
                 })}
@@ -129,7 +136,7 @@ export default function SprintSection({ topicProgress, onTopicClick }: Props) {
 
           {criticalTopics.length === 0 && (
             <p className="font-body text-xs text-teal/60 text-center py-1">
-              Todos os hot topics estão praticados ou dominados ✓
+              Todos os hot topics estão bem retidos ✓
             </p>
           )}
         </div>
