@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import { EDITAL_TOPICS } from '../data/edital_topics'
 import { DISCIPLINES, DISCIPLINE_LABELS, type Discipline } from '../types'
-import { setTopicProgress } from '../lib/progress'
+import { setTopicProgress, type TopicProgress } from '../lib/progress'
 import { saveWeeklyLog, DAY_LABELS, type WeeklyEntry, type DayKey } from '../lib/weekly'
-import type { TopicState } from '../data/edital_topics'
 
 interface Props {
   uid: string
@@ -11,7 +10,7 @@ interface Props {
   date: string
   dayKey: DayKey
   existingEntries: WeeklyEntry[]
-  currentProgress: Record<string, TopicState>
+  currentProgress: Record<string, TopicProgress>
   onClose: () => void
 }
 
@@ -42,10 +41,10 @@ export default function WeeklyEntrySheet({
       }
       await saveWeeklyLog(uid, weekKey, [...existingEntries, newEntry])
 
-      // Auto-advance unseen topics to 'seen'
+      // Auto-advance topics with no prior progress to 'seen'
       await Promise.all(
         selectedTopics
-          .filter(id => (currentProgress[id] ?? 'unseen') === 'unseen')
+          .filter(id => !currentProgress[id])
           .map(id => setTopicProgress(uid, id, 'seen'))
       )
       onClose()

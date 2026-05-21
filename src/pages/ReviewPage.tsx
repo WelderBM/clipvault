@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { subscribeReviewContent, type ReviewContent } from '../lib/review'
-import { subscribeTopicProgress } from '../lib/progress'
-import { EDITAL_TOPICS, TOPIC_STATE_DOT, type TopicState } from '../data/edital_topics'
+import { subscribeTopicProgress, calcRetentionScore, type TopicProgress } from '../lib/progress'
+import { EDITAL_TOPICS, getTopicDotClass } from '../data/edital_topics'
 import { DISCIPLINE_LABELS, type Discipline } from '../types'
 import ReviewSheet from '../components/ReviewSheet'
 
@@ -26,7 +26,7 @@ function hasContent(c: ReviewContent, key: keyof ReviewContent): boolean {
 export default function ReviewPage() {
   const { user } = useAuth()
   const [reviewContent, setReviewContent] = useState<Record<string, ReviewContent>>({})
-  const [topicProgress, setTopicProgress] = useState<Record<string, TopicState>>({})
+  const [topicProgress, setTopicProgress] = useState<Record<string, TopicProgress>>({})
   const [loading, setLoading] = useState(true)
   const [selectedDiscipline, setSelectedDiscipline] = useState<Discipline | null>(null)
   const [openTopic, setOpenTopic] = useState<string | null>(null)
@@ -118,8 +118,9 @@ export default function ReviewPage() {
             {filtered.map(topicId => {
               const content = reviewContent[topicId]
               const topicData = EDITAL_TOPICS.find(t => t.id === topicId)
-              const state: TopicState = topicProgress[topicId] ?? 'unseen'
-              const dot = TOPIC_STATE_DOT[state]
+              const prog = topicProgress[topicId]
+              const score = prog ? calcRetentionScore(prog.lastSessionType, prog.lastStudiedAt.toDate()) : undefined
+              const dot = getTopicDotClass(score)
               const formats = FORMAT_BADGES.filter(f => hasContent(content, f.key))
 
               return (
@@ -157,7 +158,10 @@ export default function ReviewPage() {
       {openContent && openTopic && openTopicData && (
         <ReviewSheet
           content={openContent}
-          topicState={topicProgress[openTopic]}
+          retentionScore={(() => {
+            const prog = topicProgress[openTopic]
+            return prog ? calcRetentionScore(prog.lastSessionType, prog.lastStudiedAt.toDate()) : undefined
+          })()}
           discipline={openTopicData.discipline}
           onClose={() => setOpenTopic(null)}
         />
