@@ -50,6 +50,11 @@ export interface TextoOficial {
   categoria: TextCategory
   ordem: number
   artigos: Artigo[]
+  // Agrupamento de partes (todos opcionais — textos sem grupo funcionam normalmente)
+  grupoId?: string       // slug da lei pai, ex: "lei-9784-1999"
+  grupoParte?: number    // número desta parte, ex: 1
+  grupoTotal?: number    // total de partes, ex: 5
+  grupoTitulo?: string   // nome completo da lei, ex: "Lei 9.784/1999 — Processo Administrativo"
   importadoEm?: unknown
   updatedAt?: unknown
 }
