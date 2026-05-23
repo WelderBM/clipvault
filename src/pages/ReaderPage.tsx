@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronRight, ArrowLeft, BookOpen, Settings2, ZoomIn, ZoomOut, EyeOff, Eye, Bookmark, Trash2 } from 'lucide-react'
+import { ArrowLeft, BookOpen, Settings2, ZoomIn, ZoomOut, EyeOff, Eye, Bookmark, Trash2 } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useTextos } from '../hooks/useTextos'
 import { DISCIPLINE_LABELS } from '../types'
-import { TEXT_CATEGORY_LABELS, type TextoOficial } from '../lib/texts'
+import { TEXT_CATEGORY_LABELS, updateArtigos, type TextoOficial } from '../lib/texts'
 import { getReaderProgress, setReadMarker, addHighlight, removeHighlight, type ReaderProgress, type HighlightColor } from '../lib/reader'
 import ImportTextSheet from '../components/ImportTextSheet'
+import EditTextSheet from '../components/EditTextSheet'
 
 type Theme = 'dark' | 'light' | 'sepia'
 
@@ -39,6 +40,7 @@ export default function ReaderPage() {
   const [expandedDiscipline, setExpandedDiscipline] = useState<string | null>(null)
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null)
   const [showImport, setShowImport] = useState(false)
+  const [editingText, setEditingText] = useState<TextoOficial | null>(null)
 
   // Leitor preferences
   const [theme, setTheme] = useState<Theme>('dark')
@@ -123,6 +125,15 @@ export default function ReaderPage() {
   }
 
   const getArticleId = (num: string) => num.replace(/\W+/g, '-').toLowerCase()
+
+  const handleToggleHotFCC = async (artIdx: number) => {
+    if (!user || !activeText) return
+    const updated = activeText.artigos.map((a, i) =>
+      i === artIdx ? { ...a, hotFCC: !a.hotFCC } : a
+    )
+    await updateArtigos(user.uid, activeText.id, updated)
+    setActiveArticleAction(null)
+  }
 
   const disciplines = Object.keys(byDiscipline) as (keyof typeof byDiscipline)[]
 
@@ -216,12 +227,11 @@ export default function ReaderPage() {
                           {items.map(item => {
                             if (item.type === 'single') {
                               return (
-                                <button
-                                  key={item.texto.id}
-                                  onClick={() => setSelectedText(item.texto.id)}
-                                  className="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-white/[0.03] transition-colors border-b border-border/20 last:border-b-0"
-                                >
-                                  <div className="flex-1 min-w-0">
+                                <div key={item.texto.id} className="flex items-center border-b border-border/20 last:border-b-0 hover:bg-white/[0.03] transition-colors">
+                                  <button
+                                    onClick={() => setSelectedText(item.texto.id)}
+                                    className="flex-1 min-w-0 px-4 py-3 text-left"
+                                  >
                                     <p className="font-body text-sm text-white/85 leading-snug">{item.texto.titulo}</p>
                                     <div className="flex items-center gap-2 mt-1">
                                       <span className="font-mono text-[9px] text-white/30 border border-white/10 rounded px-1.5 py-0.5 uppercase tracking-wider">
@@ -231,9 +241,18 @@ export default function ReaderPage() {
                                         {item.texto.artigos.length} art.
                                       </span>
                                     </div>
-                                  </div>
-                                  <ChevronRight className="w-4 h-4 text-white/20 flex-shrink-0" />
-                                </button>
+                                  </button>
+                                  <button
+                                    onClick={() => setEditingText(item.texto)}
+                                    className="px-3 py-3 text-white/20 hover:text-white/50 transition-colors flex-shrink-0"
+                                    aria-label="Editar"
+                                  >
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                    </svg>
+                                  </button>
+                                </div>
                               )
                             }
 
@@ -266,22 +285,28 @@ export default function ReaderPage() {
                                 {isGroupExpanded && (
                                   <div className="bg-white/[0.015] border-t border-border/20">
                                     {item.partes.map(parte => (
-                                      <button
-                                        key={parte.id}
-                                        onClick={() => setSelectedText(parte.id)}
-                                        className="w-full px-4 pl-10 py-2.5 flex items-center gap-3 text-left hover:bg-white/[0.03] transition-colors border-b border-border/10 last:border-b-0"
-                                      >
-                                        <div className="flex-1 min-w-0">
+                                      <div key={parte.id} className="flex items-center border-b border-border/10 last:border-b-0 hover:bg-white/[0.03] transition-colors">
+                                        <button
+                                          onClick={() => setSelectedText(parte.id)}
+                                          className="flex-1 min-w-0 pl-10 pr-2 py-2.5 text-left"
+                                        >
                                           <p className="font-body text-xs text-white/75 leading-snug">
-                                            {parte.grupoParte !== undefined
-                                              ? `Parte ${parte.grupoParte}: ${parte.titulo ?? parte.titulo ?? ''}`
-                                              : parte.titulo ?? parte.titulo ?? ''}
+                                            {parte.grupoParte !== undefined ? `Parte ${parte.grupoParte}` : parte.titulo ?? ''}
                                           </p>
-                                          <p className="font-body text-[10px] text-white/30 mt-0.5 truncate">{parte.titulo}</p>
+                                          <p className="font-body text-[10px] text-white/35 mt-0.5 truncate">{parte.titulo}</p>
                                           <span className="font-body text-[10px] text-white/25">{parte.artigos.length} art.</span>
-                                        </div>
-                                        <ChevronRight className="w-3.5 h-3.5 text-white/20 flex-shrink-0" />
-                                      </button>
+                                        </button>
+                                        <button
+                                          onClick={() => setEditingText(parte)}
+                                          className="px-3 py-2.5 text-white/20 hover:text-white/50 transition-colors flex-shrink-0"
+                                          aria-label="Editar"
+                                        >
+                                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                          </svg>
+                                        </button>
+                                      </div>
                                     ))}
                                   </div>
                                 )}
@@ -399,7 +424,7 @@ export default function ReaderPage() {
             {/* Área de Leitura */}
             <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-6 pb-24" style={{ fontSize: `${fontSize}rem` }}>
               <div className="max-w-2xl mx-auto space-y-8 font-serif leading-[1.8]">
-                {activeText?.artigos.map((art, idx) => {
+                {activeText?.artigos.map((art, artIdx) => {
                   const articleId = getArticleId(art.numero)
                   const isMarker = progress?.marker?.articleId === articleId
                   const highlights = progress?.highlights?.[articleId] || []
@@ -407,7 +432,7 @@ export default function ReaderPage() {
                   const userHighlightClass = hasUserHighlight ? highlightColors[highlights[0].color] : ''
 
                   return (
-                    <div key={idx} className="relative">
+                    <div key={artIdx} className="relative">
                       {isMarker && (
                         <div className="absolute -left-6 top-1 text-teal animate-bounce">
                           <Bookmark className="w-5 h-5 fill-current" />
@@ -452,6 +477,14 @@ export default function ReaderPage() {
                               )}
                             </div>
                             <div className="w-px h-6 bg-border mx-2" />
+                            <button
+                              onClick={() => handleToggleHotFCC(artIdx)}
+                              className={`px-2.5 py-1.5 rounded-lg font-mono text-xs transition-colors ${art.hotFCC ? 'bg-orange-500/20 text-orange-400' : 'bg-surface text-white/30 hover:text-white/60'}`}
+                              title={art.hotFCC ? 'Remover hot FCC' : 'Marcar como hot FCC'}
+                            >
+                              🔥
+                            </button>
+                            <div className="w-px h-6 bg-border mx-2" />
                             <button onClick={() => handleSetMarker(articleId)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal/10 text-teal font-body text-sm hover:bg-teal/20 transition-colors">
                               <Bookmark className="w-4 h-4" />
                               <span>Marcar</span>
@@ -470,6 +503,15 @@ export default function ReaderPage() {
 
       {showImport && user && (
         <ImportTextSheet uid={user.uid} onClose={() => setShowImport(false)} />
+      )}
+
+      {editingText && user && (
+        <EditTextSheet
+          uid={user.uid}
+          texto={editingText}
+          onClose={() => setEditingText(null)}
+          onDeleted={() => { setEditingText(null); setSelectedText(null) }}
+        />
       )}
     </div>
   )
