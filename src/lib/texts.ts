@@ -2,6 +2,8 @@ import {
   collection,
   doc,
   setDoc,
+  updateDoc,
+  deleteDoc,
   onSnapshot,
   serverTimestamp,
   type Unsubscribe,
@@ -50,6 +52,11 @@ export interface TextoOficial {
   categoria: TextCategory
   ordem: number
   artigos: Artigo[]
+  // Agrupamento de partes (todos opcionais — textos sem grupo funcionam normalmente)
+  grupoId?: string       // slug da lei pai, ex: "lei-9784-1999"
+  grupoParte?: number    // número desta parte, ex: 1
+  grupoTotal?: number    // total de partes, ex: 5
+  grupoTitulo?: string   // nome completo da lei, ex: "Lei 9.784/1999 — Processo Administrativo"
   importadoEm?: unknown
   updatedAt?: unknown
 }
@@ -82,4 +89,20 @@ export async function bulkImportTextos(
 ): Promise<number> {
   await Promise.all(textos.map(t => importTexto(uid, t)))
   return textos.length
+}
+
+type MetadataUpdate = Partial<Omit<TextoOficial, 'id' | 'artigos' | 'importadoEm' | 'updatedAt'>>
+
+export async function updateTextoMetadata(uid: string, id: string, updates: MetadataUpdate): Promise<void> {
+  const ref = doc(db, 'users', uid, 'texts', id)
+  await updateDoc(ref, { ...updates, updatedAt: serverTimestamp() })
+}
+
+export async function updateArtigos(uid: string, id: string, artigos: Artigo[]): Promise<void> {
+  const ref = doc(db, 'users', uid, 'texts', id)
+  await updateDoc(ref, { artigos, updatedAt: serverTimestamp() })
+}
+
+export async function deleteTexto(uid: string, id: string): Promise<void> {
+  await deleteDoc(doc(db, 'users', uid, 'texts', id))
 }

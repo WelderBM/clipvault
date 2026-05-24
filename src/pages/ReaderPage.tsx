@@ -1,14 +1,36 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronRight, ArrowLeft, BookOpen, Settings2, ZoomIn, ZoomOut, EyeOff, Eye, Bookmark, Trash2 } from 'lucide-react'
+import { ArrowLeft, BookOpen, Settings2, ZoomIn, ZoomOut, EyeOff, Eye, Bookmark, Trash2 } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useTextos } from '../hooks/useTextos'
 import { DISCIPLINE_LABELS } from '../types'
-import { TEXT_CATEGORY_LABELS, type TextoOficial } from '../lib/texts'
+import { TEXT_CATEGORY_LABELS, updateArtigos, type TextoOficial } from '../lib/texts'
 import { getReaderProgress, setReadMarker, addHighlight, removeHighlight, type ReaderProgress, type HighlightColor } from '../lib/reader'
 import ImportTextSheet from '../components/ImportTextSheet'
+import EditTextSheet from '../components/EditTextSheet'
 
 type Theme = 'dark' | 'light' | 'sepia'
+
+type DisciplineItem =
+  | { type: 'single'; texto: TextoOficial }
+  | { type: 'group'; grupoId: string; titulo: string; partes: TextoOficial[] }
+
+function buildDisciplineItems(texts: TextoOficial[]): DisciplineItem[] {
+  const seenGroups = new Set<string>()
+  const items: DisciplineItem[] = []
+  for (const texto of texts) {
+    if (!texto.grupoId) {
+      items.push({ type: 'single', texto })
+    } else if (!seenGroups.has(texto.grupoId)) {
+      seenGroups.add(texto.grupoId)
+      const partes = texts
+        .filter(t => t.grupoId === texto.grupoId)
+        .sort((a, b) => (a.grupoParte ?? 0) - (b.grupoParte ?? 0))
+      items.push({ type: 'group', grupoId: texto.grupoId, titulo: texto.grupoTitulo ?? texto.grupoId, partes })
+    }
+  }
+  return items
+}
 
 export default function ReaderPage() {
   const { user } = useAuth()
@@ -16,7 +38,9 @@ export default function ReaderPage() {
 
   const [selectedText, setSelectedText] = useState<string | null>(null)
   const [expandedDiscipline, setExpandedDiscipline] = useState<string | null>(null)
+  const [expandedGroup, setExpandedGroup] = useState<string | null>(null)
   const [showImport, setShowImport] = useState(false)
+  const [editingText, setEditingText] = useState<TextoOficial | null>(null)
 
   // Leitor preferences
   const [theme, setTheme] = useState<Theme>('dark')
@@ -46,6 +70,16 @@ export default function ReaderPage() {
 
   const activeText: TextoOficial | undefined = textos.find(t => t.id === selectedText)
 
+  // Group navigation
+  const groupPartes = activeText?.grupoId
+    ? textos
+        .filter(t => t.grupoId === activeText.grupoId)
+        .sort((a, b) => (a.grupoParte ?? 0) - (b.grupoParte ?? 0))
+    : null
+  const currentParteIndex = groupPartes?.findIndex(t => t.id === selectedText) ?? -1
+  const prevParte = groupPartes && currentParteIndex > 0 ? groupPartes[currentParteIndex - 1] : null
+  const nextParte = groupPartes && currentParteIndex < groupPartes.length - 1 ? groupPartes[currentParteIndex + 1] : null
+
   useEffect(() => {
     if (!user || !selectedText) {
       setProgress(null)
@@ -61,9 +95,9 @@ export default function ReaderPage() {
   }
 
   const articleClasses = {
-    dark:  { hot: 'bg-orange-500/10 border-l-2 border-orange-500', num: 'text-teal',         note: 'text-orange-400/80 bg-orange-500/5' },
-    light: { hot: 'bg-orange-100 border-l-2 border-orange-500',    num: 'text-teal-700',     note: 'text-orange-700 bg-orange-50' },
-    sepia: { hot: 'bg-[#F2E0C4] border-l-2 border-[#B98944]',      num: 'text-[#8B6B42] font-bold', note: 'text-[#8B6B42] bg-[#E8D6B6]' },
+    dark:  { hot: 'bg-orange-500/10 border-l-2 border-orange-500', num: 'text-teal',                  note: 'text-orange-400/80 bg-orange-500/5' },
+    light: { hot: 'bg-orange-100 border-l-2 border-orange-500',    num: 'text-teal-700',              note: 'text-orange-700 bg-orange-50' },
+    sepia: { hot: 'bg-[#F2E0C4] border-l-2 border-[#B98944]',      num: 'text-[#8B6B42] font-bold',   note: 'text-[#8B6B42] bg-[#E8D6B6]' },
   }
 
   const highlightColors: Record<HighlightColor, string> = {
@@ -91,6 +125,15 @@ export default function ReaderPage() {
   }
 
   const getArticleId = (num: string) => num.replace(/\W+/g, '-').toLowerCase()
+
+  const handleToggleHotFCC = async (artIdx: number) => {
+    if (!user || !activeText) return
+    const updated = activeText.artigos.map((a, i) =>
+      i === artIdx ? { ...a, hotFCC: !a.hotFCC } : a
+    )
+    await updateArtigos(user.uid, activeText.id, updated)
+    setActiveArticleAction(null)
+  }
 
   const disciplines = Object.keys(byDiscipline) as (keyof typeof byDiscipline)[]
 
@@ -124,14 +167,12 @@ export default function ReaderPage() {
               </button>
             </header>
 
-            {/* Loading */}
             {loadingTextos && (
               <div className="flex justify-center py-12">
                 <div className="w-6 h-6 border-2 border-teal/30 border-t-teal rounded-full animate-spin" />
               </div>
             )}
 
-            {/* Empty state */}
             {!loadingTextos && textos.length === 0 && (
               <div className="flex flex-col items-center gap-4 py-16 text-center">
                 <div className="w-12 h-12 rounded-full bg-surface border border-border flex items-center justify-center">
@@ -144,16 +185,18 @@ export default function ReaderPage() {
               </div>
             )}
 
-            {/* Two-level navigation: discipline → texts */}
+            {/* Two-level navigation: discipline → items (single or group) */}
             {!loadingTextos && disciplines.length > 0 && (
               <div className="space-y-2">
                 {disciplines.map(disc => {
                   const texts = byDiscipline[disc] ?? []
                   const isExpanded = expandedDiscipline === disc
                   const hotCount = texts.reduce((n, t) => n + t.artigos.filter(a => a.hotFCC).length, 0)
+                  const items = buildDisciplineItems(texts)
 
                   return (
                     <div key={disc} className="bg-surface border border-border rounded-2xl overflow-hidden">
+                      {/* Discipline header */}
                       <button
                         className="w-full px-4 py-3.5 flex items-center justify-between text-left"
                         onClick={() => setExpandedDiscipline(isExpanded ? null : disc)}
@@ -178,28 +221,98 @@ export default function ReaderPage() {
                         </svg>
                       </button>
 
+                      {/* Items (singles and groups) */}
                       {isExpanded && (
-                        <div className="border-t border-border/50 divide-y divide-border/30">
-                          {texts.map(text => (
-                            <button
-                              key={text.id}
-                              onClick={() => setSelectedText(text.id)}
-                              className="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-white/[0.03] transition-colors"
-                            >
-                              <div className="flex-1 min-w-0">
-                                <p className="font-body text-sm text-white/85 leading-snug">{text.titulo}</p>
-                                <div className="flex items-center gap-2 mt-1">
-                                  <span className="font-mono text-[9px] text-white/30 border border-white/10 rounded px-1.5 py-0.5 uppercase tracking-wider">
-                                    {TEXT_CATEGORY_LABELS[text.categoria]}
-                                  </span>
-                                  <span className="font-body text-[10px] text-white/30">
-                                    {text.artigos.length} artigo{text.artigos.length !== 1 ? 's' : ''}
-                                  </span>
+                        <div className="border-t border-border/50">
+                          {items.map(item => {
+                            if (item.type === 'single') {
+                              return (
+                                <div key={item.texto.id} className="flex items-center border-b border-border/20 last:border-b-0 hover:bg-white/[0.03] transition-colors">
+                                  <button
+                                    onClick={() => setSelectedText(item.texto.id)}
+                                    className="flex-1 min-w-0 px-4 py-3 text-left"
+                                  >
+                                    <p className="font-body text-sm text-white/85 leading-snug">{item.texto.titulo}</p>
+                                    <div className="flex items-center gap-2 mt-1">
+                                      <span className="font-mono text-[9px] text-white/30 border border-white/10 rounded px-1.5 py-0.5 uppercase tracking-wider">
+                                        {TEXT_CATEGORY_LABELS[item.texto.categoria]}
+                                      </span>
+                                      <span className="font-body text-[10px] text-white/30">
+                                        {item.texto.artigos.length} art.
+                                      </span>
+                                    </div>
+                                  </button>
+                                  <button
+                                    onClick={() => setEditingText(item.texto)}
+                                    className="px-3 py-3 text-white/20 hover:text-white/50 transition-colors flex-shrink-0"
+                                    aria-label="Editar"
+                                  >
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                    </svg>
+                                  </button>
                                 </div>
+                              )
+                            }
+
+                            // Group item
+                            const isGroupExpanded = expandedGroup === item.grupoId
+                            return (
+                              <div key={item.grupoId} className="border-b border-border/20 last:border-b-0">
+                                {/* Group header */}
+                                <button
+                                  onClick={() => setExpandedGroup(isGroupExpanded ? null : item.grupoId)}
+                                  className="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-white/[0.02] transition-colors"
+                                >
+                                  <div className="w-4 h-4 flex-shrink-0 flex items-center justify-center">
+                                    <svg
+                                      className={`w-3 h-3 text-white/30 transition-transform ${isGroupExpanded ? 'rotate-90' : ''}`}
+                                      fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                    >
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                    </svg>
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="font-body text-sm text-white/85 leading-snug">{item.titulo}</p>
+                                    <p className="font-mono text-[10px] text-white/35 mt-0.5">
+                                      {item.partes.length} partes · {item.partes.reduce((n, p) => n + p.artigos.length, 0)} art.
+                                    </p>
+                                  </div>
+                                </button>
+
+                                {/* Parts list */}
+                                {isGroupExpanded && (
+                                  <div className="bg-white/[0.015] border-t border-border/20">
+                                    {item.partes.map(parte => (
+                                      <div key={parte.id} className="flex items-center border-b border-border/10 last:border-b-0 hover:bg-white/[0.03] transition-colors">
+                                        <button
+                                          onClick={() => setSelectedText(parte.id)}
+                                          className="flex-1 min-w-0 pl-10 pr-2 py-2.5 text-left"
+                                        >
+                                          <p className="font-body text-xs text-white/75 leading-snug">
+                                            {parte.grupoParte !== undefined ? `Parte ${parte.grupoParte}` : parte.titulo ?? ''}
+                                          </p>
+                                          <p className="font-body text-[10px] text-white/35 mt-0.5 truncate">{parte.titulo}</p>
+                                          <span className="font-body text-[10px] text-white/25">{parte.artigos.length} art.</span>
+                                        </button>
+                                        <button
+                                          onClick={() => setEditingText(parte)}
+                                          className="px-3 py-2.5 text-white/20 hover:text-white/50 transition-colors flex-shrink-0"
+                                          aria-label="Editar"
+                                        >
+                                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                          </svg>
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
                               </div>
-                              <ChevronRight className="w-4 h-4 text-white/20 flex-shrink-0" />
-                            </button>
-                          ))}
+                            )
+                          })}
                         </div>
                       )}
                     </div>
@@ -225,16 +338,50 @@ export default function ReaderPage() {
                 >
                   <ArrowLeft className="w-5 h-5" />
                 </button>
-                <h1 className="font-display text-lg truncate opacity-90">
-                  {activeText?.titulo}
-                </h1>
+                <div className="min-w-0">
+                  <h1 className="font-display text-base truncate opacity-90 leading-tight">
+                    {activeText?.titulo}
+                  </h1>
+                  {groupPartes && (
+                    <p className="font-mono text-[10px] text-teal/70 mt-0.5">
+                      Parte {activeText?.grupoParte} de {activeText?.grupoTotal ?? groupPartes.length}
+                    </p>
+                  )}
+                </div>
               </div>
-              <button
-                onClick={() => setShowSettings(!showSettings)}
-                className={`p-2 rounded-lg opacity-60 hover:opacity-100 transition-colors ${showSettings ? 'bg-black/10' : ''}`}
-              >
-                <Settings2 className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-1 flex-shrink-0">
+                {/* Part navigation */}
+                {groupPartes && (
+                  <>
+                    <button
+                      onClick={() => prevParte && setSelectedText(prevParte.id)}
+                      disabled={!prevParte}
+                      className="p-1.5 rounded-lg opacity-60 hover:opacity-100 disabled:opacity-20 transition-opacity"
+                      aria-label="Parte anterior"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="15 18 9 12 15 6" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => nextParte && setSelectedText(nextParte.id)}
+                      disabled={!nextParte}
+                      className="p-1.5 rounded-lg opacity-60 hover:opacity-100 disabled:opacity-20 transition-opacity"
+                      aria-label="Próxima parte"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+                    </button>
+                  </>
+                )}
+                <button
+                  onClick={() => setShowSettings(!showSettings)}
+                  className={`p-2 rounded-lg opacity-60 hover:opacity-100 transition-colors ${showSettings ? 'bg-black/10' : ''}`}
+                >
+                  <Settings2 className="w-5 h-5" />
+                </button>
+              </div>
             </header>
 
             {/* Configurações (Collapse) */}
@@ -247,16 +394,12 @@ export default function ReaderPage() {
                   className="px-4 overflow-hidden"
                 >
                   <div className="flex flex-wrap gap-4 p-4 rounded-xl bg-black/10 border border-black/5 backdrop-blur-sm mb-4">
-                    {/* Temas */}
                     <div className="flex gap-2">
                       <button onClick={() => setTheme('dark')}  className={`w-8 h-8 rounded-full bg-[#03080F] border-2 ${theme === 'dark'  ? 'border-teal' : 'border-transparent'}`} />
                       <button onClick={() => setTheme('light')} className={`w-8 h-8 rounded-full bg-[#F9FAFB] border-2 border-gray-300 ${theme === 'light' ? '!border-teal-600' : ''}`} />
                       <button onClick={() => setTheme('sepia')} className={`w-8 h-8 rounded-full bg-[#FBF0D9] border-2 border-[#D4A853]/40 ${theme === 'sepia' ? '!border-[#D4A853]' : ''}`} />
                     </div>
-
                     <div className="w-px bg-black/10 mx-2" />
-
-                    {/* Fonte */}
                     <div className="flex gap-2">
                       <button onClick={() => setFontSize(f => Math.max(0.8, f - 0.1))} className="p-1.5 rounded bg-black/5 opacity-70 hover:opacity-100">
                         <ZoomOut className="w-5 h-5" />
@@ -265,10 +408,7 @@ export default function ReaderPage() {
                         <ZoomIn className="w-5 h-5" />
                       </button>
                     </div>
-
                     <div className="w-px bg-black/10 mx-2" />
-
-                    {/* Modo Prova */}
                     <button
                       onClick={() => setModoProva(!modoProva)}
                       className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm font-body transition-colors ${modoProva ? 'bg-red-500/10 text-red-600 dark:text-red-400' : 'bg-black/5 opacity-70'}`}
@@ -284,7 +424,7 @@ export default function ReaderPage() {
             {/* Área de Leitura */}
             <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-6 pb-24" style={{ fontSize: `${fontSize}rem` }}>
               <div className="max-w-2xl mx-auto space-y-8 font-serif leading-[1.8]">
-                {activeText?.artigos.map((art, idx) => {
+                {activeText?.artigos.map((art, artIdx) => {
                   const articleId = getArticleId(art.numero)
                   const isMarker = progress?.marker?.articleId === articleId
                   const highlights = progress?.highlights?.[articleId] || []
@@ -292,7 +432,7 @@ export default function ReaderPage() {
                   const userHighlightClass = hasUserHighlight ? highlightColors[highlights[0].color] : ''
 
                   return (
-                    <div key={idx} className="relative">
+                    <div key={artIdx} className="relative">
                       {isMarker && (
                         <div className="absolute -left-6 top-1 text-teal animate-bounce">
                           <Bookmark className="w-5 h-5 fill-current" />
@@ -318,7 +458,6 @@ export default function ReaderPage() {
                         )}
                       </div>
 
-                      {/* Menu de Ações */}
                       <AnimatePresence>
                         {activeArticleAction === articleId && (
                           <motion.div
@@ -338,6 +477,14 @@ export default function ReaderPage() {
                               )}
                             </div>
                             <div className="w-px h-6 bg-border mx-2" />
+                            <button
+                              onClick={() => handleToggleHotFCC(artIdx)}
+                              className={`px-2.5 py-1.5 rounded-lg font-mono text-xs transition-colors ${art.hotFCC ? 'bg-orange-500/20 text-orange-400' : 'bg-surface text-white/30 hover:text-white/60'}`}
+                              title={art.hotFCC ? 'Remover hot FCC' : 'Marcar como hot FCC'}
+                            >
+                              🔥
+                            </button>
+                            <div className="w-px h-6 bg-border mx-2" />
                             <button onClick={() => handleSetMarker(articleId)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal/10 text-teal font-body text-sm hover:bg-teal/20 transition-colors">
                               <Bookmark className="w-4 h-4" />
                               <span>Marcar</span>
@@ -356,6 +503,15 @@ export default function ReaderPage() {
 
       {showImport && user && (
         <ImportTextSheet uid={user.uid} onClose={() => setShowImport(false)} />
+      )}
+
+      {editingText && user && (
+        <EditTextSheet
+          uid={user.uid}
+          texto={editingText}
+          onClose={() => setEditingText(null)}
+          onDeleted={() => { setEditingText(null); setSelectedText(null) }}
+        />
       )}
     </div>
   )
