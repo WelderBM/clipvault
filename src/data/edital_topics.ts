@@ -200,6 +200,17 @@ export const EDITAL_TOPICS: EditalTopic[] = [
       'Servidores públicos estaduais (Arts. 111-116)',
     ],
   },
+  {
+    id: 'cf-funcoes-essenciais',
+    label: 'Funções Essenciais à Justiça (MP, Defensoria, Advocacia)',
+    discipline: 'constitucional',
+    subtopics: [
+      'Ministério Público — princípios institucionais, atribuições e garantias (Arts. 127-130)',
+      'Defensoria Pública — acesso à justiça, autonomia (Arts. 133-134)',
+      'Advocacia pública — AGU e Procuradorias estaduais (Arts. 131-132)',
+      'OAB — indispensabilidade do advogado à administração da justiça',
+    ],
+  },
 
   // ─── DIREITO ADMINISTRATIVO (20%) ──────────────────────────────────────────
   {
@@ -396,6 +407,28 @@ export const EDITAL_TOPICS: EditalTopic[] = [
       'Controle interno e externo',
       'Tribunal de Contas da União — competências',
       'TCE-RR — fiscalização da ALERR',
+    ],
+  },
+  {
+    id: 'afo-tipos-orcamento',
+    label: 'Tipos de Orçamento (base zero, desempenho, programa)',
+    discipline: 'afo',
+    subtopics: [
+      'Orçamento base zero (OBZ) — parte do zero, justifica todas as despesas',
+      'Orçamento-programa — vinculação a metas e objetivos',
+      'Orçamento de desempenho — avaliação por resultados',
+      'Orçamento participativo — envolvimento da sociedade',
+    ],
+  },
+  {
+    id: 'afo-fiplan',
+    label: 'Fiplan — Sistema de Planejamento de Roraima',
+    discipline: 'afo',
+    subtopics: [
+      'Módulos: planejamento, orçamento, execução e controle',
+      'Integração com a elaboração da LOA estadual',
+      'Registro de empenho, liquidação e pagamento no sistema',
+      'Relatórios e transparência fiscal gerados pelo Fiplan',
     ],
   },
 
@@ -661,6 +694,61 @@ export const EDITAL_TOPICS: EditalTopic[] = [
       'Memória — paginação, segmentação, memória virtual',
       'Sistema de arquivos — FAT, NTFS, ext4',
       'Linux — comandos básicos, permissões, scripts bash',
+    ],
+  },
+  {
+    id: 'ti-testes',
+    label: 'Testes de Software',
+    discipline: 'ti',
+    subtopics: [
+      'Tipos: unitário, integração, sistema e aceitação (UAT)',
+      'TDD — Test-Driven Development; BDD — Behavior-Driven Development',
+      'Ferramentas: JUnit, Pytest, Selenium, Jest',
+      'Métricas: cobertura de código, taxa de defeitos',
+    ],
+  },
+  {
+    id: 'ti-acessibilidade',
+    label: 'Acessibilidade (WCAG e e-MAG)',
+    discipline: 'ti',
+    subtopics: [
+      'WCAG 2.1 — quatro princípios: Perceptível, Operável, Compreensível, Robusto',
+      'Níveis de conformidade A, AA e AAA',
+      'e-MAG — Modelo de Acessibilidade em Governo Eletrônico',
+      'Tecnologias assistivas: leitores de tela, teclado, alto contraste',
+    ],
+  },
+  {
+    id: 'ti-governanca',
+    label: 'Governança TI (ITIL v3, COBIT 2019, PMBOK)',
+    discipline: 'ti',
+    subtopics: [
+      'ITIL v3 — ciclo de vida do serviço: Estratégia, Desenho, Transição, Operação, Melhoria',
+      'COBIT 2019 — domínios APO, BAI, DSS, MEA e objetivos de governança',
+      'PMBOK — 5 grupos de processos e 10 áreas de conhecimento',
+      'ISO/IEC 20000 (gestão de serviços) e 27001 (segurança da informação)',
+    ],
+  },
+  {
+    id: 'ti-ia-dados',
+    label: 'IA e Análise de Dados (Python/bibliotecas)',
+    discipline: 'ti',
+    subtopics: [
+      'Python para dados: NumPy, Pandas, Matplotlib, Scikit-learn',
+      'Machine Learning — supervisionado (classificação, regressão) e não supervisionado (clusterização)',
+      'IA generativa — conceitos, modelos de linguagem (LLM), prompt engineering',
+      'ETL, data warehouse, data lake e BI — conceitos e ferramentas',
+    ],
+  },
+  {
+    id: 'ti-ingles',
+    label: 'Inglês Técnico',
+    discipline: 'ti',
+    subtopics: [
+      'Leitura e compreensão de textos técnicos em inglês',
+      'Terminologia de TI: hardware, software, networks, security',
+      'Documentação técnica, manuais e RFCs',
+      'Interpretação de enunciados de questões em inglês',
     ],
   },
 ]
