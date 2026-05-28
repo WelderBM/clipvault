@@ -1,341 +1,314 @@
-# HANDOFF — ClipVault
+# HANDOFF — ClipVault + Preparação ALE-RR 2026
 
-> Mapa de continuidade pra próxima IA assumir o projeto. Leia em ordem.
-
----
-
-## 0. Pra quem está lendo
-
-Você está continuando o desenvolvimento do **ClipVault** — app pessoal de estudos do Welder pra concurso ALE-RR 2026 (Programador, banca FCC, prova em **28/06/2026**). É o app dele, ele é dev fullstack, e está usando o app pra tagar cards de estudo enquanto se prepara. Cada feature que entra é uma feature que ele usa no mesmo dia. Prioridade é entregar valor útil rápido, não arquitetura ideal.
-
-Antes de qualquer coisa, **leia o `CLAUDE.md`** na raiz do projeto — é a fonte de verdade do roadmap, das convenções e do contexto do concurso. Esse `HANDOFF.md` é complementar, não substitui.
+> Arquivo de continuidade para novas threads de conversa com o Claude.
+> Atualizado em: 2026-05-25
 
 ---
 
-## 1. Estado atual em uma frase
+## 1. Identidade e Contexto
 
-**Fase 1 entregue (exceto filtros/busca, intencionalmente pulados) + Fase 2 entregue (migração de campos `discipline`/`importance`/`lastReviewed`/`reviewCount`).** Tudo passa em `tsc --noEmit` e `vite build`. Pronto pra implementar filtros + busca, ou pular pra Fase 3 (navegação horizontal de tabs).
+```
+Candidato:    Welder Barroso, ~20 anos, Boa Vista/RR
+Concurso:     ALE-RR 2026 — Técnico Legislativo Especializado / Programador (Código 31)
+Banca:        FCC
+Prova:        28/06/2026 (80 questões — 40 Gerais + 40 Específicos TI)
+Eliminatório: 50 pts padronizados por bloco, 100 combinados
+Remuneração:  R$ 7.464,35
+Stack dev:    React, Next.js, TypeScript, Tailwind, Firebase, React Native
+Fuso:         America/Boa_Vista (UTC-4)
+Email:        welderb40@gmail.com
+```
 
 ---
 
-## 2. Stack e estrutura
+## 2. Protocolo de Sessão de Estudo
 
-```
-clipvault/
-├── CLAUDE.md                     ← roadmap + contexto (LER PRIMEIRO)
-├── HANDOFF.md                    ← este arquivo
-├── firestore.indexes.json        ← só 1 index: status+createdAt
-├── firestore.rules               ← cada user só lê/escreve em /users/{uid}/cards
-├── package.json                  ← React 18, TS, Vite, Firebase 10, react-router 6
-├── tailwind.config.js            ← cores: void, teal, amber, surface, border
-├── src/
-│   ├── App.tsx                   ← router (login / home / archive)
-│   ├── main.tsx
-│   ├── types/index.ts            ← Card, CardInput, Discipline, Importance, constants
-│   ├── lib/
-│   │   ├── firebase.ts           ← init via env vars
-│   │   └── cards.ts              ← TODAS as ops Firestore (CRUD + bulk + paginação + revisão)
-│   ├── hooks/
-│   │   ├── useAuth.tsx           ← Google sign-in
-│   │   ├── useCards.ts           ← paginação híbrida + sort Recente/Urgente
-│   │   ├── useLongPress.ts       ← gesture handler (touch + mouse)
-│   │   └── useSelection.ts       ← Set-based multi-selection
-│   ├── components/
-│   │   ├── CardItem.tsx          ← read mode + edit mode + selection mode
-│   │   ├── CreateCardSheet.tsx   ← bottom sheet de criação
-│   │   ├── ImportCardsSheet.tsx  ← bottom sheet de import JSON em lote
-│   │   └── SelectionToolbar.tsx  ← toolbar inferior com bulk actions
-│   └── pages/
-│       ├── HomePage.tsx          ← feed ativo + paginação + sort + import + selection
-│       ├── ArchivePage.tsx       ← feed used + archived + selection (sem paginação)
-│       └── LoginPage.tsx
-```
+Quando Welder iniciar uma conversa de estudo, o Claude deve:
 
-Stack: **React 18 + TypeScript + Vite + Tailwind + Firebase 10 + vite-plugin-pwa + Yarn**. Sem state global (useState/useContext bastam). Mobile first, testar em 390px.
+1. Verificar horário e dia atual com `user_time_v0`
+2. Comparar com última sessão registrada
+3. Situar o candidato: dias restantes, onde estamos no plano semanal, o que ficou pendente
+4. Welder fornece: energia (alta/média/baixa) + tempo disponível
+5. Claude decide o tópico com base em: sprint atual, peso FCC, score de retenção, lacunas do diagnóstico
+6. Formato por energia:
+   - Alta + 40min → conteúdo novo com questões
+   - Média + 30min → socrática em tópico com lacuna
+   - Baixa + 20min → flashcard verbal ou contexto causal sem cobrança
+7. Diagnóstico de retenção: aplicar a cada 7 dias no início da sessão
 
 ---
 
-## 3. O que JÁ está feito
+## 3. Perfil Cognitivo
 
-### 3.1 Fase 1 — Melhorias no feed de Cards
-
-| Item                                          | Status | Onde mora                                       |
-|-----------------------------------------------|--------|-------------------------------------------------|
-| Edição inline (clicar no card abre edit mode) | ✅     | `CardItem.tsx` — `editing` state                |
-| Deleção individual com confirmação            | ✅     | `CardItem.tsx` — dropdown ⋮ → confirm flow      |
-| Seleção múltipla via long press               | ✅     | `useSelection` + `useLongPress` + `CardItem`    |
-| Bulk operations (archive/delete/reactivate/export) | ✅ | `lib/cards.ts` (`bulk*`) + `SelectionToolbar`   |
-| Importação JSON em lote                       | ✅     | `ImportCardsSheet.tsx` + `bulkCreateCards`      |
-| Filtros rápidos por chips                     | ❌     | **PULADO intencionalmente** (vê 4.1)            |
-| Busca full-text                               | ❌     | **PULADO intencionalmente** (vê 4.1)            |
-| Ordenação Recente/Urgente                     | ✅     | `useCards.ts` — `sort` opt + `urgencyScore`     |
-| Paginação cursor + scroll infinito            | ✅     | `useCards.ts` (híbrido) + `HomePage` (IntersectionObserver) |
-
-### 3.2 Fase 2 — Migração de campos novos (concluída)
-
-Card ganhou 4 campos opcionais (retrocompat com cards antigos garantida via opcionalidade):
-
-```typescript
-discipline?: Discipline | null      // 8 matérias do edital
-importance?: Importance             // 1 | 2 | 3
-lastReviewed?: Timestamp | null
-reviewCount?: number
-```
-
-UI atualizada em todos os pontos: criação (`CreateCardSheet`), edição inline (`CardItem`), import JSON (`ImportCardsSheet`). Read mode mostra badge `★`/`🔥` pra importance ≥ 2 e chip cinza com `DISCIPLINE_LABELS[discipline]` ao lado do chip de categoria. Botão "Revisei" no dropdown ⋮ chama `markAsReviewed` que faz `lastReviewed=Timestamp.now()` e `reviewCount=increment(1)` atomicamente.
-
-### 3.3 Linha do tempo das sessões anteriores
-
-1. **Edição inline** — adicionada modo dual em `CardItem`. Clique no corpo do card vira tap-to-edit. Botões internos têm `e.stopPropagation()`.
-2. **Deleção individual** — dropdown ⋮ ganhou item "Deletar" com confirmação inline ("Apagar este card?" + Confirmar/Cancelar) antes de chamar `deleteCard`. Long press foi reservado pra multi-select (vê 5.1).
-3. **Seleção múltipla** — descobri que TODA a infra (`useSelection`, `useLongPress`, `SelectionToolbar`, `bulk*`) já estava pronta entre sessões. Só verifiquei o build.
-4. **Importação JSON** — criei `ImportCardsSheet` + `bulkCreateCards`. Schema permissivo: só `text` é obrigatório, todo o resto cai em defaults.
-5. **Paginação + sort** — `useCards` virou híbrido (onSnapshot first page + getDocs extra pages). Sort Urgente é client-side via fórmula `importance * log1p(daysSince)`. `HomePage` ganhou `IntersectionObserver` sentinel.
-6. **Migração Fase 2** — adicionei tipos novos (`Discipline`, `Importance`, constants), `markAsReviewed`, pickers em todos os formulários, badges no read mode, e limpei o hack de cast no `urgencyScore`.
+- Aprende por lógica causal — não por decoreba
+- Contexto antes de questão — sempre
+- Memória fraca para dados soltos — precisa da lógica por trás
+- Não converte erro em correção sem estrutura externa
+- Flow por construção ativa — não por leitura passiva
+- Afetado farmacologicamente na memória de trabalho
+- Diagnóstico: transtorno esquizoafetivo
+- Medicação: valproico + fluoxetina (manhã), lítio + olanzapina (noite 20h)
 
 ---
 
-## 4. O que AINDA FALTA
-
-### 4.1 Fase 1 — itens pulados (próximo passo recomendado)
-
-**Filtros rápidos por chips** — chips horizontais filtrando por discipline, importance, status. Agora que Fase 2 está feita, esses chips ficam genuinamente úteis (chip "Hot FCC" filtra `importance === 3`, chip "Português" filtra `discipline === 'portugues'`, etc.). Implementação client-side sobre o array que `useCards` já entrega — sem nova query Firestore inicialmente. Futuro: índices compostos pra filtragem server-side se a base crescer.
-
-**Busca full-text** — input em cima do feed que filtra em tempo real `title + text` (case-insensitive, normalize accents). Highlight do trecho encontrado dentro do `text`. Client-side via `useMemo` sobre `cards`. Importante: a busca não compete com paginação — se o termo não aparece na primeira página, sugerir um botão "Carregar mais e buscar novamente". Ou: temporariamente carregar tudo enquanto busca está ativa (depende do volume real do user).
-
-### 4.2 Fase 2.5 — pequenas pendências da migração
-
-- **`bulkMarkAsReviewed`** em `lib/cards.ts` — pra adicionar botão "Revisei" no `SelectionToolbar`. Chunked writeBatch igual aos outros bulk.
-- **Script de backfill** — não fiz porque os campos são opcionais. Se quiser, pode rodar uma vez via console pra setar `importance: 1` e `reviewCount: 0` em todos os cards existentes (limpa lógica condicional `?? 1` espalhada). Não é estritamente necessário.
-- **Limpar discipline ao salvar** — atualmente `editDiscipline=undefined` vira `null` no save (Firestore não aceita undefined). Funciona, mas se quiser puristamente "deletar o campo" usar `deleteField()` do Firestore.
-
-### 4.3 Fase 3 — Navegação horizontal de tabs
-
-Refactor estrutural. Hoje a app é vertical (Home + Archive route). O CLAUDE.md prevê 4 tabs horizontais iguais sem centralidade:
+## 4. Rotina Diária
 
 ```
-Tab 1: 📋 Cards    (HomePage atual + filtros + busca)
-Tab 2: 📊 Dashboard
-Tab 3: 🎯 Estratégia FCC
-Tab 4: 📜 Textos Oficiais
+12h–14h     Preparação + deslocamento para o ITEAM
+14h–17h30   ITEAM Full Stack (seg–sex)
+17h–19h     Sessão ALE-RR com Claude — pré-cursinho (ter/qui)
+19h–22h     Cursinho (seg/ter/qua/qui)
+20h         Remédio noturno (inegociável)
 ```
 
-Implicações: react-router muda pra estrutura aninhada com tab navigator no shell, ou um único Layout component com tabs e conteúdo conditional. ArchivePage provavelmente vira um filtro do Tab 1 em vez de página separada (decisão a tomar). FAB (criar card) pode ficar global ou por tab.
+Cursinho cobre: Português (Prof. Felipe Lins), Legislação + Administrativo + AFO + Constitucional (Prof. Marcus Duarte), Geografia (Profa Fabíola).
 
-### 4.4 Fase 4 — Dashboard (Tab 2)
+---
 
-Componentes previstos: radar chart 5 eixos (Português, Const, Adm, AFO, Legislação+RR) volume vs peso FCC, heatmap GitHub-style de atividade, lista do edital com `% FCC` + status visto/não-visto + última revisão + reviewCount, hot topics card com 8 itens da prova garantida, banner "🔄 Offline — cache de Xh atrás". Vai consumir `discipline`/`importance`/`reviewCount`/`lastReviewed` que foram criados na Fase 2.
+## 5. Plano de 5 Semanas (a partir de 25/05/2026)
 
-### 4.5 Fase 5 — Estratégia FCC (Tab 3)
+```
+Semana 1 (24–30/05): AFO do zero
+  Seg 25/05 17h: afo-principios + afo-ciclo (PPA/LDO/LOA)
+  Ter 27/05 17h: afo-receitas (originárias/derivadas, correntes/capital)
+  Qui 29/05 17h: afo-despesas + afo-creditos (F-E-L-P + créditos adicionais)
+  Sáb 30/05:    Questões AFO + revisão
+  Meta: AFO completo em practiced até 30/05
 
-Dados estáticos gerados externamente (não editáveis). Mora em `src/data/` (arquivos `.ts` ou `.json`). Conteúdo: distribuição % FCC por matéria, ranking de subtemas por peso, top 3 armadilhas, 8 hot topics, mapa de fontes (cursinho/Gran/NotebookLM). Ver tabela no `CLAUDE.md` seção "Contexto do concurso".
+Semana 2 (31/05–06/06): TI Bloco 1
+  Seg 01/06: ti-banco-dados (SQL, normalização, ACID)
+  Ter 03/06: ti-redes (OSI/TCP-IP, protocolos)
+  Qui 05/06: ti-seguranca (CIA, OWASP, criptografia)
+  Dom 07/06: Revisão TI Bloco 1 + questões
+  Meta: 3 tópicos TI em practiced
 
-### 4.6 Fase 6 — Textos Oficiais / Leitor (Tab 4)
+Semana 3 (07–13/06): TI Bloco 2 + Constitucional lacunas
+  Seg 08/06: ti-algoritmos + ti-poo
+  Ter 10/06: ti-engenharia-sw (Scrum, UML)
+  Qui 12/06: cf-organizacao-estado + cf-poder-judiciario
+  Meta: TI 7/12 practiced, Constitucional sem unseen
 
-Leitor estilo Kindle pros documentos do edital. Tipografia serif, 3 temas (branco/sépia/escuro), highlights em 3 cores (geral/armadilha/hot), índice lateral, modo prova (oculta números de artigos). Documentos como JSONs pré-processados em `src/data/documentos/`. **`regimento_interno_alerr.json` já existe** (mencionado no `CLAUDE.md`, 18 artigos, 16 hotFCC). Faltam: Código de Ética Parlamentar, Constituição RR arts. 30–67 e 111–116, LC 053/2001, LC 373/2026.
+Semana 4 (14–20/06): TI Bloco 3 + Administrativo lacunas
+  Seg 15/06: ti-arquitetura + ti-devops
+  Ter 17/06: ti-so + ti-cloud
+  Qui 19/06: adm-improbidade + adm-responsabilidade
+  Sáb 20/06: Simulado completo 40 Gerais
+  Meta: TI 10/12 practiced, Administrativo completo
 
-Schema do JSON está definido no `CLAUDE.md`:
+Semana 5 (21–27/06): REVISÃO TOTAL — zero conteúdo novo
+  Seg 22/06: Revisão AFO + Legislação
+  Ter 24/06: Revisão Constitucional + Administrativo
+  Qui 26/06: Revisão TI (pontos fracos)
+  Sex 27/06: Simulado final 80 questões (4h)
+  Sáb 28/06: PROVA
+```
 
-```typescript
-interface Artigo {
-  numero: string
-  titulo?: string
-  caput: string
-  incisos?: string[]
-  paragrafos?: string[]
-  tags?: string[]
-  hotFCC?: boolean
-  notaFCC?: string
+---
+
+## 6. Progresso Atual — 24/05/2026
+
+Estado baseado em sessionType + retenção espaçada (Ebbinghaus).
+
+### PRACTICED (questions / questions_ok)
+
+| Matéria | Tópicos |
+|---|---|
+| Português | pt-interpretacao, pt-morfologia, pt-concordancia, pt-crase, pt-sintaxe, pt-regencia |
+| Constitucional | cf-direitos-fundamentais, cf-poder-legislativo, cf-processo-legislativo, cf-administracao-publica |
+| Administrativo | adm-principios, adm-atos, adm-poderes, adm-direta-indireta, adm-agentes-publicos, adm-lc053 |
+| Legislação | leg-regimento, leg-const-rr-legislativo |
+| História | hist-formacao, hist-politica |
+| Geografia | geo-localizacao, geo-fisico |
+| TI | ti-lgpd, ti-dev-web |
+
+### SEEN (visto mas sem questões)
+
+| Matéria | Tópicos |
+|---|---|
+| Português | pt-pontuacao, pt-coesao, pt-tipologia |
+| Constitucional | cf-principios, cf-constitucional-estadual, cf-organizacao-estado |
+| Administrativo | adm-licitacao, adm-processo |
+| **AFO** | **afo-principios, afo-ciclo, afo-receitas, afo-despesas, afo-creditos (TODOS seen — risco alto)** |
+| Legislação | leg-codigo-etica, leg-const-rr-servidores, leg-lc373 |
+| História | hist-municipios |
+| Geografia | geo-recursos |
+| TI | ti-banco-dados, ti-redes, ti-seguranca, ti-algoritmos, ti-poo, ti-engenharia-sw, ti-arquitetura, ti-devops, ti-so |
+
+### UNSEEN (não visto formalmente)
+
+pt-ortografia, pt-redacao-oficial, cf-poder-judiciario, cf-controle-constitucional, adm-responsabilidade, adm-improbidade, afo-lei-4320, afo-lrf, afo-controle, ti-cloud
+
+---
+
+## 7. Lacunas Recorrentes — Erram Sempre
+
+Itens que aparecem como erro em todo diagnóstico:
+
+1. **Reunião pública** → PRÉVIO AVISO (não autorização) — inc. XVI art. 5º CF/88
+2. **Naturalização país de língua portuguesa** → 1 ANO (não 15)
+3. **MS coletivo** → partido precisa ter REPRESENTAÇÃO NO CONGRESSO NACIONAL
+4. **Sanção tácita** → silêncio do Governador no prazo = sanção (exceção: quem cala não consente)
+5. **Prazo do Governador** → 15 dias ÚTEIS (não corridos) para sancionar/vetar
+6. **Superintendências ALERR** → são 10; Superintendência-GERAL coordena todas
+7. **Improbidade** → gera SUSPENSÃO (não perda) de direitos políticos
+8. **AFO em geral** → tudo seen, zero practiced — bloqueio cognitivo documentado
+
+---
+
+## 8. Erros do Simulado — 20/05/2026
+
+Prova de Constitucional — 18 questões — 8 acertos (44,4%):
+
+| Questão | Tema | Erro |
+|---|---|---|
+| Q04 | Eficácia das normas | Eficácia limitada (não contida) |
+| Q06 | MS coletivo | Partido precisa de representação no Congresso |
+| Q07 | Liberdade de reunião | Prévio aviso (não autorização) |
+| Q08 | Gerações de direitos | Direitos sociais = 2ª geração |
+| Q11 | Naturalização | Língua portuguesa = 1 ano (não 15) |
+| Q12/Q13 | Nacionalidade | Critérios funcional vs residencial |
+| Q14 | Senado | Idade mínima = 35 anos |
+| Q17 | Militares candidatos | +10 anos: afastado; se eleito → inatividade na diplomação |
+| Q18 | Improbidade | Suspensão (não perda) de direitos políticos |
+
+---
+
+## 9. Contexto Atual
+
+- Cirurgia de implante dentário realizada em 22/05/2026 (sexta-feira)
+- Repouso físico de 2–3 meses para recuperação óssea
+- Mobilidade física reduzida — estudos pelo celular no fim de semana
+- Segunda 25/05 retorna à rotina normal
+- ClipVault app em produção: revisão espaçada implementada, leitor com textos oficiais importados
+- Textos oficiais disponíveis no app: Lei 9.784, Lei 8.429, Lei 4.320, LC 101, LGPD, Lei 14.133, LC 373, Res. 015, CF/88 arts. 5–17, Constituição Estadual, Regimento ALERR, Código de Ética, LC 053
+
+---
+
+## 10. Dois Riscos Críticos de Eliminação
+
+1. **TI (40 questões Específicos)** — 2/12 practiced. Risco real de não atingir os 50 pts mínimos do bloco específico.
+2. **AFO (15% Gerais)** — 0/7 practiced. Tudo seen, bloqueio cognitivo documentado. Se não virar practiced na Semana 1, compromete o bloco de Gerais.
+
+---
+
+## 11. Regras do Plano
+
+- Português não tem sessão dedicada — treina embutido nas questões de outras matérias
+- Cursinho reforça, não define — conteúdo do dia trazido para sessão com Claude no dia seguinte
+- Diagnóstico toda segunda-feira — 5 perguntas rápidas antes de avançar
+- Se atrasar: cortar ti-arquitetura, ti-devops, ti-so (menor peso histórico FCC técnico)
+- História e Geografia: não precisam de mais estudo — suficientes para 2 questões
+
+---
+
+## 12. App ClipVault — Estado Técnico
+
+```
+Repositório: github.com/WelderBM/clipvault
+Branch ativo: claude/extract-chat-context-Gf76V
+Stack: React 18 + TypeScript + Vite + Tailwind + Firebase + PWA (vite-plugin-pwa)
+```
+
+### Implementado (completo)
+
+- Sistema de revisão espaçada — Ebbinghaus (SessionType, HALF_LIFE_DAYS, calcRetentionScore)
+- Leitor com textos no Firestore — 2 níveis de navegação, groupId, highlights 3 cores, modo prova, marcador de leitura
+- Dashboard — RadarChart, Heatmap, ReviewTodaySection, SprintSection
+- SessionPickerSheet — registrar sessão de estudo por tópico
+- ProgressImportSheet — importa topicProgress + reviewContent + weeklyLog via JSON do Claude externo
+- Tab Revisão — 6 formatos: Mapa Mental, Texto, Flashcards, Checklist, Tabela, Cloze
+- Tab Semana — WeeklyPage + WeeklyEntrySheet
+- Cards com paginação cursor, filtros, busca, multi-seleção, import JSON
+- PWA offline: persistentLocalCache + persistentMultipleTabManager
+
+### Parcial / bugs pendentes
+
+- MindMapViewer: árvore HTML colapsável (sem pan/zoom — react-d3-tree não instalado)
+- Tema/fonte do leitor não persistem entre sessões
+- Firestore rules (firestore.rules) corretas mas não deployadas em produção — requer `npx firebase-tools deploy --only firestore:rules`
+- LC 373/2026 JSON não gerado (tópico leg-lc373 existe mas sem documento importável)
+
+### Não implementado
+
+- ErroTracker (rastreamento de questões erradas por tópico)
+- Seletor de tema no leitor (branco/sépia/escuro)
+- Tipografia serif (Lora/Georgia) no leitor
+
+Para detalhes completos: `APP_STATUS.md` na raiz do projeto.
+
+---
+
+## 13. Matérias e Pesos FCC — Referência Rápida
+
+### Conhecimentos Gerais (40 questões)
+
+| Matéria | % | ~Questões |
+|---|---|---|
+| Língua Portuguesa | 30% | ~12 |
+| Dir. Constitucional | 20% | ~8 |
+| Dir. Administrativo | 20% | ~8 |
+| AFO | 15% | ~6 |
+| Legislação Institucional | 10% | ~4 |
+| História RR | 3% | ~1 |
+| Geografia RR | 2% | ~1 |
+
+### Os 8 Hot Topics (presença garantida em toda prova FCC)
+
+1. Interpretação de texto (Português)
+2. HAVER/FAZER impessoais sempre singular (Português)
+3. Impeachment — Câmara autoriza, Senado julga (Constitucional)
+4. Anulação x Revogação — Judiciário não revoga (Administrativo)
+5. Estágio probatório = 3 anos LC 053/2001 (Administrativo)
+6. F-E-L-P — estágios da despesa (AFO)
+7. Quórum progressivo ALERR — 1/3 discute, maioria absoluta vota (Legislação)
+8. LGPD — controlador decide, operador executa (TI)
+
+---
+
+## 14. TopicIds Válidos (referência para importar JSON)
+
+```
+pt-interpretacao, pt-tipologia, pt-coesao, pt-morfologia, pt-concordancia,
+pt-regencia, pt-crase, pt-pontuacao, pt-sintaxe, pt-ortografia, pt-redacao-oficial,
+cf-principios, cf-direitos-fundamentais, cf-organizacao-estado, cf-poder-legislativo,
+cf-processo-legislativo, cf-administracao-publica, cf-constitucional-estadual,
+adm-principios, adm-atos, adm-poderes, adm-direta-indireta, adm-licitacao,
+adm-agentes-publicos, adm-responsabilidade, adm-processo, adm-improbidade, adm-lc053,
+afo-principios, afo-ciclo, afo-lei-4320, afo-receitas, afo-despesas, afo-creditos,
+afo-lrf, afo-controle, leg-regimento, leg-codigo-etica, leg-const-rr-legislativo,
+leg-const-rr-servidores, leg-lc373, hist-formacao, hist-municipios, hist-politica,
+geo-localizacao, geo-fisico, geo-recursos, ti-algoritmos, ti-poo, ti-banco-dados,
+ti-dev-web, ti-redes, ti-seguranca, ti-lgpd, ti-engenharia-sw, ti-arquitetura,
+ti-cloud, ti-devops, ti-so
+```
+
+---
+
+## 15. Protocolo JSON para Importar Revisão
+
+Quando solicitar ao Claude externo para "exportar revisão de <tópico>", ele deve produzir:
+
+```json
+{
+  "topicProgress": {
+    "<topicId>": {
+      "sessionType": "seen | socratic | questions | questions_ok | confident",
+      "lastStudiedAt": "2026-05-25T17:00:00-04:00"
+    }
+  },
+  "reviewContent": {
+    "<topicId>": {
+      "title": "string obrigatória",
+      "mindMap": { "name": "raiz", "children": [] },
+      "text": { "sections": [{ "title": "...", "body": "...", "items": ["..."] }] },
+      "flashcards": [{ "id": "f1", "question": "...", "answer": "..." }],
+      "checklist": ["ponto 1", "ponto 2"],
+      "table": { "headers": ["Col1"], "rows": [["val"]] },
+      "cloze": [{ "text": "texto com ___ lacuna", "answers": ["resposta"] }]
+    }
+  }
 }
 ```
 
-Highlights persistidos no Firestore por usuário (subcoleção a definir).
-
-### 4.7 Fase 7 — Offline & sincronização
-
-Firebase já tem offline persistence built-in (precisa ser ativado em `firebase.ts`). Banner discreto "🔄 Offline — cache de Xh atrás" com 3 estados (offline recente / offline antigo / sem cache). No leitor: "📖 Texto em cache · versão de DD/MM/AAAA".
-
----
-
-## 5. Decisões de design — NÃO DESFAÇA sem motivo
-
-### 5.1 Long press = multi-select, NÃO deleção
-
-CLAUDE.md menciona "swipe ou long press" pra deleção. **Não use.** Long press já é o gatilho do multi-select (`useLongPress` → `onToggleSelect`), e ter dois gestos no mesmo elemento causa colisão. Deleção individual fica no dropdown ⋮ com confirmação explícita — mais seguro pra ação destrutiva. Se quiser swipe pra delete no futuro, considere swipe-LEFT especificamente, e detecte que não conflita com long press.
-
-### 5.2 Paginação é híbrida, não cursor puro
-
-`useCards` em modo paginado: primeira página via `onSnapshot` (real-time), páginas seguintes via `getDocs` + `startAfter` (estáticas). **Tradeoff conhecido:** mutações em cards de páginas extras NÃO refletem em tempo real. Você arquivar/deleta um card antigo e ele continua visível até refresh.
-
-Por que assim: real-time em todas as páginas exigia ou re-subscrever a cada loadMore (caro), ou atualizar localmente via callback nas mutações (refactor invasivo em todos os callsites). O híbrido cobre 95% do uso (mutações nos cards mais recentes).
-
-Se virar problema, opção mais simples: adicionar `refresh()` no hook que reseta `extraPages` e re-paginar do zero. Outra: passar `onChange` callback pras mutações que faz `setExtraPages(prev => prev.map/filter)`.
-
-### 5.3 Sort Urgente roda client-side sobre o loaded set
-
-Não dá pra ordenar por `importance * recencyDecay` server-side sem índice composto custom. Decisão: client-side sobre `cards` (firstPage + extraPages). **Tradeoff:** se um card de Page 3 tem score maior, só aparece no topo após você fazer load-more até a Page 3.
-
-Se quiser server-side: criar índice composto `status ASC + importance DESC + lastReviewed DESC` no `firestore.indexes.json` e refatorar `subscribeToCardsPage`/`fetchCardsPage` pra parametrizar `orderBy`.
-
-### 5.4 ArchivePage não pagina (deliberado)
-
-Volume baixo (só cards `used` ou `archived` do próprio user). Carrega tudo via `subscribeToCards` original. Se virar lento, é só passar `pageSize: 20` no `useCards` (já é opt-in) e copiar o sentinel/IntersectionObserver da `HomePage`.
-
-### 5.5 `discipline`/`importance` não são gravados quando default
-
-`CreateCardSheet` e `ImportCardsSheet` usam spread condicional:
-
-```ts
-...(discipline !== undefined && { discipline }),
-...(importance !== 1 && { importance }),
-```
-
-Mantém docs Firestore enxutos pra cards "comuns" — só grava o campo se houve escolha explícita. Edit mode SEMPRE grava (porque pode estar limpando).
-
-### 5.6 `discipline?: Discipline | null` (não só `Discipline | undefined`)
-
-Razão: Firestore não aceita `undefined` em writes. Quando user muda discipline pra "Sem matéria" depois de ter setado, precisamos gravar `null` pra apagar. `null` (limpado explicitamente) é distinto de `undefined` (cards antigos que nunca tocaram em discipline). UI trata os dois iguais.
-
-### 5.7 Sem CSS modules, sem `any`, sem queries sem index
-
-Convenções do CLAUDE.md. Tailwind only, TypeScript estrito, lógica de negócio em hooks (não em UI), constantes do edital em `src/data/` (a criar quando precisar) ou `types/index.ts`.
-
----
-
-## 6. Estado do Firestore
-
-**Schema:**
-
-```
-/users/{userId}/cards/{cardId}
-  title: string | null
-  text: string
-  color: string                ← hex, um dos 8 em CARD_COLORS
-  emoji: string
-  category: string             ← um dos 5 em CARD_CATEGORIES
-  status: 'active' | 'used' | 'archived'
-  createdAt: Timestamp         ← serverTimestamp() na criação
-  usedAt: Timestamp | null
-
-  // Phase 2 (opcionais — cards antigos não têm)
-  discipline?: Discipline | null
-  importance?: Importance      ← 1 | 2 | 3
-  lastReviewed?: Timestamp | null
-  reviewCount?: number
-```
-
-**Indexes** (`firestore.indexes.json`): apenas 1 composto — `status ASC + createdAt DESC + __name__ DESC`. Cobre todas as queries atuais (`subscribeToCards`, `subscribeToCardsPage`, `fetchCardsPage`).
-
-**Rules** (`firestore.rules`): cada user só lê/escreve em `/users/{uid}/cards/*` onde `request.auth.uid == uid`.
-
-**Quando vai precisar adicionar índices:** filtragem server-side por `discipline`, `importance`, ou ordenação por `lastReviewed`. Aí cria composite indexes correspondentes. Lembrar de rodar `firebase deploy --only firestore:indexes` (dependendo do projeto Firebase do user).
-
----
-
-## 7. Como verificar build
-
-Yarn não está instalado no sandbox da Cowork. Use os binários direto:
-
-```bash
-cd /sessions/festive-sweet-hamilton/mnt/clipvault
-./node_modules/.bin/tsc --noEmit
-./node_modules/.bin/vite build --outDir dist-verify --emptyOutDir
-```
-
-**Importante:** use `--outDir dist-verify --emptyOutDir` em vez de buildar pra `dist/` direto. O sandbox tem permissões esquisitas em arquivos pré-existentes — `rm -rf dist` ou o `emptyOutDir` automático em `dist/` falham com "Operation not permitted". Buildar em outro diretório evita o problema. Não tem como deletar `dist-verify*` depois (mesma issue), então o user vai apagar quando rodar localmente.
-
-Em casos onde `node_modules/.bin/` desaparece (algumas operações npm `--no-save` quebram symlinks), rodar `npm install` no diretório raiz reinstala.
-
-Bundle atual: ~655kB (warning de chunk size; eventual code splitting fica pra Fase 7+ ou quando incomodar).
-
----
-
-## 8. Convenções da casa
-
-- **Tudo em português** nos comentários e nas labels de UI. O code é em inglês (var names, function names).
-- Componentes: `PascalCase.tsx`. Hooks: `useNomeDoHook.ts`. Tipos: `types.ts` na pasta relevante.
-- Mobile first. Cores via tokens do tailwind: `bg-void`, `bg-surface`, `border-border`, `text-teal`, `text-amber`. Não use cores hardcoded a menos que seja a accent color do próprio card (`card.color`).
-- Spacing/typography do design existente: header `font-display tracking-wider`, labels `font-mono text-[10-11px] text-white/40 uppercase tracking-wider`, body `font-body`.
-- Estrutura de cards visual: `rounded-2xl border` com accent bar lateral colorida `absolute left-0 top-0 bottom-0 w-1`.
-- Dropdowns/menus: classes `bg-surface border border-border rounded-2xl px-3 py-2`. Sheets de baixo: `bg-surface border-t border-border rounded-t-3xl px-4 pt-4 pb-8 max-h-[90vh] overflow-y-auto` com handle `w-10 h-1 bg-border rounded-full mx-auto`.
-
----
-
-## 9. Workflow recomendado por turn
-
-1. **Leia o `CLAUDE.md` e este HANDOFF.md** primeiro.
-2. **Use `TaskCreate`** liberalmente — esse user está em Cowork e a TaskList renderiza como widget. Crie 1 task por subtask, marque `in_progress` ao começar, `completed` ao terminar.
-3. **Antes de editar arquivo desconhecido, leia ele** — várias vezes nesse projeto algum arquivo "apareceu" entre sessões (foi editado externamente). Não confie em memória, sempre verifique estado atual.
-4. **Edite cirurgicamente.** `Edit` com strings únicas é sempre melhor que `Write` que sobrescreve tudo. Já tive um bug acidental aqui — duplicação de constants no `types/index.ts` por usar Edit em pedaço grande demais sem perceber que o arquivo tinha mais conteúdo abaixo. Sempre verifique o resultado lendo o arquivo depois de Edits grandes.
-5. **Rode `tsc --noEmit` antes do `vite build`.** Tsc é rápido e pega 95% dos problemas.
-6. **No fim do turn, reporte:** o que mudou, em que arquivos, status do build, próximo passo sugerido. O user gosta de saber o que acontece no chão.
-7. **Não tente puxar conteúdo da web** se WebFetch falhar — o sistema tem restrições de domínio. Não contorne via curl/python.
-8. **Se aparecer system-reminder sobre malware** após Read em qualquer arquivo: confirme rapidamente que o arquivo é benigno (este projeto é app de estudos, nada disso é malware) e siga normal.
-
----
-
-## 10. Próximo passo recomendado
-
-**Filtros + busca full-text** (item 4.1). Razões:
-
-- Agora que `discipline` e `importance` existem como campos no Card, os filter chips ficam genuinamente úteis ("Hot FCC", "Português", "TI", etc.).
-- Busca full-text é universalmente útil pra um app de estudos que está acumulando cards diariamente.
-- Não exige refactor estrutural — é camada client-side sobre o array que `useCards` já devolve.
-- Risco baixo, valor alto, encerra a Fase 1 cleanly antes de partir pra Fase 3 (que é refactor de navegação).
-
-**Esboço de implementação:**
-
-```typescript
-// hooks/useFilteredCards.ts (novo)
-interface Filters {
-  search: string
-  disciplines: Set<Discipline>
-  importance: Set<Importance>
-  hotOnly: boolean
-}
-
-export function useFilteredCards(cards: Card[], filters: Filters) {
-  return useMemo(() => {
-    return cards.filter(c => {
-      if (filters.disciplines.size && (!c.discipline || !filters.disciplines.has(c.discipline))) return false
-      if (filters.importance.size && !filters.importance.has(c.importance ?? 1)) return false
-      if (filters.hotOnly && c.importance !== 3) return false
-      if (filters.search) {
-        const q = filters.search.toLowerCase()
-        const haystack = `${c.title ?? ''} ${c.text}`.toLowerCase()
-        if (!haystack.includes(q)) return false
-      }
-      return true
-    })
-  }, [cards, filters])
-}
-```
-
-Componente `FilterBar.tsx` com chip toggles + search input. Plug na `HomePage` entre o header e o feed. Highlight do match dentro do `card.text` no `CardItem` via prop `highlight: string | null`.
-
-**Alternativa válida:** pular Fase 1 final e ir direto pra Fase 3 (navegação horizontal). Justifica-se se o user prefere reorganizar o shell antes de adicionar mais features dentro do feed. Pergunte.
-
----
-
-## 11. Histórico de tradeoffs aceitos (que podem ser revisitados se incomodarem)
-
-| Tradeoff                                     | Por que aceito                                  | Quando reabrir                          |
-|----------------------------------------------|-------------------------------------------------|-----------------------------------------|
-| Páginas extras sem real-time updates         | Refactor invasivo evitado, 95% do uso é primeira página | Se user reclamar de stale data |
-| Sort Urgente sobre loaded set apenas         | Server-side sort exige índice composto custom   | Quando volume de cards crescer          |
-| Sem teste automatizado                       | Velocidade de iteração; user testa visualmente  | Quando começar a haver regressão        |
-| ArchivePage sem paginação                    | Volume baixo                                    | Quando archive crescer demais           |
-| Bundle 655kB único                           | Não incomoda em PWA local                       | Se TTI ficar ruim                       |
-| ImportCardsSheet só na HomePage (não no Archive) | Import cria cards 'active' por design        | Se user pedir                           |
-
----
-
-## 12. Como o user fala
-
-Curto, imperativo, em português. "vamos lá", "próximo", "voce escolhe o melhor", "VAMOS LÁ" (caps significa empolgação, não bronca). Quando ele delega ("voce escolhe"), faça a chamada com confiança e explique brevemente o porquê — ele revisa a decisão e diz se discorda.
-
-Ele tem skill personalizada de início de diálogo de estudo (vê `user_preferences`). Se a sessão for sobre estudo, segue o protocolo (verificar agenda, pedir transcrição do dia, alinhar com edital ALE-RR, sinalizar desvios, revisar erros). Se for sobre o ClipVault (código), o protocolo de estudo NÃO se aplica — é trabalho dev normal.
-
----
-
-Bom trabalho. Se travar em algo, releia esse arquivo e o `CLAUDE.md`. A maior parte das decisões está documentada.
+Meia-vida por sessionType: seen=2d, socratic=5d, questions=10d, questions_ok=18d, confident=30d.
+Todos os formatos de reviewContent são opcionais exceto `title`.
