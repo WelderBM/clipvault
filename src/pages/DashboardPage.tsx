@@ -4,6 +4,7 @@ import RadarChart from '../components/RadarChart'
 import Heatmap from '../components/Heatmap'
 import SprintSection from '../components/SprintSection'
 import ProgressImportSheet from '../components/ProgressImportSheet'
+import ExportDataButton from '../components/ExportDataButton'
 import ReviewTodaySection from '../components/ReviewTodaySection'
 import SessionPickerSheet from '../components/SessionPickerSheet'
 import { FCC_WEIGHTS, HOT_TOPICS } from '../data/strategy'
@@ -115,6 +116,7 @@ export default function DashboardPage() {
           </p>
         </div>
         <div className="flex items-center gap-1 mt-1">
+          <ExportDataButton />
           <button
             onClick={() => setShowImport(true)}
             className="p-2 text-white/30 hover:text-white/60 transition-colors"
