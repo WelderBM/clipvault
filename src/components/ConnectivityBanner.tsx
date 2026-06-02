@@ -7,6 +7,7 @@ const lastOnlineRef = { value: Date.now() }
 export default function ConnectivityBanner() {
   const [isOnline, setIsOnline] = useState(navigator.onLine)
   const [lastOnline, setLastOnline] = useState<number | null>(() => lastOnlineRef.value)
+  const [, setTick] = useState(0)
 
   useEffect(() => {
     if (isOnline) {
@@ -23,12 +24,11 @@ export default function ConnectivityBanner() {
     window.addEventListener('online', handleOnline)
     window.addEventListener('offline', handleOffline)
 
-    // Update time interval periodically while offline
+    // Update time display periodically while offline
     let interval: number
     if (!isOnline) {
       interval = window.setInterval(() => {
-        // Force re-render to update the "X min/hours ago"
-        setLastOnline(prev => prev)
+        setTick(t => t + 1)
       }, 60000)
     }
 

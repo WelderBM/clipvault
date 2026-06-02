@@ -85,7 +85,7 @@ export default function ReaderPage() {
       setProgress(null)
       return
     }
-    getReaderProgress(user.uid, selectedText).then(setProgress)
+    getReaderProgress(user.uid, selectedText).then(setProgress).catch(() => setProgress(null))
   }, [user, selectedText])
 
   const themeClasses: Record<Theme, string> = {
