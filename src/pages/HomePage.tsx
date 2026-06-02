@@ -54,14 +54,22 @@ export default function HomePage() {
 
   const handleBulkDelete = async () => {
     if (!user) return
-    await bulkDeleteCards(user.uid, selection.ids)
-    selection.exit()
+    try {
+      await bulkDeleteCards(user.uid, selection.ids)
+      selection.exit()
+    } catch (err) {
+      console.error('Erro ao deletar cards:', err)
+    }
   }
 
   const handleBulkArchive = async () => {
     if (!user) return
-    await bulkArchiveCards(user.uid, selection.ids)
-    selection.exit()
+    try {
+      await bulkArchiveCards(user.uid, selection.ids)
+      selection.exit()
+    } catch (err) {
+      console.error('Erro ao arquivar cards:', err)
+    }
   }
 
   const handleBulkExport = () => {

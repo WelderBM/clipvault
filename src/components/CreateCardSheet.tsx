@@ -26,12 +26,14 @@ export default function CreateCardSheet({ onClose }: Props) {
   const [discipline, setDiscipline] = useState<Discipline | undefined>(undefined)
   const [importance, setImportance] = useState<Importance>(1)
   const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState(false)
 
   const canSave = text.trim().length > 0
 
   const save = async () => {
     if (!user || !canSave) return
     setSaving(true)
+    setSaveError(false)
     try {
       await createCard(user.uid, {
         title: title.trim() || null,
@@ -44,6 +46,8 @@ export default function CreateCardSheet({ onClose }: Props) {
         ...(importance !== 1 && { importance }),
       })
       onClose()
+    } catch {
+      setSaveError(true)
     } finally {
       setSaving(false)
     }
@@ -201,6 +205,9 @@ export default function CreateCardSheet({ onClose }: Props) {
         </div>
 
         {/* Save */}
+        {saveError && (
+          <p className="font-mono text-xs text-rose-400 text-center">Erro ao salvar. Tente novamente.</p>
+        )}
         <button
           onClick={save}
           disabled={!canSave || saving}
