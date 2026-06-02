@@ -70,6 +70,7 @@ export default function CardItem({
   const [editing, setEditing] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState(false)
 
   // Edit form state — populated each time we enter edit mode
   const [editTitle, setEditTitle] = useState(card.title || '')
@@ -113,11 +114,12 @@ export default function CardItem({
   const handleDelete = async () => {
     if (!user) return
     setDeleting(true)
+    setDeleteError(false)
     try {
       await deleteCard(user.uid, card.id)
     } catch {
       setDeleting(false)
-      setConfirmDelete(false)
+      setDeleteError(true)
     }
   }
 
@@ -623,7 +625,7 @@ export default function CardItem({
                 ) : (
                   <>
                     <span className="text-xs font-body text-white/60">
-                      Apagar este card?
+                      {deleteError ? 'Falha ao apagar. Tente novamente.' : 'Apagar este card?'}
                     </span>
                     <button
                       {...stopPointer}

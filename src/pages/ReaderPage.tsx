@@ -108,20 +108,32 @@ export default function ReaderPage() {
 
   const handleSetMarker = async (articleId: string) => {
     if (!user || !selectedText) return
-    await setReadMarker(user.uid, selectedText, articleId)
-    setActiveArticleAction(null)
+    try {
+      await setReadMarker(user.uid, selectedText, articleId)
+      setActiveArticleAction(null)
+    } catch (err) {
+      console.error('Erro ao salvar marcador:', err)
+    }
   }
 
   const handleAddHighlight = async (articleId: string, color: HighlightColor, text: string) => {
     if (!user || !selectedText) return
-    await addHighlight(user.uid, selectedText, articleId, { color, text })
-    setActiveArticleAction(null)
+    try {
+      await addHighlight(user.uid, selectedText, articleId, { color, text })
+      setActiveArticleAction(null)
+    } catch (err) {
+      console.error('Erro ao salvar highlight:', err)
+    }
   }
 
   const handleRemoveHighlight = async (articleId: string, highlightId: string) => {
     if (!user || !selectedText) return
-    await removeHighlight(user.uid, selectedText, articleId, highlightId)
-    setActiveArticleAction(null)
+    try {
+      await removeHighlight(user.uid, selectedText, articleId, highlightId)
+      setActiveArticleAction(null)
+    } catch (err) {
+      console.error('Erro ao remover highlight:', err)
+    }
   }
 
   const getArticleId = (num: string) => num.replace(/\W+/g, '-').toLowerCase()
@@ -131,8 +143,12 @@ export default function ReaderPage() {
     const updated = activeText.artigos.map((a, i) =>
       i === artIdx ? { ...a, hotFCC: !a.hotFCC } : a
     )
-    await updateArtigos(user.uid, activeText.id, updated)
-    setActiveArticleAction(null)
+    try {
+      await updateArtigos(user.uid, activeText.id, updated)
+      setActiveArticleAction(null)
+    } catch (err) {
+      console.error('Erro ao atualizar hotFCC:', err)
+    }
   }
 
   const disciplines = Object.keys(byDiscipline) as (keyof typeof byDiscipline)[]
