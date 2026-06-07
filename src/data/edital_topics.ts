@@ -201,6 +201,17 @@ export const EDITAL_TOPICS: EditalTopic[] = [
     ],
   },
   {
+    id: 'cf-emendas-constitucionais',
+    label: 'Emendas Constitucionais — Processo, Limites, Cláusulas Pétreas',
+    discipline: 'constitucional',
+    hotFCC: true,
+    subtopics: [
+      'Processo de emenda (Arts. 60)',
+      'Cláusulas pétreas (Art. 60, §4º)',
+      'Votação: 3/5 em ambas as casas',
+    ],
+  },
+  {
     id: 'cf-funcoes-essenciais',
     label: 'Funções Essenciais à Justiça (MP, Defensoria, Advocacia)',
     discipline: 'constitucional',
@@ -421,6 +432,17 @@ export const EDITAL_TOPICS: EditalTopic[] = [
     ],
   },
   {
+    id: 'afo-restos-a-pagar',
+    label: 'Restos a Pagar (RPA) — Natureza, Classificação, Procedimentos',
+    discipline: 'afo',
+    hotFCC: true,
+    subtopics: [
+      'RPA processados e não processados',
+      'Cancelamento e crédito de RPA',
+      'Demonstrativo de RPA',
+    ],
+  },
+  {
     id: 'afo-fiplan',
     label: 'Fiplan — Sistema de Planejamento de Roraima',
     discipline: 'afo',
@@ -487,6 +509,17 @@ export const EDITAL_TOPICS: EditalTopic[] = [
       'Estrutura de cargos técnicos da ALERR',
       'Requisitos para o cargo de Programador',
       'Direitos, deveres e regime disciplinar',
+    ],
+  },
+
+  {
+    id: 'leg-processo-legislativo-rr',
+    label: 'Processo Legislativo em Roraima — Estrutura ALE-RR e Procedimentos Legislativos',
+    discipline: 'legislacao',
+    subtopics: [
+      'Iniciativa legislativa na ALERR',
+      'Fases do processo legislativo estadual',
+      'Sanção e veto do Governador',
     ],
   },
 
