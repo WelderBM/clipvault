@@ -43,16 +43,20 @@ export default function ReviewPage() {
 
   const topicIds = Object.keys(reviewContent)
 
+  // Resolve discipline: content field > EDITAL_TOPICS lookup > undefined
+  function resolveDisc(id: string): Discipline | undefined {
+    const fromContent = reviewContent[id]?.discipline as Discipline | undefined
+    return fromContent ?? EDITAL_TOPICS.find(t => t.id === id)?.discipline
+  }
+
   // Disciplines that have at least one topic with review content
   const disciplinesWithContent = [...new Set(
-    topicIds
-      .map(id => EDITAL_TOPICS.find(t => t.id === id)?.discipline)
-      .filter((d): d is Discipline => !!d)
+    topicIds.map(resolveDisc).filter((d): d is Discipline => !!d)
   )]
 
   const filtered = topicIds.filter(id => {
     if (!selectedDiscipline) return true
-    return EDITAL_TOPICS.find(t => t.id === id)?.discipline === selectedDiscipline
+    return resolveDisc(id) === selectedDiscipline
   })
 
   if (loading) return (
@@ -62,7 +66,6 @@ export default function ReviewPage() {
   )
 
   const openContent = openTopic ? reviewContent[openTopic] : null
-  const openTopicData = openTopic ? EDITAL_TOPICS.find(t => t.id === openTopic) : null
 
   return (
     <div className="px-4 pt-4 pb-24">
@@ -117,7 +120,7 @@ export default function ReviewPage() {
           <div className="space-y-2">
             {filtered.map(topicId => {
               const content = reviewContent[topicId]
-              const topicData = EDITAL_TOPICS.find(t => t.id === topicId)
+              const disc = resolveDisc(topicId)
               const prog = topicProgress[topicId]
               const score = prog ? calcRetentionScore(prog.lastSessionType, prog.lastStudiedAt.toDate()) : undefined
               const dot = getTopicDotClass(score)
@@ -132,9 +135,9 @@ export default function ReviewPage() {
                   <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${dot}`} />
                   <div className="flex-1 min-w-0">
                     <p className="font-body text-sm text-white/85 truncate">{content.title}</p>
-                    {topicData && (
+                    {disc && (
                       <p className="font-mono text-[10px] text-white/35 mt-0.5">
-                        {DISCIPLINE_LABELS[topicData.discipline]}
+                        {DISCIPLINE_LABELS[disc] ?? disc}
                       </p>
                     )}
                     <div className="flex gap-1.5 mt-1.5 flex-wrap">
@@ -155,14 +158,14 @@ export default function ReviewPage() {
         </>
       )}
 
-      {openContent && openTopic && openTopicData && (
+      {openContent && openTopic && (
         <ReviewSheet
           content={openContent}
           retentionScore={(() => {
             const prog = topicProgress[openTopic]
             return prog ? calcRetentionScore(prog.lastSessionType, prog.lastStudiedAt.toDate()) : undefined
           })()}
-          discipline={openTopicData.discipline}
+          discipline={resolveDisc(openTopic)}
           onClose={() => setOpenTopic(null)}
         />
       )}

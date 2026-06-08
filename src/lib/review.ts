@@ -39,6 +39,7 @@ export interface ReviewTable {
 export interface ReviewContent {
   topicId: string
   title: string
+  discipline?: string   // pode vir direto do Firestore; sobrepõe EDITAL_TOPICS
   mindMap?: MindMapNode
   text?: { sections: TextSection[] }
   flashcards?: Flashcard[]

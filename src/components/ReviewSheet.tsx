@@ -40,7 +40,7 @@ function TextViewer({ sections }: { sections: NonNullable<ReviewContent['text']>
 interface Props {
   content: ReviewContent
   retentionScore?: number
-  discipline: Discipline
+  discipline?: Discipline
   onClose: () => void
 }
 
@@ -77,9 +77,11 @@ export default function ReviewSheet({ content, retentionScore, discipline, onClo
               {content.title}
             </h2>
             <div className="flex items-center gap-2 mt-0.5">
-              <span className="font-mono text-[10px] text-white/40 uppercase tracking-wider">
-                {DISCIPLINE_LABELS[discipline]}
-              </span>
+              {discipline && (
+                <span className="font-mono text-[10px] text-white/40 uppercase tracking-wider">
+                  {DISCIPLINE_LABELS[discipline] ?? discipline}
+                </span>
+              )}
               {retentionScore !== undefined && <div className={`w-2 h-2 rounded-full ${dot}`} />}
             </div>
           </div>
